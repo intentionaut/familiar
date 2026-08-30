@@ -24,11 +24,17 @@ it, issue after issue.
 | 5 | `/familiar-line-edit` | The mechanical pass: AI tells, house spelling, reading ease. An exact fix for every flag |
 | 6 | `/familiar-social` | A week of posts on your own cadence: one pool of candidates, you pick per channel, exact send times, and nothing scheduled without a final confirm. Works with a scheduler or hands you a paste-ready list |
 | 7 | `/familiar-learn ingest <path>` / `learn diff <piece>` | Teach it your voice. Ingest reads your past issues in bulk and drafts the voice files from evidence; diff compares Familiar's draft with what you actually published and turns your edits into rules. Both propose; you accept per section |
-| 0 | `/familiar-case-study <LOG.md>` | Optional first step. Turns a [Captain's Log](https://github.com/intentionaut/captains-log) build log into a brief and a set of interview questions grounded in what actually happened |
+| 0 (optional) | `/familiar-case-study <LOG.md>` | Optional first step. Turns a [Captain's Log](https://github.com/intentionaut/captains-log) build log into a brief and a set of interview questions grounded in what actually happened |
 
 Every stage stops and waits for you. Nothing advances, nothing is applied,
-nothing ships until you say so. The friction is the point: the decisions stay
-yours, and the writing stays yours.
+nothing ships until you say so. The gates stop drift, and they let you move
+in both directions: run an earlier stage again and it adds to what is there,
+or scope any stage to one section (`/familiar-dev-edit the opening`) and the
+rest of the file is left alone. The work is always exactly where you left it.
+
+Command names here are the cloned form (`/familiar-interview`). Installed as
+the skill, the same stages are `familiar interview`, `familiar outline`, and so
+on, without the `/familiar-` prefix.
 
 ## Your voice
 
@@ -91,12 +97,18 @@ writers are the way this gets built: see `CONTRIBUTING.md`.
 ## Use it
 
 ```sh
+mkdir -p ~/Projects
 git clone https://github.com/intentionaut/familiar.git ~/Projects/familiar
 ~/Projects/familiar/scripts/setup.sh
 ```
 
+`~/Projects/` is just a suggestion. Any working directory is fine: clone
+anywhere, then run `scripts/setup.sh` from there. It derives the folder it
+lives in and installs from it.
+
 The script installs the `/familiar-*` commands for Claude Code and opencode so
-they work from any folder. Each piece gets its own folder under `pieces/`.
+they work from any folder. Each piece gets its own folder under `pieces/`;
+`pieces/README.md` shows the layout the stages write into.
 
 Or install it as a skill:
 
@@ -116,7 +128,9 @@ knowledge and run the stages by name.
 
 - `prompts/` is the source of truth. One plain markdown file per stage, no tool-specific syntax.
 - `.claude/commands/` holds thin adapters that say "read prompts/X.md and follow it". `scripts/setup.sh` installs them globally.
-- `knowledge/` is yours. It is gitignored from nothing, so if you fork this and your voice guide is candid, keep the fork private.
+- `knowledge/` is yours. The templates ship tracked in the repo; only
+  `knowledge/proposals/` and `knowledge/private/` are ignored. If your voice
+  guide ever gets candid, keep the fork private.
 - `pieces/` is where the writing happens. Ignored by git, so the repo stays a tool and your drafts stay with you.
 
 ## Where it came from

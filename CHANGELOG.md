@@ -4,6 +4,24 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.2.1 (2026-08-30)
+
+Moving back and forth between stages is now the default, and any stage can
+work on one section.
+
+**What this gives you:**
+
+- **Go back without starting over.** Run the interview again on a piece that
+  already has notes and it reads them, tells you the current thesis, and adds
+  to them. The same holds for every stage.
+- **Rework one section.** Name a section, heading or paragraph and the stage
+  works on that part only: `dev-edit the opening`, `line-edit section 3`.
+- **Nothing is overwritten silently.** If a file already has content, the
+  stage asks whether to replace it, add to it, or write a numbered variant
+  beside it.
+- **Resume at your pace.** On return it says in one line where the piece is
+  and what the open decision was, and leaves the next move to you.
+
 ## 0.2.0 (2026-08-30)
 
 Familiar learns your voice from what you publish, knows which of its rules

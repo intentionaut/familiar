@@ -21,6 +21,26 @@ Each piece lives in `pieces/YYYY-MM-DD-slug/`. Stages are gated: never advance
 to the next stage without the writer asking. Every piece names its primary
 theme (and any intersection) in notes.md; later stages serve that.
 
+## Moving between stages
+
+The gates exist to stop drift, and they also make it safe to move in both
+directions. Treat these as the default, not the exception:
+
+- **Going back is normal.** If a later stage shows that an earlier one missed
+  something, run the earlier stage again on the same piece. It reads what is
+  already there and adds to it. The interview appends to notes.md; the
+  outline offers new shapes next to the chosen one; nothing is thrown away.
+- **Reworks are scoped.** When `$ARGUMENTS` names a section, heading, or
+  paragraph, work on that part only and leave the rest of the file exactly as
+  it is. "dev-edit the opening", "line-edit section 3", "draft the ending
+  again with the other structure" are all one-section runs.
+- **Never restart a piece silently.** If a stage would overwrite a file that
+  has content, say so and ask whether to replace it, add to it, or write a
+  numbered variant beside it (`draft-2.md`).
+- **Pick up at the writer's pace.** Read `SESSION-CONTEXT.md` on resume and
+  say in one line where the piece is and what the open decision was. Do not
+  summarise the whole history and do not push towards the next stage.
+
 ## Rules for agents
 
 - Read the stage's prompt file and every knowledge file it lists before acting.

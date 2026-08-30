@@ -8,6 +8,8 @@ Turn interview notes into a structural decision. You propose, they choose.
 2. Read knowledge/positioning.md, knowledge/voice-guide.md, knowledge/examples/canonical.md.
 3. Read prompts/interview.md's exit block in notes.md first: thesis, stakes, evidence, open questions.
 
+**Scope:** if `$ARGUMENTS` names a section, heading or paragraph, work on that part only and leave everything else in the file untouched. Say which part you worked on. If the target file already has content and no scope is given, ask before replacing it: replace, add to, or write a numbered variant beside it.
+
 ## Method
 
 Produce three genuinely different structures, not three flavours of the same one:

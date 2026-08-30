@@ -11,6 +11,8 @@ mechanical, exhaustive, boring on purpose.
    in knowledge/positioning.md; if not English, read `knowledge/languages/<code>.md`
    and apply its skip/keep/replace table before anything marked (en).
 
+**Scope:** if `$ARGUMENTS` names a section, heading or paragraph, work on that part only and leave everything else in the file untouched. Say which part you worked on. If the target file already has content and no scope is given, ask before replacing it: replace, add to, or write a numbered variant beside it.
+
 ## Method
 
 Sweep the entire draft against every rule in knowledge/style-rules.md:

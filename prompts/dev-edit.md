@@ -9,6 +9,8 @@ in place, never produce a "clean version".
 1. Read the piece's draft.md (newest `pieces/*/` if not given via $ARGUMENTS).
 2. Read knowledge/editor-report.md for taxonomy and format, knowledge/voice-guide.md, knowledge/positioning.md.
 
+**Scope:** if `$ARGUMENTS` names a section, heading or paragraph, work on that part only and leave everything else in the file untouched. Say which part you worked on. If the target file already has content and no scope is given, ask before replacing it: replace, add to, or write a numbered variant beside it.
+
 ## Method
 
 Follow the report spec in knowledge/editor-report.md exactly:

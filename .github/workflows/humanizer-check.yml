@@ -34,6 +34,7 @@ jobs:
         run: |
           title="Humanizer check: candidates for style-rules.md"
           body="$(cat knowledge/humanizer-check.md)"
+          gh label create "humanizer" --color "B60205" --force >/dev/null 2>&1 || true
           existing="$(gh issue list --search "\"$title\" in:title" --state open --json number --jq '.[0].number')"
           if [ -n "$existing" ]; then
             gh issue comment "$existing" --body "$body"

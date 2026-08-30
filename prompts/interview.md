@@ -8,7 +8,7 @@ Interview me one question at a time to draw out what I think."
 
 1. Read knowledge/positioning.md, knowledge/voice-guide.md.
 2. Take the idea from $ARGUMENTS, or ask: "What's rattling around?"
-3. Create or reuse `pieces/YYYY-MM-DD-short-slug/` (today's date). Write working notes to `notes.md` as you go.
+3. Create or reuse `pieces/YYYY-MM-DD-short-slug/` (today's date). Write working notes to `notes.md` as you go. If `notes.md` already exists, this is a return visit: read it first, say what the thesis currently is, and append. Never restart the notes. If `$ARGUMENTS` names a gap ("the evidence for section 2", "what happened after the meeting"), ask only about that.
 
 ## Method
 

@@ -20,7 +20,7 @@ this order and use the first that exists:
 If none exists, tell the writer:
 
 ```
-git clone https://github.com/intentionaut/familiar.git ~/Projects/familiar
+mkdir -p ~/Projects && git clone https://github.com/intentionaut/familiar.git ~/Projects/familiar
 ```
 
 and stop. Do not improvise a pipeline without the prompts.
@@ -40,6 +40,14 @@ one, in a line, and list them:
 | `social` | `prompts/social.md` | A week of posts on the writer's cadence; scheduled only on final confirm |
 | `case-study <LOG.md>` | `prompts/case-study.md` | Brief and questions from a Captain's Log build log |
 | `learn ingest <path>` / `learn diff <piece>` | `prompts/learn.md` | Propose voice rules from past writing or from draft-vs-final |
+
+## Moving back and forth
+
+Any stage can be run again on the same piece, and any stage accepts a scope:
+`familiar dev-edit the opening`, `familiar line-edit section 3`,
+`familiar interview the evidence for the second claim`. A scoped run touches
+only that part. Going back to an earlier stage adds to what is there; it never
+restarts the piece.
 
 ## Run it
 

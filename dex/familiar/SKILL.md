@@ -60,6 +60,7 @@ in one line, with this list:
 | `social` | `prompts/social.md` | two gates, then an explicit "confirm" before anything is scheduled |
 | `learn ingest <path>` / `learn diff <piece>` | `prompts/learn.md` | proposals the writer applies per section |
 | `case-study <LOG.md \| transcript.jsonl \| session [dir]>` | `prompts/case-study.md` | hands off to `interview` |
+| `board` | `scripts/board.py` (a command, no gate) | a page the writer opens |
 
 For every stage:
 
@@ -89,6 +90,10 @@ Pass `--pieces` again for any other folder of pieces the writer keeps, so the
 board covers everything in flight rather than the vault alone. Offer it when
 the writer asks what they have on, or when they come back to a piece that has
 been sitting.
+
+`--serve` adds Archive and Delete to each card, for the writer to use. A piece
+that has been sent cannot be deleted there. Never archive or delete on their
+behalf.
 
 ## What Dex adds
 

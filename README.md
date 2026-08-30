@@ -38,8 +38,14 @@ for the whole piece on one page: what it is waiting on, which brackets are
 still unresolved, the notes and outline folded away, then the draft.
 
 Pieces in more than one place? Pass `--pieces` once per folder and each card
-says where it came from. It is plain HTML on your own machine, it reads your
-piece folders, and it changes nothing.
+says where it came from.
+
+Add `--serve` and you can tidy as well as look. Archive moves a piece out of
+the way and can be undone; Delete removes the folder. Anything you have already
+sent keeps its `final.md` and cannot be deleted from the board, because that
+file is the record of a piece that exists in the world and is what the learn
+stage reads. The server binds to your own machine, mints a fresh token each
+run, and only ever touches pieces it just listed.
 
 Every stage stops and waits for you. Nothing advances, nothing is applied,
 nothing ships until you say so. The gates stop drift, and they let you move

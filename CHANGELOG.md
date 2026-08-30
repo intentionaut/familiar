@@ -4,6 +4,31 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.4.2 (2026-08-30)
+
+The board is a real command now, and you can tidy it, not only read it.
+
+**What this gives you:**
+
+- **`/familiar-board`.** It installs with the rest, so the board is one command
+  rather than a script you have to remember the path to.
+- **Archive and delete, from the board.** Run it with `--serve` and every card
+  gets Archive, which moves the piece out of the way and can be undone from the
+  toast or the archive drawer, and Delete, which removes the folder after a
+  confirmation naming the piece.
+- **Anything you have sent is safe.** A piece with a `final.md` shows no delete
+  control, and the server refuses one even if asked directly. That file is the
+  record of a piece that exists in the world, and it is what the learn stage
+  reads to teach itself your voice.
+- **The server stays on your machine.** It binds to localhost, mints a fresh
+  token each run so no other page in your browser can reach it, and will only
+  act on pieces it just listed rather than on any path it is handed.
+- **Fixes.** Page files are named safely, so a piece folder with a space or an
+  ampersand in its name still opens. An empty `draft.md` no longer counts as a
+  draft and gets sent for a developmental edit. Pages for pieces that no longer
+  exist are swept on every build. A slug used as a title is no longer Title
+  Cased into things like "No Fm".
+
 ## 0.4.1 (2026-08-30)
 
 The board says what each piece needs, and covers pieces kept in more than one

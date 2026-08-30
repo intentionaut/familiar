@@ -40,6 +40,7 @@ one, in a line, and list them:
 | `social` | `prompts/social.md` | A week of posts on the writer's cadence; scheduled only on final confirm |
 | `case-study <LOG.md \| transcript.jsonl \| session [dir]>` | `prompts/case-study.md` | Brief and questions from a build log or a coding session |
 | `learn ingest <path>` / `learn diff <piece>` | `prompts/learn.md` | Propose voice rules from past writing or from draft-vs-final |
+| `board` | `scripts/board.py` | Every piece in flight and what each needs; a command, so no gate |
 
 ## Commands
 
@@ -51,6 +52,9 @@ Ready, Sent) and every card says what that piece needs next.
 Pass `--pieces` once per folder when pieces live in more than one place, for
 example a Dex vault and a separate newsletter repo. Use it when the writer asks
 what they have on, or needs catching up on a piece that has sat for a while.
+
+`--serve` adds Archive and Delete to each card, for the writer's hand only. A
+piece that has been sent cannot be deleted there. Never use them yourself.
 
 ## Moving back and forth
 

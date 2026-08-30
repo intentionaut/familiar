@@ -62,6 +62,13 @@ files and the draft.
 Run it when the writer asks what they have in flight, or when a piece has sat
 long enough that they need catching up.
 
+`--serve` adds Archive and Delete to each card, for the writer's hand only.
+Archive moves a folder into `.archive/` and is reversible. Delete removes it.
+A piece that has been sent, meaning it has a `final.md`, cannot be deleted from
+the board: that file is the record of something that exists in the world and is
+what `learn diff` reads. Never archive or delete a piece on the writer's
+behalf.
+
 ## Rules for agents
 
 - Read the stage's prompt file and every knowledge file it lists before acting.

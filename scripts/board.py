@@ -16,7 +16,14 @@ Usage:
   scripts/board.py --pieces DIR         somewhere other than ./pieces
   scripts/board.py --out DIR            somewhere other than <pieces>/.board
   scripts/board.py --command PREFIX     how to invoke a stage in the hint
+  scripts/board.py --serve              serve it, so pieces can be tidied away
   scripts/board.py --stale-days N       when a piece counts as resting (7)
+
+--serve adds an Archive control to each card. Archiving moves a piece folder
+into `.archive/` beside the others. Nothing is deleted by archiving, and a
+piece can be restored from the archive with one click. Deleting for good is
+only possible from the archive, which means no single action can destroy work
+you can still see.
 
 Pieces can live in more than one place. Pass --pieces once per folder, or set
 FAMILIAR_PIECES to a colon-separated list. When there is more than one, each
@@ -26,7 +33,7 @@ card says which folder it came from:
     --pieces ~/Documents/Dex/04-Projects/Writing \
     --pieces ~/Projects/intentionaut-newsroom/issues
 """
-import argparse, datetime, html, os, pathlib, re, sys, webbrowser
+import argparse, datetime, html, json, os, pathlib, re, secrets, shutil, sys, threading, webbrowser
 
 # --------------------------------------------------------------------------
 # Markdown to HTML, for display only
@@ -119,6 +126,17 @@ def md_to_html(md):
 # Reading a piece
 # --------------------------------------------------------------------------
 
+def safe_name(*parts):
+    """A filename that survives being linked to.
+
+    Piece folders are named by the writer and can hold spaces, ampersands and
+    anything else a filesystem allows. A page named after one has to be
+    reduced to characters that need no escaping in a URL.
+    """
+    raw = "--".join(q for q in parts if q)
+    name = re.sub(r"[^A-Za-z0-9._-]+", "-", raw).strip("-.")
+    return name or "piece"
+
 def read(path):
     try:
         return path.read_text(encoding="utf-8", errors="replace")
@@ -189,8 +207,14 @@ STAGES = [
     ("sent",     "Sent"),
 ]
 
-def derive_stage(folder, brackets=0):
-    has = lambda *p: (folder.joinpath(*p)).exists()
+def derive_stage(folder, brackets=0, has_draft=True):
+    """has_draft is False when draft.md exists but holds nothing to read.
+
+    An empty file is a placeholder, and calling it a draft sends the writer to
+    a developmental edit of nothing.
+    """
+    has = lambda *p: (folder.joinpath(*p)).exists() and (
+        p != ("draft.md",) or has_draft)
     mtime = lambda *p: (folder.joinpath(*p)).stat().st_mtime
     if has("final.md"):
         return "sent"
@@ -212,7 +236,7 @@ def derive_stage(folder, brackets=0):
     return "thinking"
 
 
-def next_action(folder, state, brackets, has_social):
+def next_action(folder, state, brackets, has_social, has_draft=True):
     """What this piece needs, when the context log has not said.
 
     Every card gets one. A board where most cards say nothing is a list.
@@ -238,9 +262,17 @@ def next_action(folder, state, brackets, has_social):
             return "Ask for a developmental edit"
         return "Work through the edit report"
     if state == "writing":
-        return "Write the draft from the structure you chose"
+        if (folder / "draft.md").exists() and not has_draft:
+            return "The draft file is empty. Write it, or delete the file"
+        if (folder / "outline.md").exists():
+            return "Write the draft from the structure you chose"
+        return "Write the draft"
+    stub = (folder / "draft.md").exists() and not has_draft
     if has("notes.md"):
-        return "Ask for three structures and pick one"
+        return ("Ask for three structures and pick one"
+                + (", and clear out the empty draft file" if stub else ""))
+    if stub:
+        return "There is an empty draft file and nothing else. Start the interview"
     if has("interview-questions.md") or has("brief.md"):
         return "Run the interview from the questions"
     return "Start the interview"
@@ -283,7 +315,8 @@ def gather(folder, now, stale_days, source=""):
         m = re.search(r"^#\s+(.+)", notes or outline, re.M)
         title = m.group(1) if m else ""
     if not title:
-        title = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", folder.name).replace("-", " ").title()
+        words = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", folder.name).replace("-", " ").strip()
+        title = (words[:1].upper() + words[1:]) if words else folder.name
 
     date = fm.get("date") or ""
     if not date:
@@ -319,17 +352,19 @@ def gather(folder, now, stale_days, source=""):
     ts = newest_mtime(folder)
     words, fre = reading_ease(re.sub(r"\[(NEEDS SOURCE|ASK THE WRITER)[^\]]*\]", "", draft_body))
     brackets = re.findall(r"\[(?:NEEDS SOURCE|ASK THE WRITER)[^\]]*\]", draft_raw)
-    state = derive_stage(folder, len(brackets))
+    has_draft = bool(draft_body.strip())
+    state = derive_stage(folder, len(brackets), has_draft)
     # The writer's own words win. The derived action is the fallback, and for
     # most pieces it is all there is.
-    derived = next_action(folder, state, brackets, (folder / "social.md").exists())
+    derived = next_action(folder, state, brackets,
+                          (folder / "social.md").exists(), has_draft)
     gate = ctx.get("Decision gate", "")
     action = gate or derived
     from_log = bool(gate)
 
     return {
         "slug": folder.name, "folder": folder, "title": title, "date": date,
-        "source": source, "page": (f"{source}--{folder.name}" if source else folder.name),
+        "source": source, "page": safe_name(source, folder.name),
         "snippet": snippet, "stage": state, "ts": ts,
         "action": action, "from_log": from_log,
         "ago": ago(ts, now), "stale": (now - ts) > stale_days * 86400,
@@ -428,6 +463,31 @@ article.draft hr{border:0;border-top:1px solid var(--line);margin:2em 0}
 mark.bracket{background:color-mix(in srgb,var(--accent) 16%,transparent);
 color:var(--accent);border-radius:4px;padding:1px 4px;font-size:.88em;font-weight:600}
 .none{color:var(--muted);font-style:italic}
+/* interactive */
+.card{position:relative}
+.act{position:absolute;top:10px;right:10px;opacity:0;transition:opacity .12s ease}
+.card:hover .act,.act:focus-within{opacity:1}
+.act button{font:inherit;font-size:.72rem;color:var(--muted);background:var(--paper);
+border:1px solid var(--line);border-radius:999px;padding:2px 9px;cursor:pointer}
+.act button:hover{color:var(--accent);border-color:var(--accent)}
+.arch{margin:8px 32px 56px;max-width:900px}
+.arch>summary{cursor:pointer;color:var(--muted);font-size:.8rem;
+text-transform:uppercase;letter-spacing:.09em;font-weight:700;list-style:none;padding:8px 0}
+.arch>summary::-webkit-details-marker{display:none}
+.arch>summary:hover{color:var(--accent)}
+.arow{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);
+border:1px solid var(--line);border-radius:10px;margin-bottom:8px;flex-wrap:wrap}
+.arow .t{font-weight:600;flex:1;min-width:180px}
+.arow .when{color:var(--muted);font-size:.8rem}
+.arow button{font:inherit;font-size:.78rem;padding:3px 10px;border-radius:999px;
+border:1px solid var(--line);background:var(--paper);color:var(--muted);cursor:pointer}
+.arow button:hover{border-color:var(--accent);color:var(--accent)}
+.arow button.danger:hover{border-color:#c0392b;color:#c0392b}
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);
+color:var(--paper);padding:10px 16px;border-radius:999px;font-size:.85rem;display:none;
+align-items:center;gap:14px;box-shadow:0 12px 32px -12px rgba(0,0,0,.5);z-index:20}
+#toast button{font:inherit;font-size:.82rem;background:none;border:0;color:var(--paper);
+text-decoration:underline;cursor:pointer;padding:0}
 """
 
 def page(title, body, css_depth=0):
@@ -439,7 +499,7 @@ def page(title, body, css_depth=0):
 {body}
 </body></html>"""
 
-def card_html(p):
+def card_html(p, token=""):
     pills = [f'<span class="pill">{html.escape(p["date"] or "no date")}</span>',
              f'<span class="pill{" stale" if p["stale"] else ""}">{p["ago"]}</span>']
     if p["brackets"]:
@@ -450,7 +510,15 @@ def card_html(p):
     label = "Waiting on you" if p["from_log"] else "Next"
     w = (f'<div class="waiting{"" if p["from_log"] else " derived"}">'
          f'<b>{label}</b>{html.escape(p["action"])}</div>')
-    return f"""<a class="card" href="{html.escape(p['page'])}.html">
+    act = ""
+    if token:
+        buttons = ('<button data-act="archive" title="Move it out of the way, '
+                   'reversibly">Archive</button>')
+        if p["stage"] != "sent":
+            buttons += ('<button class="danger" data-act="delete" '
+                        'title="Delete the folder">Delete</button>')
+        act = f'<span class="act">{buttons}</span>' 
+    return f"""<a class="card" href="{html.escape(p['page'])}.html" data-id="{html.escape(p['page'])}">{act}
   <h3>{html.escape(p['title'])}</h3>
   <div class="sub">{''.join(pills)}</div>
   <p>{html.escape(p['snippet']) or '<span class="none">nothing written yet</span>'}</p>
@@ -547,7 +615,59 @@ def piece_page(p, prefix="familiar"):
 
     return page(p["title"], f'<div class="wrap">{"".join(parts)}</div>')
 
-def board_page(pieces, pieces_dirs, prefix="familiar"):
+def deletable(folder):
+    """A piece that has been sent is not the board's to destroy.
+
+    `final.md` is the record that something went out. It is what `learn diff`
+    reads, and it is evidence of a thing that exists in the world. Everything
+    else in a piece folder is working material, and clearing it out is the
+    writer's business.
+    """
+    return not (folder / "final.md").exists()
+
+def list_archive(dirs, source_of=None):
+    """Everything sitting in .archive, newest first.
+
+    An archived piece keeps the id it had on the board, so Restore can find
+    what Archive moved.
+    """
+    source_of = source_of or {}
+    out = []
+    for d in dirs:
+        arch = d / ".archive"
+        if not arch.is_dir():
+            continue
+        for folder in arch.iterdir():
+            if not folder.is_dir() or folder.name.startswith("."):
+                continue
+            fm, _ = frontmatter(read(folder / "draft.md"))
+            out.append({"id": safe_name(source_of.get(d, ""), folder.name), "folder": folder,
+                        "home": d, "slug": folder.name,
+                        "title": fm.get("title") or folder.name,
+                        "deletable": deletable(folder),
+                        "ts": folder.stat().st_mtime})
+    return sorted(out, key=lambda a: a["ts"], reverse=True)
+
+def archive_html(archived, token):
+    if not archived:
+        return ""
+    rows = "".join(
+        f'<div class="arow" data-id="{html.escape(a["id"])}">'
+        f'<span class="t">{html.escape(a["title"])}</span>'
+        f'<span class="when">{html.escape(a["slug"])}</span>'
+        + (('<button data-act="restore">Restore</button>'
+            + ('<button class="danger" data-act="delete">Delete</button>'
+               if a["deletable"] else '<span class="when">sent, kept</span>'))
+           if token else "")
+        + '</div>'
+        for a in archived)
+    n = len(archived)
+    return (f'<details class="arch"><summary>Archive ({n})</summary>{rows}'
+            + ("" if token else '<p class="none">Run with --serve to restore or '
+                                'delete these.</p>')
+            + '</details>')
+
+def board_page(pieces, pieces_dirs, prefix="familiar", archived=(), token=""):
     if not pieces:
         where = ", ".join(str(d) for d in pieces_dirs)
         body = (f'<header class="top"><h1>Familiar</h1></header>'
@@ -571,36 +691,77 @@ def board_page(pieces, pieces_dirs, prefix="familiar"):
         cols.append(
             f'<div class="col{"" if inc else " empty"}"><h2>{label}'
             f'<span>{len(inc)}</span></h2>'
-            + "".join(card_html(p) for p in inc) + "</div>")
+            + "".join(card_html(p, token) for p in inc) + "</div>")
     body = (f'<header class="top"><h1>Familiar</h1>'
             f'<div class="meta">{meta} &middot; built {now}</div></header>'
-            f'<div class="board">{"".join(cols)}</div>')
+            f'<div class="board">{"".join(cols)}</div>'
+            + archive_html(archived, token)
+            + ('<div id="toast"></div>' + CLIENT_JS.replace("__TOKEN__", token)
+               if token else ""))
     return page("Familiar board", body)
+
+CLIENT_JS = """
+<script>
+const TOKEN = "__TOKEN__";
+const toast = document.getElementById("toast");
+let hide = null;
+function say(msg, onUndo) {
+  toast.innerHTML = "";
+  toast.append(msg);
+  if (onUndo) {
+    const b = document.createElement("button");
+    b.textContent = "Undo"; b.onclick = onUndo; toast.append(b);
+  }
+  toast.style.display = "flex";
+  clearTimeout(hide);
+  hide = setTimeout(() => { toast.style.display = "none"; }, 7000);
+}
+async function call(action, id) {
+  const r = await fetch("/api/" + action, {
+    method: "POST",
+    headers: {"Content-Type": "application/json", "X-Familiar-Token": TOKEN},
+    body: JSON.stringify({id})
+  });
+  if (!r.ok) { say("That did not work: " + (await r.text())); return null; }
+  return r.json();
+}
+function nameOf(el) {
+  const h = el.querySelector("h3, .t");
+  return h ? h.textContent.trim() : "this piece";
+}
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest("[data-act]");
+  if (!btn) return;
+  e.preventDefault(); e.stopPropagation();
+  const row = btn.closest("[data-id]");
+  const act = btn.dataset.act, id = row.dataset.id;
+  if (act === "delete") {
+    const ok = confirm(
+      "Delete \u201c" + nameOf(row) + "\u201d?\n\n" +
+      "The whole piece folder goes: notes, outline, draft, edits. " +
+      "This cannot be undone.\n\nArchive instead if you might want it back.");
+    if (!ok) return;
+    if (await call("delete", id)) location.reload();
+    return;
+  }
+  const res = await call(act, id);
+  if (!res) return;
+  if (act === "archive") {
+    say("Archived. It is in the archive at the bottom.", async () => {
+      await call("restore", id); location.reload();
+    });
+    setTimeout(() => location.reload(), 1400);
+  } else {
+    location.reload();
+  }
+});
+</script>
+"""
 
 # --------------------------------------------------------------------------
 
-def main():
-    ap = argparse.ArgumentParser(description="Build a static board of every piece.")
-    ap.add_argument("--pieces", action="append", default=[],
-                    help="folder holding the piece folders; repeatable "
-                         "(default: ./pieces, or FAMILIAR_PIECES)")
-    ap.add_argument("--out", default="", help="where to write the HTML (default: <first pieces>/.board)")
-    ap.add_argument("--command", default="", help="how to invoke a stage in the hint")
-    ap.add_argument("--stale-days", type=int, default=7)
-    ap.add_argument("--open", action="store_true", help="open the board in a browser")
-    args = ap.parse_args()
-
-    root = pathlib.Path(__file__).resolve().parent.parent
-    raw = args.pieces or [q for q in os.environ.get("FAMILIAR_PIECES", "").split(":") if q]
-    dirs = [pathlib.Path(q).expanduser().resolve() for q in raw] or [root / "pieces"]
-    missing = [d for d in dirs if not d.is_dir()]
-    if missing:
-        sys.exit("No such folder: " + ", ".join(str(m) for m in missing))
-
-    out = pathlib.Path(args.out).expanduser() if args.out else dirs[0] / ".board"
-    out.mkdir(parents=True, exist_ok=True)
-
-    # A source label only helps when there is more than one place to confuse.
+def build(dirs, out, stale_days, command, token=""):
+    """Write index.html and a page per piece. Returns (pieces, archived, swept)."""
     GENERIC = {"pieces", "issues", "writing", "drafts", "posts", "content",
                "src", "docs", "documents", "projects"}
     def label(d):
@@ -610,27 +771,188 @@ def main():
             return part
         return d.name
 
+    source_of = {d: (label(d) if len(dirs) > 1 else "") for d in dirs}
     now = datetime.datetime.now().timestamp()
     pieces = []
     for d in dirs:
-        src = label(d) if len(dirs) > 1 else ""
+        src = source_of[d]
         for folder in sorted((f for f in d.iterdir()
                               if f.is_dir() and not f.name.startswith(".")),
                              key=lambda f: f.name, reverse=True):
-            pieces.append(gather(folder, now, args.stale_days, src))
-    pieces.sort(key=lambda p: p["slug"], reverse=True)
+            pieces.append(gather(folder, now, stale_days, src))
+    pieces.sort(key=lambda q: q["slug"], reverse=True)
+    archived = list_archive(dirs, source_of)
 
-    prefix = args.command or command_prefix(dirs[0])
-    for p in pieces:
-        (out / f"{p['page']}.html").write_text(piece_page(p, prefix), encoding="utf-8")
-    index = out / "index.html"
-    index.write_text(board_page(pieces, dirs, prefix), encoding="utf-8")
+    prefix = command or command_prefix(dirs[0])
+    out.mkdir(parents=True, exist_ok=True)
+    for q in pieces:
+        (out / f"{q['page']}.html").write_text(piece_page(q, prefix), encoding="utf-8")
+    (out / "index.html").write_text(
+        board_page(pieces, dirs, prefix, archived, token), encoding="utf-8")
 
-    waiting = sum(1 for p in pieces if p["ctx"].get("Decision gate"))
-    print(f"{len(pieces)} piece{'s' if len(pieces) != 1 else ''}, {waiting} waiting on you")
-    print(index)
+    # A page for a piece that no longer exists is a link to a lie. Sweep them.
+    keep = {"index.html"} | {f"{q['page']}.html" for q in pieces}
+    swept = 0
+    for old_page in out.glob("*.html"):
+        if old_page.name not in keep:
+            old_page.unlink(); swept += 1
+    return pieces, archived, swept
+
+
+def unique_dest(parent, name):
+    dest = parent / name
+    n = 2
+    while dest.exists():
+        dest = parent / f"{name}-{n}"; n += 1
+    return dest
+
+
+def serve(dirs, out, stale_days, command, open_browser):
+    """A local server, so the board can be tidied as well as read.
+
+    Safety, deliberately:
+      - binds 127.0.0.1 only, so nothing off this machine can reach it
+      - every write needs a token minted for this run, so another page open in
+        the same browser cannot post to it
+      - an action names a piece by the id the board itself generated, and the
+        server resolves that against the pieces it just built. No path from
+        the client is ever touched
+      - archiving moves a folder; it never deletes
+      - deleting is refused for any piece that has been sent, checked on the
+        server against the folder rather than trusted from the page
+    """
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+    token = secrets.token_urlsafe(18)
+    state = {}
+    lock = threading.Lock()
+
+    def rebuild():
+        pieces, archived, _ = build(dirs, out, stale_days, command, token)
+        state["live"] = {q["page"]: q["folder"] for q in pieces}
+        state["archived"] = {a["id"]: (a["folder"], a["home"]) for a in archived}
+        return pieces, archived
+
+    rebuild()
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def _send(self, code, body=b"", ctype="text/plain; charset=utf-8"):
+            self.send_response(code)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            if body:
+                self.wfile.write(body)
+
+        def do_GET(self):
+            name = self.path.split("?")[0].lstrip("/") or "index.html"
+            target = (out / name).resolve()
+            if out.resolve() not in target.parents or not target.is_file():
+                return self._send(404, b"not found")
+            ctype = "text/html; charset=utf-8" if target.suffix == ".html" else "text/plain"
+            self._send(200, target.read_bytes(), ctype)
+
+        def do_POST(self):
+            if self.headers.get("X-Familiar-Token") != token:
+                return self._send(403, b"bad token")
+            action = self.path.rsplit("/", 1)[-1]
+            try:
+                n = int(self.headers.get("Content-Length", 0))
+                pid = json.loads(self.rfile.read(n) or b"{}").get("id", "")
+            except Exception:
+                return self._send(400, b"bad request")
+
+            with lock:
+                try:
+                    if action == "archive":
+                        folder = state["live"].get(pid)
+                        if not folder:
+                            return self._send(404, b"no such piece")
+                        arch = folder.parent / ".archive"
+                        arch.mkdir(exist_ok=True)
+                        shutil.move(str(folder), str(unique_dest(arch, folder.name)))
+                    elif action == "restore":
+                        entry = state["archived"].get(pid)
+                        if not entry:
+                            return self._send(404, b"not in the archive")
+                        folder, home = entry
+                        shutil.move(str(folder), str(unique_dest(home, folder.name)))
+                    elif action == "delete":
+                        entry = state["archived"].get(pid)
+                        folder = entry[0] if entry else state["live"].get(pid)
+                        if not folder:
+                            return self._send(404, b"no such piece")
+                        # Checked here as well as in the page, because the page
+                        # is not what enforces it.
+                        if not deletable(folder):
+                            return self._send(403, b"refusing: this piece has been sent")
+                        if folder.parent not in dirs and folder.parent.name != ".archive":
+                            return self._send(400, b"refusing: unexpected location")
+                        shutil.rmtree(folder)
+                    else:
+                        return self._send(404, b"no such action")
+                    rebuild()
+                except OSError as exc:
+                    return self._send(500, str(exc).encode())
+            self._send(200, b'{"ok":true}', "application/json")
+
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    url = f"http://127.0.0.1:{httpd.server_port}/"
+    print(f"Serving the board at {url}", flush=True)
+    print("Archive moves a piece into .archive; it can be restored.", flush=True)
+    print("Delete removes the folder. A piece that has been sent is refused.",
+          flush=True)
+    print("Ctrl-C to stop.", flush=True)
+    if open_browser:
+        webbrowser.open(url)
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\nStopped. The board is still readable at " + str(out / "index.html"))
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Build a static board of every piece.")
+    ap.add_argument("--pieces", action="append", default=[],
+                    help="folder holding the piece folders; repeatable "
+                         "(default: ./pieces, or FAMILIAR_PIECES)")
+    ap.add_argument("--out", default="", help="where to write the HTML (default: <first pieces>/.board)")
+    ap.add_argument("--command", default="", help="how to invoke a stage in the hint")
+    ap.add_argument("--stale-days", type=int, default=7)
+    ap.add_argument("--serve", action="store_true",
+                    help="serve it locally so pieces can be archived and restored")
+    ap.add_argument("--open", action="store_true", help="open the board in a browser")
+    args = ap.parse_args()
+
+    root = pathlib.Path(__file__).resolve().parent.parent
+    raw = args.pieces or [q for q in os.environ.get("FAMILIAR_PIECES", "").split(":") if q]
+    dirs = [pathlib.Path(q).expanduser().resolve() for q in raw] or [root / "pieces"]
+    missing = [d for d in dirs if not d.is_dir()]
+    if missing:
+        sys.exit("No such folder: " + ", ".join(str(m) for m in missing))
+    out = pathlib.Path(args.out).expanduser() if args.out else dirs[0] / ".board"
+
+    if args.serve:
+        return serve(dirs, out, args.stale_days, args.command, args.open)
+
+    pieces, archived, swept = build(dirs, out, args.stale_days, args.command)
+    waiting = sum(1 for q in pieces if q["from_log"])
+    note = f"{len(pieces)} piece{'s' if len(pieces) != 1 else ''}"
+    if waiting:
+        note += f", {waiting} with a note from you"
+    if archived:
+        note += f", {len(archived)} archived"
+    if swept:
+        note += f", {swept} stale page{'s' if swept != 1 else ''} removed"
+    print(note)
+    print(out / "index.html")
     if args.open:
-        webbrowser.open(index.as_uri())
+        webbrowser.open((out / "index.html").as_uri())
+
 
 if __name__ == "__main__":
     main()

@@ -37,9 +37,9 @@ directions. Treat these as the default, not the exception:
 - **Never restart a piece silently.** If a stage would overwrite a file that
   has content, say so and ask whether to replace it, add to it, or write a
   numbered variant beside it (`draft-2.md`).
-- **Pick up at the writer's pace.** Read `SESSION-CONTEXT.md` on resume and
-  say in one line where the piece is and what the open decision was. Do not
-  summarise the whole history and do not push towards the next stage.
+- **Pick up at the writer's pace.** Read the piece's `SESSION-CONTEXT.md` on
+  resume and say in one line where the piece is and what the open decision was.
+  Do not summarise the whole history and do not push towards the next stage.
 
 ## Rules for agents
 
@@ -60,10 +60,11 @@ directions. Treat these as the default, not the exception:
   final confirmation, and only reaches a scheduler the way
   `knowledge/social-schedule.md` describes. Keys and tokens never go in that
   file.
-- **Context log:** at the exit of every stage, append an entry to the project
-  root `SESSION-CONTEXT.md` per `knowledge/context-log.md`: status, files
+- **Context log:** at the exit of every stage, append an entry to the piece's
+  own `SESSION-CONTEXT.md` per `knowledge/context-log.md`: status, files
   touched, what changed, the decision gate for the writer, and next stage.
-  Append, never replace. Read it on resume to pick work back up.
+  One log per piece, inside the piece folder. Append, never replace. Read it on
+  resume to pick work back up.
 
 ## File map
 

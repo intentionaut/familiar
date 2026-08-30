@@ -33,10 +33,10 @@ Follow the report spec in knowledge/editor-report.md exactly:
 ## Exit
 
 Write to `edits/dev-edit-report.md` next to the draft. Tell the writer the report
-is ready and how many fixes landed in each section. They accept, reject, or
-revises each item herself. If they want changes applied, they will say which ones.
+is ready and how many fixes landed in each section. They accept, reject or revise
+each item themselves. If they want changes applied, they will say which ones.
 
-- **Context log:** append to the project root `SESSION-CONTEXT.md` per
+- **Context log:** append to the piece's own `SESSION-CONTEXT.md` per
   knowledge/context-log.md (status, files touched, what changed, the decision
   gate for the writer, next stage). Terse; this is what makes the article easy to
   resume later.

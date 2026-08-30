@@ -95,5 +95,5 @@ comment so the origin is traceable. Keep the proposal file.
 
 One line: what was proposed, what was applied, where the record is.
 
-- **Context log:** append to the project root `SESSION-CONTEXT.md` per
+- **Context log:** append to the piece's own `SESSION-CONTEXT.md` per
   knowledge/context-log.md.

@@ -62,5 +62,5 @@ process.
   tell the orchestrator to run /interview on this piece folder, passing
   interview-questions.md as the question seed and brief.md as context. /interview
   runs its normal one-question-at-a-time method to produce notes.md.
-- Context log: append to SESSION-CONTEXT.md per knowledge/context-log.md (status,
+- Context log: append to the piece's own SESSION-CONTEXT.md per knowledge/context-log.md (status,
   files touched, decision gate, next stage = interview).

@@ -12,7 +12,8 @@ pieces/YYYY-MM-DD-slug/
 ├── edits/
 │   ├── dev-edit-report.md    # /dev-edit output
 │   └── line-edit-report.md   # /line-edit output
-└── social.md                 # /social output (pool, picks, schedule, result)
+├── social.md                 # /social output (pool, picks, schedule, result)
+└── SESSION-CONTEXT.md        # every stage appends here on exit; read it on resume
 ```
 
 Piece folders are ignored by git. This repo is the tool; the writing stays with

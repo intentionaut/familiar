@@ -1,8 +1,14 @@
 # Context log
 
-`SESSION-CONTEXT.md` at the project root is how a piece survives a closed
-terminal. Every stage appends an entry on exit. Nothing is ever replaced or
-tidied; read the last few entries to pick work back up.
+`SESSION-CONTEXT.md` **inside the piece folder** is how a piece survives a
+closed terminal. Every stage appends an entry on exit. Nothing is ever replaced
+or tidied; read the last few entries to pick work back up.
+
+One log per piece, so a piece is self contained. Moving or archiving a piece
+takes its history with it, and nothing collides with a session file belonging
+to whatever else lives in that folder. If you have an older log at the project
+root, it can be split: every entry names its piece in the heading, so the split
+is a filter and needs no guessing.
 
 ## Entry format
 
@@ -23,3 +29,6 @@ Next stage: <name, or "none until the writer decides">
 - The decision gate is the important line. It is what the next session reads
   first.
 - Ignored by git by default; it is working state, not a record.
+- Keep the heading format exactly as above, including the piece folder.
+  It is read by a person and by `status`, which quotes the decision gate
+  back verbatim and never paraphrases it.

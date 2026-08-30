@@ -4,6 +4,22 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.3.3 (2026-08-30)
+
+Each piece keeps its own context log, so a piece is self contained.
+
+**What this gives you:**
+
+- **The log lives with the piece.** Every stage now appends to
+  `SESSION-CONTEXT.md` inside the piece folder rather than one shared file at
+  the project root. Moving or archiving a piece takes its history with it, and
+  twenty pieces no longer share one stream. If you have an existing root log,
+  split it by piece; every entry already names its piece in the heading, so
+  nothing has to be guessed. Copy rather than move, and keep the original until
+  you have checked.
+- **Two wording fixes.** The developmental edit no longer says "revises each
+  item herself", and the outline stage says piece where it used to say issue.
+
 ## 0.3.2 (2026-08-30)
 
 The draft stage asks before it invents, and in Dex your voice files live in

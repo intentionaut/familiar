@@ -90,7 +90,8 @@ For every stage:
 - **Learn from the vault.** `learn ingest` accepts a vault path such as
   `06-Resources/Published/` or a `05-Areas/` folder of past writing.
 - **Context log.** Familiar's `SESSION-CONTEXT.md` lives in the piece folder,
-  not the vault root, so it never collides with Dex's own session files.
+  which is Familiar's rule everywhere, and it means Familiar never writes a
+  session file to the vault root where Dex keeps its own.
 
 ## Honesty rules
 

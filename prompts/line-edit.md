@@ -59,7 +59,7 @@ Write to `edits/line-edit-report.md`: findings, then the summary table from the
 spec (flags per category, reading ease, grade level, top three highest-impact fixes).
 They apply what they agree with. Nothing is auto-applied.
 
-- **Context log:** append to the project root `SESSION-CONTEXT.md` per
+- **Context log:** append to the piece's own `SESSION-CONTEXT.md` per
   knowledge/context-log.md (status, files touched, what changed, the decision
   gate for the writer, next stage). Terse; this is what makes the article easy to
   resume later.

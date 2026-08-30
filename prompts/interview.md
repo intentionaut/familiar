@@ -48,7 +48,7 @@ Lines or phrases they said worth building around.
 Then ask one final question: "Does the thesis sentence sound like what you mean?"
 Do not proceed to outlining unless asked. The human decides when to move stages.
 
-- **Context log:** append to the project root `SESSION-CONTEXT.md` per
+- **Context log:** append to the piece's own `SESSION-CONTEXT.md` per
   knowledge/context-log.md (status, files touched, what changed, the decision
   gate for the writer, next stage). Terse; this is what makes the article easy to
   resume later.

@@ -163,7 +163,7 @@ Then one line: what is scheduled, on which channels, and anything still needed
 (a link to add, a channel to connect, a comment to pin, a thread to link by
 hand).
 
-- **Context log:** append to the project root `SESSION-CONTEXT.md` per
+- **Context log:** append to the piece's own `SESSION-CONTEXT.md` per
   knowledge/context-log.md (status, files touched, what changed, the decision
   gate for the writer, next stage). Note whether this stage wrote to a
   scheduler, so a resumed session knows posts already exist.

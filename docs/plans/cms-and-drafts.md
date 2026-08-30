@@ -1,9 +1,19 @@
 # Plan: drafts at a glance, and the CMS as the draft store
 
-**Written:** 30 August 2026. **Status:** proposal, nothing built.
+**Written:** 30 August 2026. **Revised:** 30 August 2026, after the first two
+questions were answered. **Status:** proposal, nothing built.
 **Scope:** two additions to Familiar. A `status` command that shows every piece
 in flight, and a set of adapters that let a stage work against a draft that
-lives in Ghost, beehiiv or Substack.
+lives in beehiiv, Ghost or Substack.
+
+**Decisions already taken, and applied to the repo:**
+
+- The context log moves into the piece folder. Done: eight prompts,
+  `AGENTS.md`, `knowledge/context-log.md`, `pieces/README.md` and the Dex skill
+  all say the same thing now, and the existing root log has been split.
+- **beehiiv is the first adapter. Ghost is next.** Intentionaut publishes on
+  beehiiv, so beehiiv is the one that gets used rather than the one that
+  demonstrates well. This costs something real, and section 4.1 says what.
 
 Confidence markers used below: **[READ]** taken from a file in this repo,
 with the line. **[LIVE]** checked against a vendor's own documentation today,
@@ -33,9 +43,11 @@ Four facts from the repo shape everything that follows.
 - **The gates are the product.** `AGENTS.md:20-21`: "Stages are gated: never
   advance to the next stage without the writer asking." **[READ]**
 
-### A contradiction to resolve first
+### A contradiction, now resolved
 
-The repo disagrees with itself about where the context log lives.
+The repo disagreed with itself about where the context log lives. It has since
+been fixed in favour of the piece folder; the evidence below is kept because it
+is why `status` has to tolerate both shapes for a while.
 
 - `knowledge/context-log.md:3`: "`SESSION-CONTEXT.md` **at the project root**
   is how a piece survives a closed terminal." **[READ]**
@@ -45,14 +57,15 @@ The repo disagrees with itself about where the context log lives.
   **piece folder**, not the vault root, so it never collides with Dex's own
   session files." **[READ]**
 
-So a Dex user and a standalone user store the same information in two
-different places. This has to be settled before `status` can read anything.
-The plan settles it in section 1.
+A Dex user and a standalone user stored the same information in two different
+places. **Fixed on 30 August 2026:** the piece folder wins, for the reasons in
+section 1. `status` still reads a root log if it finds one, because other
+people's clones will have one until they run the split.
 
-Two small bugs found while reading, unrelated to this work, worth a one line
-fix each: `prompts/dev-edit.md:37` reads "They accept, reject, or revises each
-item herself", left over from the de-gendering pass, and `prompts/outline.md:7`
-still says "the target issue folder" where every other file says piece.
+Two small bugs found while reading, also fixed: `prompts/dev-edit.md:37` read
+"They accept, reject, or revises each item herself", left over from the
+de-gendering pass, and `prompts/outline.md:7` said "the target issue folder"
+where every other file says piece.
 
 ---
 
@@ -79,22 +92,23 @@ they disagree, files win on "how far" and the log wins on "what next", and
 
 ### Where the log lives, settled
 
-Move to **one `SESSION-CONTEXT.md` per piece folder**, which is what
-`dex/familiar/SKILL.md:92` already does. Three reasons: a piece is a folder and
+**One `SESSION-CONTEXT.md` per piece folder.** This is done, and it is what
+`dex/familiar/SKILL.md:92` already did. Three reasons: a piece is a folder and
 should be self contained, so moving or archiving a piece takes its history with
 it; a shared root file grows without bound and mixes twenty pieces into one
 stream; and Dex already collides with a vault-root file.
 
-Migration is one pass and it is safe, because the existing entry heading already
+Migration was one pass and it was safe, because the entry heading already
 names the piece. `knowledge/context-log.md:10` defines the heading as
 `## YYYY-MM-DD HH:MM  <stage>  <piece folder>`, and the real log on this machine
 follows it: `## 2026-08-30 08:55  line-edit  pieces/2026-08-30-kernic-site-copy`.
-**[READ]** So `status` can split a root log into per-piece logs with no
-guessing. Ship the migration inside `status` itself: on first run, if a root
-`SESSION-CONTEXT.md` exists, offer to split it, and copy rather than move so
-nothing is destroyed.
+**[READ]** So a root log splits into per-piece logs with no guessing. That is
+how the local one was split on 30 August: entries copied, never moved, and the
+original left in place with a note.
 
-Until the split happens, `status` reads both and prefers the per-piece file.
+Ship the same migration inside `status`, because other people's clones will
+still have a root log. On first run, if one exists, offer to split it, copy
+rather than move, and prefer the per-piece file wherever both exist.
 
 ### How status derives a stage
 
@@ -335,34 +349,155 @@ appear in the CMS section of `AGENTS.md` word for word.
 ### Connecting in under two minutes
 
 ```
-$ familiar connect ghost
+$ familiar connect beehiiv
 
-  1. In Ghost, go to Settings, Integrations, Add custom integration.
-  2. Name it Familiar. Copy the Admin API key. It looks like
-     6512c0a1e4b0f0f0f0f0f0f0:9a8b7c...
+  1. In beehiiv, go to Settings, Integrations, API.
+  2. Create a key with posts:read and posts:write. Copy it.
   3. Paste it here. It goes into your keychain, never into a file.
 
-  Admin API URL: https://example.com
-  Admin API key: ****
+  Publication ID: pub_...
+  API key: ****
 
-  Connected. 3 drafts, 41 published posts. Familiar can read and update
-  drafts. It cannot publish; there is no code in it that can.
+  Connected to Intentionaut. 2 drafts, 26 published posts.
+
+  What Familiar can do here:
+    write a draft            yes
+    update an existing draft no, your plan does not include it. Each push
+                             writes a new dated draft and leaves the old one.
+    read a draft back        only the rendered page, so Familiar can tell you
+                             the copy in beehiiv changed and cannot bring the
+                             change down for you
+    publish or send          no. There is no code in Familiar that can.
 ```
 
-The last line matters. A writer handing a tool an admin key deserves to be told
-what it will refuse to do, at the moment they hand it over.
+The last four lines matter. A writer handing a tool an API key deserves to be
+told what it will refuse to do, and what it cannot do on their plan, at the
+moment they hand it over rather than the first time it fails.
 
 ---
 
 ## 4. The adapters
 
-Build order is set by what each API can actually do, verified today.
+Build order is set by where the writing actually goes. beehiiv is where
+Intentionaut publishes, so it is first, and section 4.1 is honest about the
+price of that choice. Ghost is second, because it is the platform that lets
+the two way path exist at all. Substack is last and optional, because it has
+no API to build on.
 
-### 4.1 Ghost, first
+### 4.0 The Markdown converter, needed before any adapter
 
-**Why first.** It is the only one of the three with a documented, supported,
-complete API, and it is the only one with collision detection built in, which
-means the risky part of this whole feature is handled by the vendor.
+Every platform here speaks HTML. `draft.md` is Markdown. Python has no
+Markdown in the standard library, and section 0 says no dependencies, so
+Familiar needs its own converter. This is the first thing to build, and it is
+the thing most likely to lose content, so it gets the strictest rule in the
+plan.
+
+**Write a small deterministic converter for the subset a newsletter draft
+actually uses:** headings, paragraphs, bold, italic, links, blockquotes,
+ordered and unordered lists, inline code, code blocks, horizontal rules,
+images. That is roughly a hundred and fifty lines each way and it covers every
+piece in this repo.
+
+**Then make it refuse.** On the way out, if the Markdown contains anything the
+converter does not recognise, it stops and names the line rather than dropping
+it or passing it through raw. On the way in, if the HTML contains a tag outside
+the subset, it stops and names the tag. A converter that guesses is the single
+most likely way this feature loses a writer's work, and the fix is for it to
+have no guessing branch.
+
+```
+Line 84 uses a footnote reference, which this converter does not handle.
+
+Nothing was sent. Options:
+  rewrite the footnote as an inline aside
+  familiar push --strict=off   sends it as literal text, which is almost
+                               certainly not what you want
+```
+
+**Test it against itself before trusting it.** Convert every `draft.md` in
+`pieces/` to HTML and back, and diff. Any difference that is not whitespace is
+a bug. This test costs nothing to run and should be the first thing in CI for
+this feature.
+
+### 4.1 beehiiv, first
+
+**Why first.** Because it is where Intentionaut is published, and a tool that
+works on the platform you do not use is a demonstration. Everything below is
+the cost of that decision, stated plainly so it is chosen rather than
+discovered.
+
+**What the API can do**, verified today:
+
+- Create: `POST /v2/publications/{id}/posts`, `title` required, and either
+  `blocks` or `body_content` but not both. `body_content` is raw HTML.
+  **[LIVE, developers.beehiiv.com/api-reference/posts/create, 30 Aug 2026]**
+- Update: `PATCH /v2/publications/{id}/posts/{postId}`. Partial semantics,
+  "Only the fields provided in the request body will be updated". It has a
+  `content_merge_strategy` that defaults to `replace`, with `append`,
+  `prepend` and `append_to_template` as alternatives. Familiar always sends
+  `replace` explicitly and never relies on the default.
+  **[LIVE, developers.beehiiv.com/api-reference/posts/update.md, 30 Aug 2026]**
+- List: `GET /v2/publications/{id}/posts`, filtered by `status` on `draft`,
+  `confirmed`, `archived` or `all`.
+  **[LIVE, developers.beehiiv.com/api-reference/posts/index, 30 Aug 2026]**
+- Get: `GET /v2/publications/{id}/posts/{postId}`.
+  **[LIVE, developers.beehiiv.com/api-reference/posts/show.md, 30 Aug 2026]**
+- Drafts became the create default on 6 August 2026: "a Create post API call
+  made without a status parameter will default to draft instead of publishing
+  automatically". **[LIVE, beehiiv help article 36759164012439, 30 Aug 2026]**
+  Familiar passes `status: "draft"` explicitly on every call regardless. A
+  default that changed once can change again, and the cost of being wrong here
+  is a published post.
+
+**The three constraints that shape the adapter.**
+
+1. **Get returns rendered HTML, and never the editable document.** Content
+   comes back through `expand` options named `free_web_content`,
+   `free_email_content`, `premium_web_content` and similar, and the docs note
+   "Generating HTML is slow". There is no `blocks` expand option.
+   **[LIVE, posts/show.md, 30 Aug 2026]** So a pull cannot reconstruct the
+   draft. It gets the rendered page, wrappers and all.
+2. **Update is plan gated.** The update endpoint is "available to publications
+   on the Max and Enterprise plans". **[LIVE, posts/update.md, 30 Aug 2026]**
+   Below that, a writer can create drafts and cannot update them.
+3. **There is no collision detection.** Nothing in the documented response
+   gives a version marker to send back. **[LIVE, posts/update.md, 30 Aug 2026]**
+
+**So the beehiiv adapter is push first.** `draft.md` is the source of truth and
+beehiiv holds a copy. Push sends `body_content` as HTML. Pull exists, and it is
+used to answer one question only: has the remote copy changed since Familiar
+last wrote it. It answers that by hashing the rendered content and comparing,
+which is exactly the mechanism section 2 already describes.
+
+If the writer has edited in beehiiv's editor, `status` will say the remote
+moved, and the honest instruction is to copy those edits back by hand, once.
+Familiar will not pretend it can merge a rendered page into a Markdown draft.
+
+**On a plan without update**, `connect` says so at connect time, and push
+creates a new draft each run, titled `<Title> (Familiar, 30 Aug 14:02)`,
+leaving the previous one untouched. Clutter the writer can see and delete is a
+better failure than a silent no-op.
+
+**What can be lost.** Polls, buttons, paywall breaks, section blocks, adverts
+and embeds are all block types the create endpoint understands that plain HTML
+does not carry back. Style handling is specific: "style tags are removed. All
+style block elements are stripped" while "inline styles are preserved".
+**[LIVE, posts/create, 30 Aug 2026]** So a draft assembled from beehiiv blocks
+should be finished in beehiiv. A draft that is prose, which is what a
+Familiar piece is, survives.
+
+**Because beehiiv gives no collision detection, the general mechanism gets
+built first.** That is the quiet benefit of this ordering. Had Ghost gone
+first, the temptation would have been to lean on `updated_at` and discover
+later that it does not generalise. Building the hash comparison for beehiiv
+means Ghost inherits a mechanism that already works, and uses `updated_at` as
+a second, better check on top.
+
+### 4.2 Ghost, next
+
+**Why second.** It is the only one of the three with a documented, supported
+API complete enough for a real two way sync, and the only one where the
+dangerous part is handled by the vendor.
 
 - Content format: "By default, the API expects and returns content in the
   **Lexical** format only", and `formats=html,lexical` returns both.
@@ -371,91 +506,34 @@ means the risky part of this whole feature is handled by the vendor.
   used to handle collision detection", and the docs recommend "perform a GET
   request to fetch the latest data before updating a post".
   **[LIVE, docs.ghost.org/admin-api/posts/updating-a-post, 30 Aug 2026]**
-  A mismatch raises `UpdateCollisionError`, the same error Ghost surfaces in its
+  A mismatch raises `UpdateCollisionError`, the same error Ghost shows in its
   own editor as "Someone else is editing this post".
   **[LIVE, github.com/TryGhost/Ghost issue 10691, read 30 Aug 2026]**
 - Sending HTML instead of Lexical: `PUT /ghost/api/admin/posts/:id/?source=html`,
   with the post object wrapped in a `posts` array. The `html` field on its own
   is not writeable, because Ghost regenerates it from Lexical.
-  **[LIVE, forum.ghost.org thread 44374, read 30 Aug 2026. This is a forum
-  resolution rather than a documented parameter, so verify before shipping.]**
+  **[LIVE, forum.ghost.org thread 44374, read 30 Aug 2026. A forum resolution
+  rather than a documented parameter, so verify before shipping.]**
 - Auth: a JWT signed HS256 from the Admin API key. `hmac`, `hashlib`, `base64`
-  and `json` are all standard library, so no dependency is needed. **[LIVE]**
+  and `json` are all standard library, so this needs no dependency. **[LIVE]**
 
 **Round trip:** pull with `formats=html,lexical`, convert the HTML to Markdown
-for `draft.md`, push with `?source=html` after converting back.
+for `draft.md`, push with `?source=html`. Send `updated_at` from the GET
+performed immediately before, and treat a collision error as a conflict under
+section 2 rather than as something to retry.
 
-**What can be lost, and the honest answer.** Markdown cannot hold everything
-Lexical can. Ghost cards for embeds, galleries, bookmarks, buttons, toggles and
-email-only blocks have no Markdown spelling. The pull will flatten them.
-
-The fix is to refuse rather than to flatten silently. On pull, walk the Lexical
-tree, and if it contains a node type that has no Markdown equivalent, name it
-and stop:
+**What can be lost.** Markdown cannot hold everything Lexical can. Ghost cards
+for embeds, galleries, bookmarks, buttons, toggles and email-only blocks have
+no Markdown spelling. The converter in 4.0 refuses rather than flattening:
 
 ```
 This draft contains 2 blocks Markdown cannot hold:
   a bookmark card and an email-only block.
 
 Pulling would flatten them, and pushing back would delete them. Options:
-  familiar pull --text-only   work on the prose, push is disabled for this piece
-  edit those blocks in Ghost, and pull again once they are the last thing you add
+  familiar pull --text-only   work on the prose; push is disabled for this piece
+  keep those blocks last in Ghost, and pull before you add them
 ```
-
-A plain prose draft, which is what most newsletter issues are, round trips
-cleanly. A draft full of cards should be edited where the cards live.
-
-### 4.2 beehiiv, second
-
-**What is there.** More than expected, and asymmetric in a way that decides the
-design.
-
-- Create: `POST /v2/publications/{id}/posts`, `title` required, and either
-  `blocks` or `body_content` but not both. `body_content` is raw HTML.
-  **[LIVE, developers.beehiiv.com/api-reference/posts/create, 30 Aug 2026]**
-- Update: `PATCH /v2/publications/{id}/posts/{postId}`. Partial semantics,
-  "Only the fields provided in the request body will be updated". Has a
-  `content_merge_strategy` that defaults to `replace`.
-  **[LIVE, developers.beehiiv.com/api-reference/posts/update.md, 30 Aug 2026]**
-- List: `GET /v2/publications/{id}/posts`, with `status` filtering on `draft`,
-  `confirmed`, `archived` or `all`.
-  **[LIVE, developers.beehiiv.com/api-reference/posts/index, 30 Aug 2026]**
-- Get: `GET /v2/publications/{id}/posts/{postId}`.
-  **[LIVE, developers.beehiiv.com/api-reference/posts/show.md, 30 Aug 2026]**
-- Drafts are the default from 6 August 2026: "a Create post API call made
-  without a status parameter will default to draft instead of publishing
-  automatically". **[LIVE, beehiiv help article 36759164012439, 30 Aug 2026]**
-  Familiar should pass `status: "draft"` explicitly anyway and never rely on a
-  default that changed once and could change again.
-
-**Two constraints that shape the adapter.**
-
-1. **Get returns rendered HTML, and no blocks.** The content comes back through
-   `expand` options named `free_web_content`, `free_email_content`,
-   `premium_web_content` and similar, and the documentation notes "Generating
-   HTML is slow". There is no `blocks` expand option.
-   **[LIVE, posts/show.md, 30 Aug 2026]** So a pull cannot reconstruct the
-   editable document. It gets the rendered page, wrappers and all.
-2. **Update is plan gated.** The update endpoint is "available to publications
-   on the Max and Enterprise plans". **[LIVE, posts/update.md, 30 Aug 2026]**
-   A writer on a lower plan can create drafts and cannot update them.
-
-**So the beehiiv adapter is push first.** Familiar's `draft.md` is the source of
-truth, beehiiv holds the copy. Push sends `body_content` as HTML. Pull is used
-to detect that the remote changed, by hashing the rendered content, rather than
-to rebuild `draft.md`. If the writer has edited in beehiiv's UI, `status` will
-say the remote moved and the honest instruction is to copy the changes back by
-hand, once.
-
-On a lower plan, `connect` says so at connect time and push creates a new draft
-each time, named `Title (Familiar, 30 Aug 14:02)`, leaving the old one alone.
-Creating clutter is a better failure than silently doing nothing.
-
-**What can be lost:** polls, buttons, paywall breaks, section blocks, adverts
-and embeds are all block types the create endpoint understands and that plain
-HTML does not carry back. Inline styles survive a push, style blocks do not:
-"style tags are removed. All style block elements are stripped" while "inline
-styles are preserved". **[LIVE, posts/create, 30 Aug 2026]**
 
 ### 4.3 Substack, last and optional
 
@@ -471,17 +549,16 @@ styles are preserved". **[LIVE, posts/create, 30 Aug 2026]**
   undocumented Substack interfaces that may change without notice."
   **[LIVE, same page]**
 - It already separates the two operations Familiar cares about: "`substack
-  drafts create` always creates an unpublished draft. It never schedules, sends,
-  publishes, or deletes content." **[LIVE, same page]** That is a good
-  neighbour to a tool with Familiar's refusals.
+  drafts create` always creates an unpublished draft. It never schedules,
+  sends, publishes, or deletes content." **[LIVE, same page]**
 
-**How to treat it.** As an optional dependency that Familiar never installs and
-never requires. If the writer has it, the Substack adapter shells out to it. If
-they do not, `connect substack` explains the situation in two sentences and
-offers the clipboard path instead.
+**How to treat it.** As an optional dependency Familiar never installs and
+never requires. If the writer has it, the adapter shells out to it. If not,
+`connect substack` explains the situation in two sentences and offers the
+clipboard path.
 
-**Say the risk in the product, not only in this plan.** The `connect substack`
-output should carry the warning:
+**Say the risk in the product, not only here.** The `connect substack` output
+should carry it:
 
 ```
 Substack has no official API. This uses a community library that talks to
@@ -491,29 +568,28 @@ you when it breaks. It will not guess.
 
 **The fallback that always works.** `familiar push --clipboard` puts the draft
 on the clipboard as HTML, and `familiar pull --paste` reads it back. It is
-manual, it depends on nothing, and it is the honest floor. Ship it in the same
-phase, because it is also the answer for any platform nobody has written an
-adapter for.
+manual, it depends on nothing, and it is the honest floor. It is also the
+answer for any platform nobody has written an adapter for, so it is worth
+shipping early rather than last.
 
-**What can be lost:** footnotes are the specific worry. Substack footnotes have
-no Markdown spelling and are a real part of how essays are written there.
-Subtitle, section, and paywall markers are also editor concepts rather than
-document ones. **[NEEDS SOURCE: how python-substack 0.4.0 represents footnotes
-and subtitles on the way in, and whether they survive a round trip. Test with a
-real draft before this adapter goes past a preview.]**
+**What can be lost:** footnotes are the specific worry, because Substack
+footnotes have no Markdown spelling and are a real part of how essays are
+written there. Subtitle, section and paywall markers are editor concepts rather
+than document ones. **[NEEDS SOURCE: how python-substack 0.4.0 represents
+footnotes and subtitles on the way in, and whether they survive a round trip.
+Test with a real draft before this adapter goes past a preview.]**
 
 ### 4.4 Summary
 
-| | Ghost | beehiiv | Substack |
+| | beehiiv | Ghost | Substack |
 |---|---|---|---|
 | Official API | yes | yes | no |
 | Create draft | yes | yes | via community library |
-| Update draft | yes | Max and Enterprise plans only | via community library |
-| Read draft content | yes, Lexical and HTML | rendered HTML only | via community library |
-| Collision detection | yes, `updated_at` | none found | none |
-| Familiar's stance | two way sync | push first, pull to detect change | optional, warned, clipboard floor |
-
----
+| Update draft | Max and Enterprise plans only | yes | via community library |
+| Read draft content | rendered HTML only | yes, Lexical and HTML | via community library |
+| Collision detection | none found | yes, `updated_at` | none |
+| Familiar's stance | push first, pull to detect change | two way sync | optional, warned, clipboard floor |
+| Order | first, because it is used | second, because it works properly | last, because it may break |
 
 ## 5. What changes in the prompts
 
@@ -570,62 +646,76 @@ by a machine as well as a person.
 
 **What ships.** `scripts/status.py`. Reading piece folders, deriving the stage
 from files, reading the last context entry, printing the table, `resume`, the
-root-log split, and the `AGENTS.md` section on commands.
+root-log split for other people's clones, and the `AGENTS.md` section on
+commands.
 
-**Why first.** It is useful on its own, it needs no credentials, no network and
-no vendor, and it is the thing a writer with four pieces in flight feels
-immediately. It is a weekend for one person, and most of that weekend is
-deciding what the table says rather than writing code.
+**Why still first.** It needs no credentials, no network and no vendor, and it
+is the thing a writer with four pieces in flight feels immediately. It is a
+weekend for one person, and most of that weekend is deciding what the table
+says rather than writing code.
 
 **What it proves.** That the context log is worth machine-reading. If the
 decision-gate lines turn out to be too vague to print, that is a finding about
-the prompts and it changes what the stages write. Better to learn it here than
-after three adapters exist.
+the prompts, and it changes what every stage writes. Better to learn it here
+than after an adapter exists.
 
 **Stop if:** the derived stage disagrees with the writer's own sense of where a
 piece is, more than about once in ten. That means the file-order model is wrong
 and needs rethinking before anything is built on it.
 
-### Phase 2: Ghost, two way.
+### Phase 2: the Markdown converter, and beehiiv push.
 
-**What ships.** `scripts/cms.py` with the shared logic and the Ghost adapter.
-`connect`, `list`, `pull`, `push`, `link`, `remote.json`, hashes, the conflict
-stop, the unsupported-block refusal, and the one line added to three prompts.
+**What ships.** The converter from 4.0, both directions, with its refusal
+behaviour and the round-trip test over every existing `draft.md`. Then
+`scripts/cms.py` with the shared logic and the beehiiv adapter: `connect`,
+`list`, `push`, `link`, `remote.json`, the hashes, and the conflict stop.
 
-**What it proves.** That the round trip preserves a real draft. The test is
-specific: take a published Intentionaut issue, pull it, change one sentence,
-push it, pull it again, and diff. Anything that is not the one sentence is a
-bug in the converter.
+Pull ships in this phase too, limited to what beehiiv can honestly support: it
+fetches the rendered content, hashes it, and updates `remote_hash`. It does not
+overwrite `draft.md`. The command says so every time it runs.
 
-**Stop if:** the Markdown round trip cannot survive that test on ordinary prose.
-A converter that quietly reorders or drops formatting fails the one rule this
-feature cannot break.
+**What it proves.** Two things. That a Familiar draft survives the trip into
+beehiiv and looks right in the editor, and that the general conflict mechanism
+works without a vendor's version marker to lean on.
 
-### Phase 3: beehiiv, push first.
+**The test.** Take a finished Intentionaut issue, push it as a draft, open it
+in beehiiv, and read it beside `draft.md`. Every heading, link, emphasis and
+blockquote in the right place, and nothing added. Then change one word in
+beehiiv, run `status`, and confirm it says the remote moved.
 
-**What ships.** The beehiiv adapter, the plan check at connect time, the
-create-new-draft fallback for lower plans, and the remote-changed detection.
+**Stop if:** the plan tier turns out to block updates and creating a new draft
+per push is genuinely annoying rather than merely untidy. In that case the
+honest product is push-once plus the clipboard, and the adapter should say so
+rather than growing workarounds.
 
-**What it proves.** That an asymmetric platform can be supported honestly, with
-the tool saying what it cannot do rather than pretending.
+### Phase 3: Ghost, two way.
 
-**Stop if:** the rendered-HTML pull turns out to be so far from the editable
-draft that "the remote changed" fires constantly. A change detector that cries
-wolf gets ignored, and then it is worse than nothing.
+**What ships.** The Ghost adapter, JWT auth, `formats=html,lexical` on pull,
+`?source=html` on push, `updated_at` as a second collision check on top of the
+hashes, and the unsupported-block refusal wired to the converter.
 
-### Phase 4: Substack and the clipboard.
+**What it proves.** That the round trip is genuinely lossless when the platform
+lets it be. The test is specific: pull a real post, change one sentence, push,
+pull again, and diff. Anything that is not the one sentence is a bug in the
+converter.
 
-**What ships.** `push --clipboard` and `pull --paste` first, because they always
-work. Then the optional `python-substack` path behind a clear warning.
+**Stop if:** the Markdown round trip cannot survive that test on ordinary
+prose. A converter that quietly reorders or drops formatting fails the one rule
+this feature cannot break, and there is no point continuing to Substack with a
+broken foundation.
+
+### Phase 4: the clipboard, then Substack.
+
+**What ships.** `push --clipboard` and `pull --paste` first, because they work
+everywhere and need nothing. Then the optional `python-substack` path behind
+the warning in 4.3.
 
 **What it proves.** Whether an unofficial integration can be offered without
 promising something Familiar cannot keep.
 
 **Stop if:** the community library needs a password rather than a cookie for
 most people. Asking a writer to hand a tool their Substack password is a line
-worth not crossing, and the clipboard path is a perfectly good answer instead.
-
----
+worth not crossing, and the clipboard path is a good enough answer instead.
 
 ## 7. Risks and refusals
 
@@ -639,7 +729,7 @@ is a guarantee.
 | Schedule a send | Same. No adapter accepts a `scheduled_at`, `publish_at` or `send_at` field. Passing one is a programming error, and the shared layer strips scheduling keys from any document before it reaches an adapter. |
 | Change a live post | `push` reads the post's status first. If it is anything other than a draft, it stops and says so. This is one API call and it is not optional. |
 | Delete a draft | No delete code path exists, in any adapter, including the two platforms whose APIs offer it. |
-| Overwrite a newer remote version | Ghost enforces it with `updated_at` and returns a collision error. For beehiiv and Substack, the hash comparison in section 2 does the same job, and a conflict stops rather than merging. `--force` is the only path through, and it is typed by a human and names what it is discarding. |
+| Overwrite a newer remote version | The hash comparison in section 2 does this for every platform, including the two that offer nothing. Ghost adds `updated_at` on top and returns a collision error of its own. A conflict stops rather than merging. `--force` is the only path through, it is typed by a human, and it names what it is discarding. |
 | Put a credential in a tracked file | Credentials are read from the keychain or an environment variable at run time. `connect` writes to the keychain and prints nothing back. `remote.json` holds an id and a URL. |
 | Send the writer's draft anywhere they did not ask | Only `push` reaches out, only on an explicit command, and it prints the platform, the post title and the word count before it does. |
 | Lose work in a conflict | The remote copy is written to `draft.remote.md` and nothing is overwritten. Both versions exist on disk before the writer chooses. |
@@ -675,24 +765,44 @@ See every piece you have in flight, and what each one is waiting on.
 - **Pick a piece back up in one step.** `familiar resume <piece>` prints where
   it got to, the open decision, and the exact command to continue. It prints
   and stops; it never runs the next stage for you.
-- **A context log per piece.** The log moves from one shared file into each
-  piece folder, so moving or archiving a piece takes its history with it. Your
-  existing log is split on first run, and copied rather than moved.
+- **A context log per piece.** The log lives in the piece folder now, so moving
+  or archiving a piece takes its history with it. An older log at the project
+  root is split on first run, and copied rather than moved.
 ```
 
 ```markdown
 ## 0.5.0 (unreleased)
 
-Work on the draft that lives in Ghost, without keeping two copies.
+Send a finished draft straight to beehiiv, without keeping two copies.
+
+**What this gives you:**
+
+- **Your draft, in beehiiv, in one command.** `familiar push` writes the piece
+  into beehiiv as a draft. Headings, links, emphasis and quotes arrive intact,
+  because the converter refuses to send anything it cannot carry rather than
+  flattening it.
+- **It cannot publish or send.** There is no publishing code in it. It writes
+  drafts, it says so explicitly on every call rather than trusting a default,
+  and it checks a post is still a draft before touching it.
+- **It tells you when the copy in beehiiv moved.** beehiiv hands back the
+  rendered page and not the editable one, so Familiar can see that something
+  changed and cannot bring the change down for you. It says exactly that,
+  rather than guessing or overwriting.
+- **It tells you what your plan allows before you connect.** Updating an
+  existing draft needs a higher beehiiv plan. On a lower one, each push writes
+  a new dated draft and leaves the old one alone.
+```
+
+```markdown
+## 0.6.0 (unreleased)
+
+Work on the draft that lives in Ghost, in both directions.
 
 **What this gives you:**
 
 - **Pull a draft, edit it, push it back.** Every stage works on the draft
   exactly as before. Familiar handles fetching it and sending the new version
   to the same draft in Ghost.
-- **It cannot publish.** There is no publishing code in it. It writes drafts,
-  it checks a post is still a draft before it touches it, and it will not send
-  a scheduled post.
 - **It will not overwrite you.** If the copy in Ghost changed while you were
   working, Familiar stops, saves the other version beside yours, and lets you
   compare them. Nothing is merged for you.
@@ -702,53 +812,41 @@ Work on the draft that lives in Ghost, without keeping two copies.
 ```
 
 ```markdown
-## 0.6.0 (unreleased)
-
-beehiiv drafts, with the parts beehiiv cannot do said plainly.
-
-**What this gives you:**
-
-- **Send a finished draft to beehiiv.** Familiar writes it as a draft, never a
-  send, and tells you the plan you need for updates before you connect rather
-  than after.
-- **It tells you when the copy in beehiiv moved.** beehiiv gives back the
-  rendered page and not the editable one, so Familiar can see that something
-  changed and cannot bring the change down for you. It says exactly that.
-```
-
-```markdown
 ## 0.7.0 (unreleased)
 
-Substack, and a clipboard path that works anywhere.
+A clipboard path that works anywhere, and Substack with the risk stated.
 
 **What this gives you:**
 
 - **Copy a finished draft anywhere.** `push --clipboard` puts the piece on your
-  clipboard, formatted, ready to paste into any editor. No account, no key.
-- **Substack drafts, with the risk stated.** Substack has no official API.
-  Familiar can use a community library if you have it installed, and it says so
-  before you connect, and it tells you when it breaks rather than guessing.
+  clipboard, formatted, ready to paste into any editor. No account, no key, no
+  integration required.
+- **Substack drafts, honestly.** Substack has no official API. Familiar can use
+  a community library if you already have it, it says so before you connect,
+  and it tells you when it breaks rather than guessing.
 ```
 
 ---
 
-## Three questions before phase one starts
+## What is still open
 
-1. **Does the context log move to per-piece files?** It is the right shape and
-   Dex already assumes it, but it changes eight prompts and the format doc, and
-   it is your working state. Yes moves the plan forward as written. No means
-   `status` parses the shared root file by its heading, which works today and
-   gets slower and noisier as pieces pile up.
+The first two questions from the original plan are answered and applied. Three
+remain, and the first one blocks phase 2.
 
-2. **Which platform do you actually publish on?** Intentionaut is on beehiiv,
-   which is the platform with the weakest read path and a plan gate on updates.
-   Building Ghost first is right on the engineering merits and gives you nothing
-   you can use. Say whether phase 2 should be Ghost, because it proves the
-   design properly, or beehiiv, because it is the one you would use on the third
-   of September.
+1. **Which beehiiv plan is Intentionaut on?** Updating an existing draft is
+   limited to Max and Enterprise. **[LIVE, posts/update.md, 30 Aug 2026]** On
+   anything lower, phase 2 ships as create-only, every push leaves a new dated
+   draft, and that is the product rather than a bug to work around. This needs
+   answering before any code is written, because it changes what the adapter
+   is.
+
+2. **Where does the beehiiv API key come from, and does it already exist?**
+   The plan assumes an API key with `posts:write`. If Intentionaut's beehiiv
+   account does not have API access on its plan, phase 2 stops before it starts
+   and the clipboard path in phase 4 becomes the thing worth building first.
 
 3. **What is the honest size of the problem?** This plan assumes several pieces
-   in flight at once. Right now there are two piece folders on this machine. If
-   the real number stays under three, phase 1 is most of the value and phases 2
-   to 4 are a bet on a future workload. Worth saying out loud before a weekend
-   goes into it.
+   in flight at once. There are two piece folders on this machine. If the real
+   number stays under three, phase 1 is most of the value, and phases 2 to 4
+   are a bet on a future workload. Worth saying out loud before a weekend goes
+   into it.

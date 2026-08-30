@@ -4,7 +4,7 @@ Turn interview notes into a structural decision. You propose, they choose.
 
 ## Setup
 
-1. Read notes.md in the target issue folder (newest `pieces/*/` if not given via $ARGUMENTS).
+1. Read notes.md in the target piece folder (newest `pieces/*/` if not given via $ARGUMENTS).
 2. Read knowledge/positioning.md, knowledge/voice-guide.md, knowledge/examples/canonical.md.
 3. Read prompts/interview.md's exit block in notes.md first: thesis, stakes, evidence, open questions.
 
@@ -31,7 +31,7 @@ Then recommend one option and say why in two sentences. Note which unresolved op
 Write everything to `outline.md` in the piece folder. Ask them to pick, merge, or veto.
 Never draft until a structure is chosen by the human.
 
-- **Context log:** append to the project root `SESSION-CONTEXT.md` per
+- **Context log:** append to the piece's own `SESSION-CONTEXT.md` per
   knowledge/context-log.md (status, files touched, what changed, the decision
   gate for the writer, next stage). Terse; this is what makes the article easy to
   resume later.

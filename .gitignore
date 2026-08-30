@@ -1,0 +1,10 @@
+.DS_Store
+
+# Working state and the writing itself stay with the writer.
+SESSION-CONTEXT.md
+pieces/*/
+
+# Candid material never belongs in a public repo. If you keep a reflections
+# file or a private voice notes file next to the tool, it is ignored here.
+REFLECTIONS.md
+knowledge/private/

@@ -38,7 +38,7 @@ one, in a line, and list them:
 | `dev-edit` | `prompts/dev-edit.md` | Editorial report, nothing applied |
 | `line-edit` | `prompts/line-edit.md` | Mechanical pass, exact fix per flag |
 | `social` | `prompts/social.md` | A week of posts on the writer's cadence; scheduled only on final confirm |
-| `case-study <LOG.md>` | `prompts/case-study.md` | Brief and questions from a Captain's Log build log |
+| `case-study <LOG.md \| transcript.jsonl \| session [dir]>` | `prompts/case-study.md` | Brief and questions from a build log or a coding session |
 | `learn ingest <path>` / `learn diff <piece>` | `prompts/learn.md` | Propose voice rules from past writing or from draft-vs-final |
 
 ## Moving back and forth

@@ -4,6 +4,22 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.3.1 (2026-08-30)
+
+The case-study stage reads your coding sessions, not only a build log.
+
+**What this gives you:**
+
+- **Start a piece from a session.** `case-study session` takes the most
+  recent Claude Code session for the project (or a transcript path) and
+  turns it into a brief and interview questions, the same as it does for a
+  Captain's Log. Wrong turns are found in the moments you changed direction
+  or corrected the assistant, and quoted.
+- **A readable digest, kept.** `scripts/session-digest.py` writes the
+  session into the piece folder as plain markdown: what was said, in order,
+  tool use collapsed to a line each. Nothing interpreted. Everything from a
+  transcript is marked reconstructed.
+
 ## 0.3.0 (2026-08-30)
 
 Familiar runs inside Dex as a skill.

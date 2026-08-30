@@ -52,7 +52,7 @@ in one line, with this list:
 | `line-edit` | `prompts/line-edit.md` | findings with exact fixes; nothing applied |
 | `social` | `prompts/social.md` | two gates, then an explicit "confirm" before anything is scheduled |
 | `learn ingest <path>` / `learn diff <piece>` | `prompts/learn.md` | proposals the writer applies per section |
-| `case-study <LOG.md>` | `prompts/case-study.md` | hands off to `interview` |
+| `case-study <LOG.md \| transcript.jsonl \| session [dir]>` | `prompts/case-study.md` | hands off to `interview` |
 
 For every stage:
 

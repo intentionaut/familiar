@@ -1,9 +1,9 @@
 # Familiar
 
-A companion for your craft. Familiar sits beside you while you write about the
-work you do, asks the questions that pull out what only you know, and helps
-you shape it into something worth sending. It keeps your book of rules so the
-writing sounds like you, not like a model.
+A companion for your newsletter. Familiar sits beside you while you write
+about the work you do, asks the questions that pull out what only you know,
+and helps you shape it into an issue worth sending. It keeps your voice rules
+so the writing sounds like you, not like a model.
 
 It is a set of plain markdown prompts. No app, no account, nothing to install
 beyond a folder. Works in Claude Code, opencode, or pasted into a claude.ai
@@ -11,8 +11,9 @@ Project.
 
 ## What it does
 
-Writing about your own work is hard for a specific reason: the good material
-is the part you take for granted. Familiar's job is to notice it.
+Writing a newsletter about your own work is hard for a specific reason: the
+good material is the part you take for granted. Familiar's job is to notice
+it, issue after issue.
 
 | Stage | Command | What you get |
 |-------|---------|--------------|
@@ -28,7 +29,7 @@ Every stage stops and waits for you. Nothing advances, nothing is applied,
 nothing ships until you say so. The friction is the point: the decisions stay
 yours, and the writing stays yours.
 
-## Your book
+## Your voice
 
 `knowledge/` is where Familiar keeps what it knows about how you write. Five
 files, each a template with questions to answer:
@@ -39,7 +40,7 @@ files, each a template with questions to answer:
 - `examples/canonical.md`: short excerpts of your own published writing at full strength, with a note on why each works.
 - `social-schedule.md`: your channels, cadence, send times and what shape each slot wants. Only needed if you use the social stage; it refuses to guess a cadence.
 
-Fill in `positioning.md` and `voice-guide.md` before the first piece. The others
+Fill in `positioning.md` and `voice-guide.md` before the first issue. The others
 can grow as you go. The second time you correct the same thing by hand,
 write it into `style-rules.md` and it will not come back.
 

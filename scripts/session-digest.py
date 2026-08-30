@@ -105,7 +105,7 @@ def main():
     ]
     body = []
     for kind, ts, text, tools in turns:
-        who = "Writer" if kind == "user" else "Assistant"
+        who = "Assistant" if kind == "assistant" else ("Writer" if text else "Tool result")
         body.append(f"## {when(ts)} {who}")
         if text:
             body.append("")

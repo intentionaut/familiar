@@ -132,12 +132,13 @@ If you run [Dex](https://heydex.ai), Familiar installs as a callable skill:
 dex/install.sh ~/path/to/your/vault
 ```
 
-That gives you `/familiar interview <idea>`, `/familiar draft`, and the rest,
+That gives you `/familiar-custom interview <idea>`, `/familiar-custom draft`, and the rest,
 with the vault doing what a vault is for: pieces live in
 `04-Projects/Writing/`, people and companies named in a piece link to their
 pages, "needs finding" evidence is searched for in your notes before you are
-asked, and an open decision at a gate can become a task if you want one. The
-skill installs as `familiar-custom`, which Dex updates leave alone.
+asked, and an open decision at a gate can become a task if you want one. Dex names
+custom skills by their folder, and the `-custom` suffix is what keeps it safe
+across Dex updates, so the command carries it.
 
 ## How it's built
 

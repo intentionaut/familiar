@@ -10,8 +10,9 @@ Familiar runs inside Dex as a skill.
 
 **What this gives you:**
 
-- **`/familiar` in your vault.** `dex/install.sh <vault>` installs it as a
-  protected custom skill. Every stage works the same; pieces are written to
+- **`/familiar-custom` in your vault.** `dex/install.sh <vault>` installs it as
+  a protected custom skill (Dex names them by folder, and the suffix is the
+  protection). Every stage works the same; pieces are written to
   `04-Projects/Writing/` so they are searchable and backed up with the rest.
 - **The vault helps.** People and companies named in a piece link to their
   pages, evidence marked "needs finding" is looked for in your notes first,

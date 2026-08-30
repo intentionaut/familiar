@@ -1,6 +1,6 @@
 ---
 name: familiar
-description: "Write and edit a newsletter issue about your own work with Familiar: interview yourself one question at a time, get three structures, a draft in your voice with brackets over anything unsourced, then editor's reports you work through yourself, a week of social posts on your cadence, and a learn stage that turns your edits into voice rules. Use when the user says 'familiar', 'interview me about', 'draft my newsletter', 'dev edit this piece', 'line edit', 'turn this issue into posts', or 'learn my voice'. Not for a product requirements doc or feature spec; use `product-brief`. Not for a decision record; use `decision-log`. Not for reflecting on how the week felt; use `weekly-reflection`."
+description: "Write and edit a newsletter issue about your own work with Familiar: interview yourself one question at a time, get three structures, a draft in your voice with brackets over anything unsourced, then editor's reports you work through yourself, a week of social posts on your cadence, and a learn stage that turns your edits into voice rules. Use when the user says 'familiar', 'familiar-custom', 'interview me about', 'draft my newsletter', 'dev edit this piece', 'line edit', 'turn this issue into posts', or 'learn my voice'. Not for a product requirements doc or feature spec; use `product-brief`. Not for a decision record; use `decision-log`. Not for reflecting on how the week felt; use `weekly-reflection`."
 ---
 
 ## Execution mode

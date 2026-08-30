@@ -1,5 +1,5 @@
 #!/bin/sh
-# Install Familiar as a callable Dex skill: /familiar inside a Dex vault.
+# Install Familiar as a callable Dex skill: /familiar-custom inside a Dex vault.
 #
 # Usage: dex/install.sh /path/to/your/Dex/vault
 #
@@ -26,4 +26,5 @@ echo "Installed /familiar into $DEST"
 echo "Familiar home: $HOME_DIR"
 echo "Pieces will be written to $VAULT/04-Projects/Writing/"
 echo
-echo "Start a new Dex session, then: /familiar interview <an idea>"
+echo "Start a new Dex session, then: /familiar-custom interview <an idea>"
+echo "(Dex names custom skills by folder; the -custom suffix is what keeps it safe across updates.)"

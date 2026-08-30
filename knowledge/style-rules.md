@@ -59,6 +59,12 @@ Sweep for every pattern below. Each flag gets the exact rewritten line. When uns
 - Spectrum ("on the spectrum of")
 - It is worth noting that...
 - It is important to mention...
+- Quietly, as a metaphor for small, gradual or unnoticed ("quietly reshaping",
+  "quietly, people are losing"). Keep it only for actual sound. Before: "But
+  quietly, people are losing the ability to think through the hard stuff."
+  After: "People are losing the ability to think through the hard stuff, and
+  nobody has noticed." (Matches humanizer §7; adopted 2026-08-30 from a real
+  outline.)
 
 ### Structural tells
 

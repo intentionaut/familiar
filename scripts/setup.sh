@@ -8,7 +8,7 @@ CC="$HOME/.claude/commands"
 OC="$HOME/.config/opencode/command"
 mkdir -p "$CC" "$OC"
 
-for stage in case-study interview outline draft dev-edit line-edit; do
+for stage in case-study interview outline draft dev-edit line-edit social; do
   # The adapters carry a placeholder for the repo path; render it here so the
   # installed command knows where the prompts live.
   sed "s|{{FAMILIAR_HOME}}|$DIR|g" "$DIR/.claude/commands/$stage.md" > "$CC/familiar-$stage.md"

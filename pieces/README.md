@@ -9,9 +9,10 @@ pieces/YYYY-MM-DD-slug/
 ├── notes.md                  # /interview output
 ├── outline.md                # /outline output, chosen structure marked
 ├── draft.md                  # /draft output
-└── edits/
-    ├── dev-edit-report.md    # /dev-edit output
-    └── line-edit-report.md   # /line-edit output
+├── edits/
+│   ├── dev-edit-report.md    # /dev-edit output
+│   └── line-edit-report.md   # /line-edit output
+└── social.md                 # /social output (pool, picks, schedule, result)
 ```
 
 Piece folders are ignored by git. This repo is the tool; the writing stays with

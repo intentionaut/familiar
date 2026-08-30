@@ -21,6 +21,7 @@ where it is worth spending more or less.
 | /outline | more | Reasoning across three structures |
 | /draft | most | Prose in your voice. Use the best model you have for a piece you care about |
 | /dev-edit | more | Editorial judgement on substance |
+| /social | more | Short-form voice is unforgiving; quality matters |
 | /line-edit | less | A mechanical checklist pass; a fast, cheap model is fine. Step up if it misses things |
 
 ## Overriding

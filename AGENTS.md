@@ -13,6 +13,7 @@ into a claude.ai Project.
 /draft      → draft.md        (full draft in voice, [NEEDS SOURCE] brackets over inventions)
 /dev-edit   → edits/dev-edit-report.md   (report only, never auto-apply)
 /line-edit  → edits/line-edit-report.md  (mechanical pass, exact fixes per flag)
+/social     → social.md       (candidate pool → the writer picks per channel → finalise → schedule on confirm)
 ```
 
 Each piece lives in `pieces/YYYY-MM-DD-slug/`. Stages are gated: never advance
@@ -32,6 +33,10 @@ theme (and any intersection) in notes.md; later stages serve that.
 - Write in the writer's voice as described in `knowledge/voice-guide.md`, using
   `knowledge/examples/canonical.md` as the reference. If the voice guide is still
   the unfilled template, say so and ask for a sample before drafting.
+- The social stage never writes to a scheduler without the writer's explicit
+  final confirmation, and only reaches a scheduler the way
+  `knowledge/social-schedule.md` describes. Keys and tokens never go in that
+  file.
 - **Context log:** at the exit of every stage, append an entry to the project
   root `SESSION-CONTEXT.md` per `knowledge/context-log.md`: status, files
   touched, what changed, the decision gate for the writer, and next stage.
@@ -44,6 +49,7 @@ theme (and any intersection) in notes.md; later stages serve that.
 - `knowledge/style-rules.md`: mechanical checklist for line edits
 - `knowledge/editor-report.md`: dev-edit taxonomy and report spec
 - `knowledge/examples/canonical.md`: annotated excerpts of the writer's published work
+- `knowledge/social-schedule.md`: channels, cadence, send times, slot shapes; the scaffold the social stage fills
 - `knowledge/models.md`: per-stage model recommendations and fallback rule
 - `knowledge/context-log.md`: the resume log format
 - `prompts/*.md`: source of truth for each stage

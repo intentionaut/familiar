@@ -6,7 +6,7 @@ in their voice, not in model voice.
 ## Setup
 
 1. Read the piece's outline.md (chosen structure marked) and notes.md.
-2. Read knowledge/voice-guide.md, knowledge/style-rules.md, knowledge/positioning.md, knowledge/examples/canonical.md. Internalise them before typing.
+2. Read knowledge/voice-guide.md, knowledge/style-rules.md, knowledge/positioning.md, knowledge/examples/canonical.md. Internalise them before typing. If `Language:` in positioning.md is not English, read `knowledge/languages/<code>.md` too and write in that language's conventions, not English ones.
 3. Target length: 800 to 1200 words for a standard piece; deep dives up to 2500 only if outline says so.
 
 ## Non-negotiables while writing

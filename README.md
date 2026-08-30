@@ -23,6 +23,7 @@ it, issue after issue.
 | 4 | `/familiar-dev-edit` | An editor's report: where the spark is, whether the argument holds, what to fix and in what order. Nothing changed for you |
 | 5 | `/familiar-line-edit` | The mechanical pass: AI tells, house spelling, reading ease. An exact fix for every flag |
 | 6 | `/familiar-social` | A week of posts on your own cadence: one pool of candidates, you pick per channel, exact send times, and nothing scheduled without a final confirm. Works with a scheduler or hands you a paste-ready list |
+| 7 | `/familiar-learn ingest <path>` / `learn diff <piece>` | Teach it your voice. Ingest reads your past issues in bulk and drafts the voice files from evidence; diff compares Familiar's draft with what you actually published and turns your edits into rules. Both propose; you accept per section |
 | 0 | `/familiar-case-study <LOG.md>` | Optional first step. Turns a [Captain's Log](https://github.com/intentionaut/captains-log) build log into a brief and a set of interview questions grounded in what actually happened |
 
 Every stage stops and waits for you. Nothing advances, nothing is applied,
@@ -44,6 +45,49 @@ Fill in `positioning.md` and `voice-guide.md` before the first issue. The others
 can grow as you go. The second time you correct the same thing by hand,
 write it into `style-rules.md` and it will not come back.
 
+## How Familiar is different
+
+Most writing skills do one of two things: generate text from a description of
+your voice, or clean AI text after the fact. Familiar does neither.
+
+**It works from human material.** The interview is you answering questions,
+one at a time, in your own words. The voice files are built from your
+published writing, not from adjectives about it. The learn stage reads what
+you actually changed between Familiar's draft and the issue you sent, and
+turns that into rules. Every rule cites the sentence it came from. The result
+is a draft that starts from what you said, not from what a model guesses
+someone like you would say.
+
+**It reports; it never rewrites.** The dev edit and the line edit hand you a
+report: the quote, the problem, the exact fix. You accept, reject or change
+each one. Nothing is applied for you and no file is written over. This is
+slower than a clean-up pass, and that is the point. Rewrite tools have two
+failure modes people keep reporting: they flag your deliberate choices as
+tells, and they drop claims while "only" changing shape. A ranking, a
+superlative, a hedge that was actually a considered position, gone. When the
+change is a proposal you can see, both failures cost you a glance instead of
+a paragraph.
+
+**The tell list is kept honest.** `style-rules.md` carries a full list of AI
+writing patterns. Once a week a check compares it with
+[humanizer](https://github.com/blader/humanizer), the most actively curated
+list of these, and opens an issue with anything new. Additions land one at a
+time with a real example, never as a bulk import; a bloated list means false
+positives for every writer using it. Humanizer is the right tool when you have
+AI text and want it cleaned. Familiar is for when the text starts with you.
+
+## Languages
+
+The mechanical rules were written for English, and some of them are about
+English: dashes, spelling, heading case, hyphenated pairs, quotation marks.
+Set `Language:` in `positioning.md` and the stages read
+`knowledge/languages/<code>.md`, which says which rules to skip or replace
+and adds that language's own overused words and tells. The language-agnostic
+patterns (padding, hedging, fake candour, announced evidence) still apply.
+
+There is a template and no language files yet. Pull requests from fluent
+writers are the way this gets built: see `CONTRIBUTING.md`.
+
 ## Use it
 
 ```sh
@@ -53,6 +97,17 @@ git clone https://github.com/intentionaut/familiar.git ~/Projects/familiar
 
 The script installs the `/familiar-*` commands for Claude Code and opencode so
 they work from any folder. Each piece gets its own folder under `pieces/`.
+
+Or install it as a skill:
+
+```sh
+npx skills add intentionaut/familiar
+```
+
+That gives you one `familiar` skill that takes the stage as its first word
+(`familiar interview <idea>`, `familiar learn ingest ~/writing`). It looks for
+the Familiar folder at `$FAMILIAR_HOME`, `./familiar/`, or
+`~/Projects/familiar` for the prompts and your voice files.
 
 No terminal? Paste `knowledge/*` and `prompts/*` into a claude.ai Project as
 knowledge and run the stages by name.
@@ -77,4 +132,5 @@ fabrication.
 ## Status
 
 Free, and a prompt pack rather than a product. Issues and pull requests
-welcome, especially additions to the AI-tell list in `style-rules.md`.
+welcome: language files, one tell at a time with a real example, and styles
+for other kinds of publication. `CONTRIBUTING.md` has the three shapes.

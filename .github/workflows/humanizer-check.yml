@@ -1,0 +1,42 @@
+name: Humanizer check
+
+# Weekly: compare Familiar's AI-tell list with blader/humanizer and open (or
+# update) one issue listing the candidates. Never edits style-rules.md.
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run the check
+        id: run
+        run: |
+          python3 scripts/humanizer-check.py > summary.json
+          cat summary.json
+          echo "words=$(python3 -c 'import json;print(json.load(open("summary.json"))["missing_words"])')" >> "$GITHUB_OUTPUT"
+          echo "patterns=$(python3 -c 'import json;print(json.load(open("summary.json"))["missing_patterns"])')" >> "$GITHUB_OUTPUT"
+      - name: Open or update the tracking issue
+        if: steps.run.outputs.words != '0' || steps.run.outputs.patterns != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Humanizer check: candidates for style-rules.md"
+          body="$(cat knowledge/humanizer-check.md)"
+          existing="$(gh issue list --search "\"$title\" in:title" --state open --json number --jq '.[0].number')"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --title "$title" --label "humanizer" --body "$body"
+          fi

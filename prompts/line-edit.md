@@ -7,7 +7,9 @@ mechanical, exhaustive, boring on purpose.
 ## Setup
 
 1. Read the piece's draft.md (newest `pieces/*/` if not given).
-2. Read knowledge/style-rules.md and knowledge/voice-guide.md.
+2. Read knowledge/style-rules.md and knowledge/voice-guide.md. Check `Language:`
+   in knowledge/positioning.md; if not English, read `knowledge/languages/<code>.md`
+   and apply its skip/keep/replace table before anything marked (en).
 
 ## Method
 

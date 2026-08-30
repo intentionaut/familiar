@@ -17,6 +17,9 @@ Replace the bracketed prompts with your answers. Short is fine.
 
 These are the mechanical choices the line edit enforces. Set them once.
 
+- Language: [en, or an ISO code such as de, pt-BR, he. Anything but English
+  makes the stages read `knowledge/languages/<code>.md` and skip the
+  English-only rules]
 - Spelling: [British / American / other]
 - Em dashes: [never / sparingly / fine]
 - Reading ease target: [e.g. Flesch 60+, grade level about 8]

@@ -4,14 +4,28 @@ A checklist precise enough for any model or human to run consistently.
 Every flag must come with the exact rewritten line. Never auto-apply changes:
 the writer accepts, rejects, or revises each one.
 
+## Language gate
+
+Read `Language:` in `knowledge/positioning.md` first. If it is not English,
+open `knowledge/languages/<code>.md` and follow its skip/keep/replace table
+before applying anything below. The rules marked **(en)** assume English
+orthography and will damage other languages if applied blindly: the dash
+rule, house spelling, sentence-case headings, hyphenated word pairs,
+quotation marks and the number-spelling convention. Everything else (padding,
+hedging, fake candour, forced groups of three, announced evidence,
+authority-flexing) is about how models pad meaning and travels across
+languages, with the language file adding its own vocabulary. If no language
+file exists for the house language, say so, apply only the language-agnostic
+rules, and point the writer at `CONTRIBUTING.md`.
+
 ## Absolute rules
 
 | # | Rule | Fix pattern |
 |---|------|-------------|
-| 1 | No em dashes (— or ―) anywhere, including titles (drop this rule in positioning.md if the house uses them) | Recast with comma, colon, semicolon or period |
-| 2 | House spelling, as set in knowledge/positioning.md | Default British: organise, realise, favourite, colour, behaviour, licence (n.), programme (except computer program). Swap the list if the house is American |
+| 1 | **(en)** No em dashes (— or ―) anywhere, including titles (drop this rule in positioning.md if the house uses them) | Recast with comma, colon, semicolon or period |
+| 2 | **(en)** House spelling, as set in knowledge/positioning.md | Default British: organise, realise, favourite, colour, behaviour, licence (n.), programme (except computer program). Swap the list if the house is American |
 | 3 | No banned/hype vocabulary | Flag every word in the overused list below, plus: journey (metaphor), transform (unless literal), supercharge, realm, "in today's fast-paced world" |
-| 4 | Sentence case headlines and subheadings | Match existing site convention |
+| 4 | **(en)** Sentence case headlines and subheadings | Match existing site convention |
 
 ## AI-tell patterns to flag
 
@@ -76,7 +90,7 @@ Sweep for every pattern below. Each flag gets the exact rewritten line. When uns
 ### Sentence-level tells
 
 - Long subordinate clauses with em dashes or parentheticals to sound thoughtful
-- Invented compound adjectives ("future-forward", "human-centred")
+- **(en)** Invented compound adjectives ("future-forward", "human-centred")
 - Abstract nouns where concrete ones would be sharper ("implementation" instead of "doing", "utilisation" instead of "use")
 - "Whether you're X, Y, or Z" opening that tries to address everyone
 - "It's safe to say that..."
@@ -98,7 +112,7 @@ Sweep for every pattern below. Each flag gets the exact rewritten line. When uns
 - Coined or unfamiliar terms: italics on first use, define immediately in plain words
 - Links: inline, descriptive anchor text (never "click here")
 - Blockquotes for other people's words; always name the speaker
-- Numbers: spell out one to nine, numerals for 10+, always numerals for data
+- **(en)** Numbers: spell out one to nine, numerals for 10+, always numerals for data
 - Oxford comma: optional, follow the writer's habit within a piece, stay consistent
 - Paragraphs: short. Two to four sentences typical.
 - Every piece ends with an invitation to reply or a question to the reader

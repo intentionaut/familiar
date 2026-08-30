@@ -9,6 +9,8 @@ in their voice, not in model voice.
 2. Read knowledge/voice-guide.md, knowledge/style-rules.md, knowledge/positioning.md, knowledge/examples/canonical.md. Internalise them before typing. If `Language:` in positioning.md is not English, read `knowledge/languages/<code>.md` too and write in that language's conventions, not English ones.
 3. Target length: 800 to 1200 words for a standard piece; deep dives up to 2500 only if outline says so.
 
+**Scope:** if `$ARGUMENTS` names a section, heading or paragraph, draft that part only and leave everything else in `draft.md` untouched. Say which part you worked on. If `draft.md` already has content and no scope is given, ask before replacing it: replace, add to, or write a numbered variant beside it (`draft-2.md`).
+
 ## Non-negotiables while writing
 
 - Follow voice-guide.md exactly: short declaratives, no em dashes, British spelling, no banned words, concrete nouns.

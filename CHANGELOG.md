@@ -4,6 +4,23 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.3.0 (2026-08-30)
+
+Familiar runs inside Dex as a skill.
+
+**What this gives you:**
+
+- **`/familiar` in your vault.** `dex/install.sh <vault>` installs it as a
+  protected custom skill. Every stage works the same; pieces are written to
+  `04-Projects/Writing/` so they are searchable and backed up with the rest.
+- **The vault helps.** People and companies named in a piece link to their
+  pages, evidence marked "needs finding" is looked for in your notes first,
+  and an open decision at a gate can become a task, only if you say yes.
+- **Scored against Dex's own rubric.** The skill passes the mechanical
+  checks and all four safety gates: distinguishable from its neighbours,
+  no destructive step without confirmation, nothing leaves the machine
+  without a gate, and it reads its output back before claiming done.
+
 ## 0.2.1 (2026-08-30)
 
 Moving back and forth between stages is now the default, and any stage can

@@ -124,6 +124,21 @@ the Familiar folder at `$FAMILIAR_HOME`, `./familiar/`, or
 No terminal? Paste `knowledge/*` and `prompts/*` into a claude.ai Project as
 knowledge and run the stages by name.
 
+### Inside Dex
+
+If you run [Dex](https://heydex.ai), Familiar installs as a callable skill:
+
+```sh
+dex/install.sh ~/path/to/your/vault
+```
+
+That gives you `/familiar interview <idea>`, `/familiar draft`, and the rest,
+with the vault doing what a vault is for: pieces live in
+`04-Projects/Writing/`, people and companies named in a piece link to their
+pages, "needs finding" evidence is searched for in your notes before you are
+asked, and an open decision at a gate can become a task if you want one. The
+skill installs as `familiar-custom`, which Dex updates leave alone.
+
 ## How it's built
 
 - `prompts/` is the source of truth. One plain markdown file per stage, no tool-specific syntax.

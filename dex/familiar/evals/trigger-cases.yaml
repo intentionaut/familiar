@@ -1,0 +1,43 @@
+# Trigger evals for /familiar (Dex skill package).
+#   3 positive paraphrases  — MUST fire this skill
+#   2 negative / collision  — MUST NOT fire; must route to the named neighbor
+#   1 ambiguous             — should ASK rather than silently fire
+#   1 missing-prerequisite  — should degrade honestly, not fake a result
+#   1 failure-recovery      — must not claim success when the underlying action failed
+#
+# `expect: fire` / `no-fire` / `ask` / `degrade` / `honest-failure`.
+
+skill: familiar
+
+positive:
+  - utterance: "Interview me about the churn model that kept lying, I want it in the next newsletter."
+    expect: fire
+  - utterance: "Draft this issue from my notes, then stop so I can rewrite it."
+    expect: fire
+  - utterance: "Turn last week's piece into a week of LinkedIn and Bluesky posts."
+    expect: fire
+
+negative:
+  - utterance: "Write a PRD for the new onboarding flow."
+    expect: no-fire
+    route_to: product-brief
+    why: a requirements document for a product feature is product-brief; Familiar writes about work for a publication, it does not spec work.
+  - utterance: "Record why we chose annual pricing over monthly."
+    expect: no-fire
+    route_to: decision-log
+    why: capturing a decision with rationale and a review date is decision-log, even if it might become an essay later.
+
+ambiguous:
+  - utterance: "Help me write something about this week."
+    expect: ask
+    why: could be a newsletter piece (familiar interview), a reflection on how the week felt (weekly-reflection), or a review of what got done (week-review). Ask which before firing.
+
+missing_prerequisite:
+  - utterance: "Draft the piece."  # knowledge/voice-guide.md is still the unfilled template
+    expect: degrade
+    why: without a voice guide the draft would be in a guessed voice. Say so, offer `learn ingest <past writing>`, and do not draft.
+
+failure_recovery:
+  - utterance: "Confirm, schedule the week."  # scheduler rejects the Bluesky posts
+    expect: honest-failure
+    why: report the LinkedIn posts that landed and the Bluesky ones that did not, leave the finished copy in social.md, and never claim the week is scheduled.

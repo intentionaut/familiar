@@ -4,6 +4,27 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.4.0 (2026-08-30)
+
+See everything you have in flight, on one board.
+
+**What this gives you:**
+
+- **A board of every piece.** `scripts/board.py --open` writes a static page
+  with a column per stage and a card per piece: title, date, the first thing it
+  actually says, how long since you touched it, and how many brackets are still
+  unresolved. Pieces that have been sitting are marked.
+- **The decision waiting on you, in your own words.** Each card carries the
+  decision gate from that piece's context log, quoted rather than summarised.
+- **One page per piece, for coming back cold.** Click a card and you get what
+  it argues, what is waiting on you, every unresolved `[NEEDS SOURCE]` and
+  `[ASK THE WRITER]` listed out, the folder path and the next command, then the
+  notes and outline folded away, then the draft. Enough to pick up a piece you
+  have not opened in a month.
+- **Local, static, and it changes nothing.** Plain HTML on your own machine. It
+  reads your piece folders and writes a `.board` folder beside them. Nothing is
+  sent anywhere, and no key is needed.
+
 ## 0.3.3 (2026-08-30)
 
 Each piece keeps its own context log, so a piece is self contained.

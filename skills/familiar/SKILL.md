@@ -41,6 +41,14 @@ one, in a line, and list them:
 | `case-study <LOG.md \| transcript.jsonl \| session [dir]>` | `prompts/case-study.md` | Brief and questions from a build log or a coding session |
 | `learn ingest <path>` / `learn diff <piece>` | `prompts/learn.md` | Propose voice rules from past writing or from draft-vs-final |
 
+## Commands
+
+`board` is a command, not a stage, so it has no gate. Run
+`<home>/scripts/board.py --open` to build a static board of every piece and a
+page per piece. In a Dex vault pass `--pieces <vault>/04-Projects/Writing`.
+Use it when the writer asks what they have on, or needs catching up on a piece
+that has sat for a while.
+
 ## Moving back and forth
 
 Any stage can be run again on the same piece, and any stage accepts a scope:

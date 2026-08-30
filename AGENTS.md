@@ -41,6 +41,22 @@ directions. Treat these as the default, not the exception:
   resume and say in one line where the piece is and what the open decision was.
   Do not summarise the whole history and do not push towards the next stage.
 
+## Commands, and how they differ from stages
+
+`board` is a command, not a stage. It makes no editorial decision, so it has no
+gate: it reads the piece folders and writes HTML beside them, and changes
+nothing.
+
+```
+scripts/board.py --open
+scripts/board.py --pieces ~/Documents/Dex/04-Projects/Writing
+```
+
+It writes `.board/index.html`, a column per stage with a card per piece, and
+one page per piece holding the open decision, the unresolved brackets, the
+supporting files and the draft. Run it when the writer asks what they have in
+flight, or when a piece has sat long enough that they need catching up.
+
 ## Rules for agents
 
 - Read the stage's prompt file and every knowledge file it lists before acting.

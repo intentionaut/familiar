@@ -26,6 +26,18 @@ it, issue after issue.
 | 7 | `/familiar-learn ingest <path>` / `learn diff <piece>` | Teach it your voice. Ingest reads your past issues in bulk and drafts the voice files from evidence; diff compares Familiar's draft with what you actually published and turns your edits into rules. Both propose; you accept per section |
 | 0 (optional) | `/familiar-case-study <LOG.md>` | Optional first step. Turns a [Captain's Log](https://github.com/intentionaut/captains-log) build log, or a Claude Code session transcript (`session` for the latest one), into a brief and a set of interview questions grounded in what actually happened |
 
+### See what you have in flight
+
+```sh
+scripts/board.py --open
+```
+
+A static board, a column per stage, a card per piece with its title, date and
+the first thing it says. Click a card for the whole piece on one page: what is
+waiting on you, which brackets are still unresolved, the notes and outline
+folded away, then the draft. It is plain HTML on your own machine, it reads
+your piece folders, and it changes nothing.
+
 Every stage stops and waits for you. Nothing advances, nothing is applied,
 nothing ships until you say so. The gates stop drift, and they let you move
 in both directions: run an earlier stage again and it adds to what is there,

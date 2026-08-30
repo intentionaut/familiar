@@ -73,6 +73,19 @@ For every stage:
 3. Stop where the prompt says to stop. Say in one line what the open
    decision is. Do not start the next stage.
 
+## Commands
+
+`board` is a command, not a stage, so it has no gate:
+
+```
+python3 {{FAMILIAR_HOME}}/scripts/board.py --pieces <vault>/04-Projects/Writing --open
+```
+
+It writes a static board of every piece by stage, and a page per piece holding
+the open decision, the unresolved brackets and the draft. It reads the vault
+and changes nothing. Offer it when the writer asks what they have in flight, or
+when they come back to a piece that has been sitting.
+
 ## What Dex adds
 
 - **People and companies.** When notes or a draft name a person or company,

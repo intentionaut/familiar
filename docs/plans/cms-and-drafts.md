@@ -6,14 +6,59 @@ questions were answered. **Status:** proposal, nothing built.
 in flight, and a set of adapters that let a stage work against a draft that
 lives in beehiiv, Ghost or Substack.
 
+> **Parked on 30 August 2026, after one more fact.** Intentionaut stays on
+> beehiiv's free plan until the subscriber base grows. beehiiv's free plan does
+> include API access, and the create-post endpoint works on it, so a push would
+> land a draft. **Updating** an existing draft is the part limited to Max and
+> Enterprise. **[LIVE, developers.beehiiv.com/api-reference/posts/update.md,
+> 30 Aug 2026; plan availability cross-checked against beehiiv's pricing pages,
+> 30 Aug 2026]** So the honest offer on free is a new dated draft on every
+> push, which is a worse experience than pasting once.
+>
+> What was actually wanted was a way to see the drafts, not to sync them.
+> **That shipped instead: `scripts/board.py`, a static local board.** See
+> "What replaced this" below.
+>
+> Sections 2 to 8 are kept as written. Revisit them when either the plan
+> changes or updating a draft stops mattering.
+
 **Decisions already taken, and applied to the repo:**
 
 - The context log moves into the piece folder. Done: eight prompts,
   `AGENTS.md`, `knowledge/context-log.md`, `pieces/README.md` and the Dex skill
   all say the same thing now, and the existing root log has been split.
-- **beehiiv is the first adapter. Ghost is next.** Intentionaut publishes on
-  beehiiv, so beehiiv is the one that gets used rather than the one that
-  demonstrates well. This costs something real, and section 4.1 says what.
+- The status model in section 1 was built, as a board rather than a table.
+- The CMS adapters in sections 3 and 4 are parked, for the reason above.
+
+---
+
+## What replaced this
+
+`scripts/board.py`. It reads the piece folders and writes static HTML beside
+them: `.board/index.html` is a column per stage with a card per piece, and
+`.board/<slug>.html` is one piece on one page.
+
+It uses the status model from section 1 exactly as designed: **files give the
+skeleton, the context log gives the open decision.** The stage table in section
+1 is what `derive_stage` implements, with two additions found while building.
+A piece with `final.md` is shipped, and a piece with edit reports and no draft
+is editing rather than an idea.
+
+Three things from this plan turned out to be worth keeping:
+
+- **The decision gate, quoted verbatim.** It is the most useful line on a card
+  and on a piece page, exactly as section 1 argued.
+- **The unresolved brackets, listed.** Not planned, and it is the thing that
+  makes a cold draft resumable. `[NEEDS SOURCE]` and `[ASK THE WRITER]` are
+  pulled out and shown before the draft, so returning to a piece starts with
+  what it still needs.
+- **The Markdown converter, in its weak form.** Section 4.0 argued for a
+  converter that refuses what it cannot carry. That is right for a push, where
+  a mistake reaches a publication. It is wrong for a view, where nothing leaves
+  the machine and a forgiving renderer costs nothing. `board.py` carries a
+  display-only renderer and says in a comment that it must not be reused for a
+  push. If sections 3 and 4 are ever unparked, the strict converter is still to
+  be written.
 
 Confidence markers used below: **[READ]** taken from a file in this repo,
 with the line. **[LIVE]** checked against a vendor's own documentation today,
@@ -457,9 +502,13 @@ discovered.
    "Generating HTML is slow". There is no `blocks` expand option.
    **[LIVE, posts/show.md, 30 Aug 2026]** So a pull cannot reconstruct the
    draft. It gets the rendered page, wrappers and all.
-2. **Update is plan gated.** The update endpoint is "available to publications
-   on the Max and Enterprise plans". **[LIVE, posts/update.md, 30 Aug 2026]**
-   Below that, a writer can create drafts and cannot update them.
+2. **Update is plan gated, and only update.** The update endpoint is
+   "available to publications on the Max and Enterprise plans".
+   **[LIVE, posts/update.md, 30 Aug 2026]** API access itself, including
+   create-post, is on the free Launch plan; the Send API is the other gated
+   one, and Familiar has no use for it. **[LIVE, beehiiv pricing and developer
+   docs, 30 Aug 2026]** So on free a writer can create drafts and cannot update
+   them, which is the exact reason this plan is parked.
 3. **There is no collision detection.** Nothing in the documented response
    gives a version marker to send back. **[LIVE, posts/update.md, 30 Aug 2026]**
 

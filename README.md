@@ -154,7 +154,7 @@ across Dex updates, so the command carries it.
 Familiar started as the private newsroom behind
 [Intentionaut](https://intentionaut.com), a letter on design, product, data and
 AI. The story of how it came to be, and why it refuses to rewrite, is at
-[intentionaut.com/releases/familiar](https://intentionaut.com/releases/familiar/). The stages are shaped by how good editors actually work: interview first,
+[intentionaut.com/open-source/familiar](https://intentionaut.com/open-source/familiar/). The stages are shaped by how good editors actually work: interview first,
 propose structures rather than pick one, report rather than rewrite, and run the
 boring mechanical pass last. The one rule that matters most came from watching
 models fill gaps with invented detail: a bracket is always better than a

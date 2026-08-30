@@ -123,7 +123,8 @@ knowledge and run the stages by name.
 
 Familiar started as the private newsroom behind
 [Intentionaut](https://intentionaut.com), a letter on design, product, data and
-AI. The stages are shaped by how good editors actually work: interview first,
+AI. The project page, with the reasoning behind it, is at
+[intentionaut.com/projects/familiar](https://intentionaut.com/projects/familiar). The stages are shaped by how good editors actually work: interview first,
 propose structures rather than pick one, report rather than rewrite, and run the
 boring mechanical pass last. The one rule that matters most came from watching
 models fill gaps with invented detail: a bracket is always better than a

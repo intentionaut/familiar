@@ -15,10 +15,16 @@ Usage:
   scripts/board.py --open               build it and open it in a browser
   scripts/board.py --pieces DIR         somewhere other than ./pieces
   scripts/board.py --out DIR            somewhere other than <pieces>/.board
+  scripts/board.py --command PREFIX     how to invoke a stage in the hint
   scripts/board.py --stale-days N       when a piece counts as resting (7)
 
-In a Dex vault, point it at the vault:
-  scripts/board.py --pieces ~/Documents/Dex/04-Projects/Writing
+Pieces can live in more than one place. Pass --pieces once per folder, or set
+FAMILIAR_PIECES to a colon-separated list. When there is more than one, each
+card says which folder it came from:
+
+  scripts/board.py --open \
+    --pieces ~/Documents/Dex/04-Projects/Writing \
+    --pieces ~/Projects/intentionaut-newsroom/issues
 """
 import argparse, datetime, html, os, pathlib, re, sys, webbrowser
 
@@ -120,17 +126,31 @@ def read(path):
         return ""
 
 def frontmatter(md):
-    if not md.startswith("---"):
-        return {}, md
-    end = md.find("\n---", 3)
-    if end == -1:
-        return {}, md
-    fm = {}
-    for line in md[3:end].splitlines():
-        m = re.match(r'\s*([A-Za-z_]+):\s*"?(.*?)"?\s*$', line)
-        if m:
-            fm[m.group(1)] = m.group(2)
-    return fm, md[end + 4:].lstrip("\n")
+    """Pull a YAML-ish block out, even when a note sits above it.
+
+    A draft does not always start with its frontmatter. A smoke-test warning or
+    an editor's note above it is common, and the title still has to be found.
+    Anything above the block is kept, because a note there is worth reading.
+    """
+    lines = md.split("\n")
+    for start in range(min(len(lines), 20)):
+        if lines[start].strip() != "---":
+            continue
+        for end in range(start + 1, min(len(lines), start + 60)):
+            if lines[end].strip() != "---":
+                continue
+            fm = {}
+            for line in lines[start + 1:end]:
+                m = re.match(r'\s*([A-Za-z_]+):\s*"?(.*?)"?\s*$', line)
+                if m:
+                    fm[m.group(1)] = m.group(2)
+            if not fm:
+                break                       # a horizontal rule, not frontmatter
+            before = "\n".join(lines[:start]).strip()
+            after = "\n".join(lines[end + 1:]).lstrip("\n")
+            return fm, (before + "\n\n" + after).lstrip("\n") if before else after
+        break
+    return {}, md
 
 def last_context_entry(folder):
     """The last entry in the piece's own log, or a root log naming this piece."""
@@ -158,36 +178,72 @@ def last_context_entry(folder):
         got["when"], got["stage"] = m.group(1), m.group(2)
     return got
 
+# The state of the writing, in the writer's terms. Familiar's stage names
+# describe which prompt ran last, which is the tool's business rather than the
+# writer's. What a writer scans for is what a piece needs next.
 STAGES = [
-    ("idea",    "Idea"),
-    ("interview", "Interview"),
-    ("outline", "Outline"),
-    ("draft",   "Draft"),
-    ("editing", "Editing"),
-    ("social",  "Social"),
-    ("shipped", "Shipped"),
+    ("thinking", "Thinking"),
+    ("writing",  "Writing"),
+    ("editing",  "Editing"),
+    ("ready",    "Ready"),
+    ("sent",     "Sent"),
 ]
 
-def derive_stage(folder):
+def derive_stage(folder, brackets=0):
     has = lambda *p: (folder.joinpath(*p)).exists()
     mtime = lambda *p: (folder.joinpath(*p)).stat().st_mtime
     if has("final.md"):
-        return "shipped"
-    if has("social.md"):
-        return "social"
+        return "sent"
     if has("draft.md"):
+        if brackets:
+            return "editing"
         d = mtime("draft.md")
-        for report in ("edits/line-edit-report.md", "edits/dev-edit-report.md"):
-            if has(*report.split("/")) and mtime(*report.split("/")) > d:
-                return "editing"
-        return "draft"
+        reports = [r for r in ("edits/line-edit-report.md", "edits/dev-edit-report.md")
+                   if has(*r.split("/"))]
+        if not reports:
+            return "editing"          # a draft nobody has edited yet
+        if any(mtime(*r.split("/")) > d for r in reports):
+            return "editing"          # flags written after the draft, not worked through
+        return "ready"
     if has("edits", "line-edit-report.md") or has("edits", "dev-edit-report.md"):
         return "editing"
     if has("outline.md"):
-        return "outline"
+        return "writing"
+    return "thinking"
+
+
+def next_action(folder, state, brackets, has_social):
+    """What this piece needs, when the context log has not said.
+
+    Every card gets one. A board where most cards say nothing is a list.
+    """
+    has = lambda *p: (folder.joinpath(*p)).exists()
+    mtime = lambda *p: (folder.joinpath(*p)).stat().st_mtime
+    if state == "sent":
+        return "Diff the draft against what you sent, to teach it your voice"
+    if state == "ready":
+        if has_social:
+            return "Confirm the week, or leave a slot empty"
+        return "Turn it into a week of posts, or send it"
+    if state == "editing":
+        if brackets:
+            n = len(brackets) if isinstance(brackets, list) else brackets
+            return f"Resolve {n} bracket{'s' if n != 1 else ''} the draft is still missing"
+        if has("draft.md"):
+            d = mtime("draft.md")
+            for r, name in (("edits/line-edit-report.md", "line edit"),
+                            ("edits/dev-edit-report.md", "developmental edit")):
+                if has(*r.split("/")) and mtime(*r.split("/")) > d:
+                    return f"Work through the {name}, flag by flag"
+            return "Ask for a developmental edit"
+        return "Work through the edit report"
+    if state == "writing":
+        return "Write the draft from the structure you chose"
     if has("notes.md"):
-        return "interview"
-    return "idea"
+        return "Ask for three structures and pick one"
+    if has("interview-questions.md") or has("brief.md"):
+        return "Run the interview from the questions"
+    return "Start the interview"
 
 def newest_mtime(folder):
     best = folder.stat().st_mtime
@@ -216,7 +272,7 @@ def reading_ease(text):
     fre = 206.835 - 1.015 * (len(words) / len(sents)) - 84.6 * (sy / len(words))
     return len(words), round(fre)
 
-def gather(folder, now, stale_days):
+def gather(folder, now, stale_days, source=""):
     draft_raw = read(folder / "draft.md")
     fm, draft_body = frontmatter(draft_raw)
     notes = read(folder / "notes.md")
@@ -251,7 +307,10 @@ def gather(folder, now, stale_days):
         if m:
             snippet = m.group(1).strip()
     if not snippet:
-        snippet = (notes or outline).strip().split("\n\n")[0] if (notes or outline) else ""
+        for para in (notes or outline).split("\n\n"):
+            para = para.strip()
+            if para and not para.startswith(("#", ">", "-", "*", "```", "|")):
+                snippet = para; break
     snippet = " ".join(snippet.split())
     if len(snippet) > 240:
         snippet = snippet[:237].rsplit(" ", 1)[0] + "..."
@@ -260,10 +319,19 @@ def gather(folder, now, stale_days):
     ts = newest_mtime(folder)
     words, fre = reading_ease(re.sub(r"\[(NEEDS SOURCE|ASK THE WRITER)[^\]]*\]", "", draft_body))
     brackets = re.findall(r"\[(?:NEEDS SOURCE|ASK THE WRITER)[^\]]*\]", draft_raw)
+    state = derive_stage(folder, len(brackets))
+    # The writer's own words win. The derived action is the fallback, and for
+    # most pieces it is all there is.
+    derived = next_action(folder, state, brackets, (folder / "social.md").exists())
+    gate = ctx.get("Decision gate", "")
+    action = gate or derived
+    from_log = bool(gate)
 
     return {
         "slug": folder.name, "folder": folder, "title": title, "date": date,
-        "snippet": snippet, "stage": derive_stage(folder), "ts": ts,
+        "source": source, "page": (f"{source}--{folder.name}" if source else folder.name),
+        "snippet": snippet, "stage": state, "ts": ts,
+        "action": action, "from_log": from_log,
         "ago": ago(ts, now), "stale": (now - ts) > stale_days * 86400,
         "ctx": ctx, "words": words, "fre": fre, "brackets": brackets,
         "subtitle": fm.get("subtitle", ""),
@@ -312,10 +380,13 @@ display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 font-size:.8rem;color:var(--ink)}
 .card .waiting b{color:var(--accent);font-weight:600;font-size:.72rem;
 text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:2px}
+.card .waiting.derived b{color:var(--muted)}
+.card .waiting.derived{color:var(--muted)}
 .pill{font-size:.7rem;padding:1px 7px;border-radius:999px;border:1px solid var(--line);
 color:var(--muted);white-space:nowrap}
 .pill.stale{color:var(--warn);border-color:var(--warn)}
 .pill.brk{color:var(--accent);border-color:var(--accent)}
+.pill.src{color:var(--muted);background:var(--line);border-color:transparent}
 .empty-state{padding:48px 32px;color:var(--muted);max-width:52ch}
 .empty-state code{background:var(--card);border:1px solid var(--line);
 border-radius:6px;padding:2px 6px;font-size:.85em}
@@ -374,10 +445,12 @@ def card_html(p):
     if p["brackets"]:
         n = len(p["brackets"])
         pills.append(f'<span class="pill brk">{n} bracket{"s" if n != 1 else ""}</span>')
-    waiting = p["ctx"].get("Decision gate", "")
-    w = (f'<div class="waiting"><b>Waiting on you</b>{html.escape(waiting)}</div>'
-         if waiting else "")
-    return f"""<a class="card" href="{html.escape(p['slug'])}.html">
+    if p["source"]:
+        pills.append(f'<span class="pill src">{html.escape(p["source"])}</span>')
+    label = "Waiting on you" if p["from_log"] else "Next"
+    w = (f'<div class="waiting{"" if p["from_log"] else " derived"}">'
+         f'<b>{label}</b>{html.escape(p["action"])}</div>')
+    return f"""<a class="card" href="{html.escape(p['page'])}.html">
   <h3>{html.escape(p['title'])}</h3>
   <div class="sub">{''.join(pills)}</div>
   <p>{html.escape(p['snippet']) or '<span class="none">nothing written yet</span>'}</p>
@@ -397,19 +470,19 @@ def command_prefix(pieces_dir):
     return "familiar"
 
 NEXT_COMMAND = {
-    "idea": "familiar interview {slug}",
-    "interview": "familiar outline {slug}",
-    "outline": "familiar draft {slug}",
-    "draft": "familiar dev-edit {slug}",
-    "editing": "familiar line-edit {slug}",
-    "social": "familiar social {slug}",
-    "shipped": "familiar learn diff {slug}",
+    "thinking": "familiar interview {slug}",
+    "writing":  "familiar draft {slug}",
+    "editing":  "familiar dev-edit {slug}",
+    "ready":    "familiar social {slug}",
+    "sent":     "familiar learn diff {slug}",
 }
 
 def piece_page(p, prefix="familiar"):
     facts = [f'<span class="pill">{html.escape(dict(STAGES)[p["stage"]])}</span>',
              f'<span class="pill">{html.escape(p["date"] or "no date")}</span>',
              f'<span class="pill{" stale" if p["stale"] else ""}">touched {p["ago"]} ago</span>']
+    if p["source"]:
+        facts.append(f'<span class="pill src">{html.escape(p["source"])}</span>')
     if p["words"]:
         facts.append(f'<span class="pill">{p["words"]} words</span>')
     if p["fre"] is not None:
@@ -425,13 +498,14 @@ def piece_page(p, prefix="familiar"):
     parts.append(f'<div class="facts">{"".join(facts)}</div></div>')
 
     ctx = p["ctx"]
-    if ctx.get("Decision gate"):
-        parts.append(
-            '<div class="panel"><h2>Waiting on you</h2>'
-            f'<p>{html.escape(ctx["Decision gate"])}</p>'
-            + (f'<p class="none">Last touched by {html.escape(ctx.get("stage",""))} '
-               f'on {html.escape(ctx.get("when",""))}.</p>' if ctx.get("when") else "")
-            + '</div>')
+    parts.append(
+        f'<div class="panel"><h2>{"Waiting on you" if p["from_log"] else "Next"}</h2>'
+        f'<p>{html.escape(p["action"])}</p>'
+        + (f'<p class="none">Last touched by {html.escape(ctx.get("stage",""))} '
+           f'on {html.escape(ctx.get("when",""))}.</p>' if ctx.get("when")
+           else '<p class="none">Worked out from the files. This piece has no '
+                'context log yet, so no stage has left a note.</p>')
+        + '</div>')
 
     if p["brackets"]:
         items = "".join(f"<li>{_inline(b)}</li>" for b in p["brackets"])
@@ -473,20 +547,22 @@ def piece_page(p, prefix="familiar"):
 
     return page(p["title"], f'<div class="wrap">{"".join(parts)}</div>')
 
-def board_page(pieces, pieces_dir, prefix="familiar"):
+def board_page(pieces, pieces_dirs, prefix="familiar"):
     if not pieces:
+        where = ", ".join(str(d) for d in pieces_dirs)
         body = (f'<header class="top"><h1>Familiar</h1></header>'
                 '<div class="empty-state"><p>No pieces in '
-                f'<code>{html.escape(str(pieces_dir))}</code> yet.</p>'
+                f'<code>{html.escape(where)}</code> yet.</p>'
                 f'<p>Start one: <code>{html.escape(prefix)} interview "the thing that '
                 'has been rattling around"</code></p></div>')
         return page("Familiar board", body)
 
-    waiting = sum(1 for p in pieces if p["ctx"].get("Decision gate"))
+    waiting = sum(1 for p in pieces if p["from_log"])
     stale = sum(1 for p in pieces if p["stale"])
     now = datetime.datetime.now().strftime("%-d %B, %H:%M")
-    meta = (f'<b>{len(pieces)}</b> piece{"s" if len(pieces) != 1 else ""}, '
-            f'<b>{waiting}</b> waiting on you')
+    meta = f'<b>{len(pieces)}</b> piece{"s" if len(pieces) != 1 else ""}'
+    if waiting:
+        meta += f', <b>{waiting}</b> with a note from you'
     if stale:
         meta += f', <b>{stale}</b> resting'
     cols = []
@@ -505,31 +581,50 @@ def board_page(pieces, pieces_dir, prefix="familiar"):
 
 def main():
     ap = argparse.ArgumentParser(description="Build a static board of every piece.")
-    ap.add_argument("--pieces", default=os.environ.get("FAMILIAR_PIECES", ""),
-                    help="folder holding the piece folders (default: ./pieces)")
-    ap.add_argument("--out", default="", help="where to write the HTML (default: <pieces>/.board)")
+    ap.add_argument("--pieces", action="append", default=[],
+                    help="folder holding the piece folders; repeatable "
+                         "(default: ./pieces, or FAMILIAR_PIECES)")
+    ap.add_argument("--out", default="", help="where to write the HTML (default: <first pieces>/.board)")
+    ap.add_argument("--command", default="", help="how to invoke a stage in the hint")
     ap.add_argument("--stale-days", type=int, default=7)
     ap.add_argument("--open", action="store_true", help="open the board in a browser")
     args = ap.parse_args()
 
     root = pathlib.Path(__file__).resolve().parent.parent
-    pieces_dir = pathlib.Path(args.pieces).expanduser() if args.pieces else root / "pieces"
-    if not pieces_dir.is_dir():
-        sys.exit(f"No such folder: {pieces_dir}")
-    out = pathlib.Path(args.out).expanduser() if args.out else pieces_dir / ".board"
+    raw = args.pieces or [q for q in os.environ.get("FAMILIAR_PIECES", "").split(":") if q]
+    dirs = [pathlib.Path(q).expanduser().resolve() for q in raw] or [root / "pieces"]
+    missing = [d for d in dirs if not d.is_dir()]
+    if missing:
+        sys.exit("No such folder: " + ", ".join(str(m) for m in missing))
+
+    out = pathlib.Path(args.out).expanduser() if args.out else dirs[0] / ".board"
     out.mkdir(parents=True, exist_ok=True)
 
-    now = datetime.datetime.now().timestamp()
-    folders = sorted((d for d in pieces_dir.iterdir()
-                      if d.is_dir() and not d.name.startswith(".")),
-                     key=lambda d: d.name, reverse=True)
-    pieces = [gather(d, now, args.stale_days) for d in folders]
+    # A source label only helps when there is more than one place to confuse.
+    GENERIC = {"pieces", "issues", "writing", "drafts", "posts", "content",
+               "src", "docs", "documents", "projects"}
+    def label(d):
+        for part in [d.name] + [q.name for q in d.parents]:
+            if part.lower() in GENERIC or re.match(r"^\d\d[-_]", part):
+                continue
+            return part
+        return d.name
 
-    prefix = command_prefix(pieces_dir)
+    now = datetime.datetime.now().timestamp()
+    pieces = []
+    for d in dirs:
+        src = label(d) if len(dirs) > 1 else ""
+        for folder in sorted((f for f in d.iterdir()
+                              if f.is_dir() and not f.name.startswith(".")),
+                             key=lambda f: f.name, reverse=True):
+            pieces.append(gather(folder, now, args.stale_days, src))
+    pieces.sort(key=lambda p: p["slug"], reverse=True)
+
+    prefix = args.command or command_prefix(dirs[0])
     for p in pieces:
-        (out / f"{p['slug']}.html").write_text(piece_page(p, prefix), encoding="utf-8")
+        (out / f"{p['page']}.html").write_text(piece_page(p, prefix), encoding="utf-8")
     index = out / "index.html"
-    index.write_text(board_page(pieces, pieces_dir, prefix), encoding="utf-8")
+    index.write_text(board_page(pieces, dirs, prefix), encoding="utf-8")
 
     waiting = sum(1 for p in pieces if p["ctx"].get("Decision gate"))
     print(f"{len(pieces)} piece{'s' if len(pieces) != 1 else ''}, {waiting} waiting on you")

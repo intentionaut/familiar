@@ -81,10 +81,14 @@ For every stage:
 python3 {{FAMILIAR_HOME}}/scripts/board.py --pieces <vault>/04-Projects/Writing --open
 ```
 
-It writes a static board of every piece by stage, and a page per piece holding
-the open decision, the unresolved brackets and the draft. It reads the vault
-and changes nothing. Offer it when the writer asks what they have in flight, or
-when they come back to a piece that has been sitting.
+It writes a static board of every piece, a column per state of the writing,
+and a page per piece holding what that piece needs next, the unresolved
+brackets and the draft. It reads and changes nothing.
+
+Pass `--pieces` again for any other folder of pieces the writer keeps, so the
+board covers everything in flight rather than the vault alone. Offer it when
+the writer asks what they have on, or when they come back to a piece that has
+been sitting.
 
 ## What Dex adds
 

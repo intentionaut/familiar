@@ -38,16 +38,27 @@ lives in beehiiv, Ghost or Substack.
 them: `.board/index.html` is a column per stage with a card per piece, and
 `.board/<slug>.html` is one piece on one page.
 
-It uses the status model from section 1 exactly as designed: **files give the
-skeleton, the context log gives the open decision.** The stage table in section
-1 is what `derive_stage` implements, with two additions found while building.
-A piece with `final.md` is shipped, and a piece with edit reports and no draft
-is editing rather than an idea.
+It keeps the half of section 1 that was right, **files give the skeleton, the
+context log gives the open decision**, and changes the half that was wrong.
+
+Section 1 named its columns after Familiar's stages: interview, outline, draft,
+dev-edit. That is which prompt ran last, which is the tool's business. A writer
+scans a board for what a piece needs. So the columns are states of the writing:
+**Thinking, Writing, Editing, Ready, Sent.**
+
+The bigger correction: section 1 assumed the context log would supply the
+decision gate. Across seven real pieces, six had no log at all, because a log
+only exists once a Familiar stage has run on that piece. A board where six
+cards in seven say nothing is a list. So every card carries a next action,
+taken from the log when a stage left one and worked out from the files when
+none did: run the interview from the questions, ask for three structures,
+resolve four brackets, work through the line edit.
 
 Three things from this plan turned out to be worth keeping:
 
 - **The decision gate, quoted verbatim.** It is the most useful line on a card
-  and on a piece page, exactly as section 1 argued.
+  when it exists, exactly as section 1 argued. It just does not exist often
+  enough to be the only line.
 - **The unresolved brackets, listed.** Not planned, and it is the thing that
   makes a cold draft resumable. `[NEEDS SOURCE]` and `[ASK THE WRITER]` are
   pulled out and shown before the draft, so returning to a piece starts with

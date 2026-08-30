@@ -4,6 +4,27 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.4.1 (2026-08-30)
+
+The board says what each piece needs, and covers pieces kept in more than one
+place.
+
+**What this gives you:**
+
+- **Columns you recognise.** Thinking, Writing, Editing, Ready, Sent. They
+  describe the state of the writing rather than which Familiar stage ran last.
+- **Every card says what is next.** When a stage left a note in the context
+  log, the card quotes it. When none did, the card works it out from the
+  files: run the interview from the questions, ask for three structures,
+  resolve four brackets, work through the line edit. No card is blank.
+- **Pieces in more than one place.** Pass `--pieces` once per folder, or set
+  `FAMILIAR_PIECES` to a colon-separated list, and each card says which folder
+  it came from. Useful when a vault and a separate newsletter repo both hold
+  work in flight.
+- **Titles found where they really are.** A draft with an editor's note above
+  its frontmatter now shows its real title rather than falling back to a
+  heading from the notes.
+
 ## 0.4.0 (2026-08-30)
 
 See everything you have in flight, on one board.

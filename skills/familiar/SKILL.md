@@ -45,9 +45,12 @@ one, in a line, and list them:
 
 `board` is a command, not a stage, so it has no gate. Run
 `<home>/scripts/board.py --open` to build a static board of every piece and a
-page per piece. In a Dex vault pass `--pieces <vault>/04-Projects/Writing`.
-Use it when the writer asks what they have on, or needs catching up on a piece
-that has sat for a while.
+page per piece. Columns are states of the writing (Thinking, Writing, Editing,
+Ready, Sent) and every card says what that piece needs next.
+
+Pass `--pieces` once per folder when pieces live in more than one place, for
+example a Dex vault and a separate newsletter repo. Use it when the writer asks
+what they have on, or needs catching up on a piece that has sat for a while.
 
 ## Moving back and forth
 

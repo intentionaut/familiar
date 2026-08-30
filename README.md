@@ -32,11 +32,14 @@ it, issue after issue.
 scripts/board.py --open
 ```
 
-A static board, a column per stage, a card per piece with its title, date and
-the first thing it says. Click a card for the whole piece on one page: what is
-waiting on you, which brackets are still unresolved, the notes and outline
-folded away, then the draft. It is plain HTML on your own machine, it reads
-your piece folders, and it changes nothing.
+A static board, a column per state of the writing, a card per piece with its
+title, date, the first thing it says, and the next thing it needs. Click a card
+for the whole piece on one page: what it is waiting on, which brackets are
+still unresolved, the notes and outline folded away, then the draft.
+
+Pieces in more than one place? Pass `--pieces` once per folder and each card
+says where it came from. It is plain HTML on your own machine, it reads your
+piece folders, and it changes nothing.
 
 Every stage stops and waits for you. Nothing advances, nothing is applied,
 nothing ships until you say so. The gates stop drift, and they let you move

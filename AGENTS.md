@@ -49,13 +49,18 @@ nothing.
 
 ```
 scripts/board.py --open
-scripts/board.py --pieces ~/Documents/Dex/04-Projects/Writing
+scripts/board.py --pieces DIR --pieces DIR       pieces in more than one place
 ```
 
-It writes `.board/index.html`, a column per stage with a card per piece, and
-one page per piece holding the open decision, the unresolved brackets, the
-supporting files and the draft. Run it when the writer asks what they have in
-flight, or when a piece has sat long enough that they need catching up.
+It writes `.board/index.html`: a column per state of the writing, Thinking,
+Writing, Editing, Ready and Sent, with a card per piece. Every card carries the
+next thing that piece needs, taken from the context log when a stage left a
+note and worked out from the files when none did. Each piece also gets its own
+page holding that decision, the unresolved brackets listed out, the supporting
+files and the draft.
+
+Run it when the writer asks what they have in flight, or when a piece has sat
+long enough that they need catching up.
 
 ## Rules for agents
 

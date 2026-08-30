@@ -11,6 +11,22 @@ in their voice, not in model voice.
 
 **Scope:** if `$ARGUMENTS` names a section, heading or paragraph, draft that part only and leave everything else in `draft.md` untouched. Say which part you worked on. If `draft.md` already has content and no scope is given, ask before replacing it: replace, add to, or write a numbered variant beside it (`draft-2.md`).
 
+## Before writing: voice first, then ask, then invent only with permission
+
+1. **Prior work first.** If `knowledge/voice-guide.md` or `examples/canonical.md`
+   is still the template, do not draft. Say so, and offer to run
+   `learn ingest <the writer's published work>` now; in a Dex vault, look for
+   the writer's own published pieces before asking where they are.
+2. **Ask where possible.** For every gap the outline flagged, and for any
+   scene, number or quote the notes do not contain, ask the writer before
+   drafting if they are present. Batch these into one short list so it is one
+   interruption, not ten.
+3. **Invent only with permission.** If the writer says "draft from what you
+   have", you may write connective prose, but every specific you did not get
+   from notes.md, the outline, or the writer's own words stays a bracket:
+   `[NEEDS SOURCE: ...]` for a fact, `[ASK THE WRITER: ...]` for a scene or a
+   feeling. Never fill one in with something plausible.
+
 ## Non-negotiables while writing
 
 - Follow voice-guide.md exactly: short declaratives, no em dashes, British spelling, no banned words, concrete nouns.

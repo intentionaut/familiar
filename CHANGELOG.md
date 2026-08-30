@@ -4,6 +4,22 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.3.2 (2026-08-30)
+
+The draft stage asks before it invents, and in Dex your voice files live in
+your vault.
+
+**What this gives you:**
+
+- **Voice first, then ask, then invent only with permission.** Draft will
+  not run on template voice files; it offers to learn from your published
+  work instead. Gaps the outline flagged are asked about in one short list
+  before writing. Anything it still does not have stays a bracket.
+- **Your voice stays out of the public repo.** In Dex, the voice files live
+  in `06-Resources/Familiar/knowledge/`, seeded from the templates on
+  install and never overwritten. Pieces and learn proposals are in the vault
+  too.
+
 ## 0.3.1 (2026-08-30)
 
 The case-study stage reads your coding sessions, not only a build log.

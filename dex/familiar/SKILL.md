@@ -34,9 +34,16 @@ one line to fix it, then stop:
 git clone https://github.com/intentionaut/familiar.git {{FAMILIAR_HOME}}
 ```
 
-Pieces live in the vault, so they are searchable, backed up and linked like
-everything else: `04-Projects/Writing/YYYY-MM-DD-slug/`. Wherever a Familiar
-prompt says `pieces/`, use that folder instead. Create it on first use.
+The writer's data lives in the vault, so it is searchable, backed up and
+never in a public repo:
+
+- **Voice files:** `06-Resources/Familiar/knowledge/` (positioning, voice
+  guide, style rules, canonical examples, social schedule, languages). The
+  installer seeds it with the templates. Wherever a prompt says `knowledge/`,
+  read from and write to this folder, never the Familiar repo's own.
+- **Pieces:** `04-Projects/Writing/YYYY-MM-DD-slug/`. Wherever a prompt says
+  `pieces/`, use this. Create it on first use.
+- **Proposals from `learn`:** `06-Resources/Familiar/proposals/`.
 
 ## Stages
 
@@ -87,9 +94,10 @@ For every stage:
 
 ## Honesty rules
 
-- If the voice files in `{{FAMILIAR_HOME}}/knowledge/` are still the
-  unfilled template, say so before drafting and offer `learn ingest` as the
-  fastest way to fill them. Do not draft in a guessed voice.
+- If the voice files in `06-Resources/Familiar/knowledge/` are still the
+  unfilled template, say so before drafting and offer `learn ingest` on the
+  writer's published work in the vault as the fastest way to fill them. Do
+  not draft in a guessed voice.
 - If a scheduler call in the social stage fails, report exactly which posts
   landed and which did not. Never retry silently.
 - If the Work MCP or QMD is unavailable, say the vault could not be searched

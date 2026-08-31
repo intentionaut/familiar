@@ -157,6 +157,42 @@ The script installs the `/familiar-*` commands for Claude Code and opencode so
 they work from any folder. Each piece gets its own folder under `pieces/`;
 `pieces/README.md` shows the layout the stages write into.
 
+### Your first hour
+
+Setup ends by telling you what Familiar can see and what it still needs. You can
+ask again at any point:
+
+```sh
+python3 scripts/doctor.py
+```
+
+It reports three states per file, and a missing optional file is fine.
+
+**Familiar needs to know your voice before it drafts anything**, or the draft is
+a guess in a stranger's register. Two ways in:
+
+- **You have published before.** `/familiar-learn ingest <folder of your past
+  writing>` reads it and drafts your voice files from evidence, with counts
+  rather than adjectives. You accept or reject each section. This is the fast
+  path and it is much better than writing the files cold.
+- **You have not, or you would rather write them.** Open `positioning.md` and
+  `voice-guide.md` and answer the bracketed prompts. Short answers are fine, and
+  you can start with positioning alone.
+
+Then `/familiar-interview <an idea you have been chewing on>`. It asks one
+question at a time, and the first stage usually takes ten or fifteen minutes of
+honest answers. There is no way to skip that part, because your answers are the
+material: everything downstream is built from what you said.
+
+**What to expect while you work.** Every stage stops and waits. Nothing is
+applied to your draft for you, the edit stages hand back a report you work
+through yourself, and anything Familiar cannot source is left as a visible
+bracket rather than invented. A piece can sit between stages for an hour or a
+fortnight; it is a folder of files, so it waits exactly where you left it.
+
+If you keep your voice files somewhere other than the repo, point
+`$FAMILIAR_CONFIG` at that folder, or let a host declare it.
+
 The gates, in the order a piece usually meets them. Every one of them can be
 run again, and out of order:
 

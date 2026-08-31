@@ -27,7 +27,10 @@ sed "s|{{FAMILIAR_HOME}}|$DIR|g" "$DIR/.claude/commands/reflect.md" > "$CC/refle
 sed "s|{{FAMILIAR_HOME}}|$DIR|g" "$DIR/.claude/commands/reflect.md" > "$OC/reflect.md"
 
 echo "Installed /familiar-* commands for Claude Code and opencode."
-echo "Familiar lives at: $DIR"
 echo
-echo "Next: fill in knowledge/positioning.md and knowledge/voice-guide.md,"
-echo "then start with /familiar-interview <an idea>."
+echo "Familiar stops after every stage and waits for you. It reports rather"
+echo "than rewrites: your draft is never edited in place, and anything it"
+echo "cannot source is left as a bracket instead of being invented."
+echo
+# Say what is actually configured and what to do next, rather than assuming.
+python3 "$DIR/scripts/doctor.py" || true

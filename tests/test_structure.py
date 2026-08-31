@@ -15,7 +15,7 @@ ADAPTERS = ROOT / ".claude" / "commands"
 # A prompt run through the skill rather than a slash command.
 PROMPTS_WITHOUT_A_COMMAND = {"log"}
 # A command backed by a script instead of a prompt.
-COMMANDS_WITHOUT_A_PROMPT = {"board"}
+COMMANDS_WITHOUT_A_PROMPT = {"board", "doctor"}
 
 
 def stems(directory):

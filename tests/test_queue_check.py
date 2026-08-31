@@ -117,3 +117,37 @@ class Request(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+_dspec = importlib.util.spec_from_file_location("doc", ROOT / "scripts" / "doctor.py")
+doc = importlib.util.module_from_spec(_dspec)
+_dspec.loader.exec_module(doc)
+
+
+class DoctorState(unittest.TestCase):
+    """A bracket is only a blank if the shipped template has the same one."""
+
+    def test_untouched_template_reads_as_a_template(self):
+        shipped = ROOT / "knowledge" / "voice-guide.md"
+        st, n = doc.state(shipped, shipped)
+        self.assertEqual(doc.TEMPLATE, st)
+        self.assertGreater(n, 0)
+
+    def test_the_writers_own_brackets_are_not_blanks(self):
+        """A voice guide banning 'as a [senior title]' framing is finished, not
+        unfilled. Counting that bracket told a writer with a complete voice
+        guide that Familiar did not know their voice."""
+        shipped = ROOT / "knowledge" / "voice-guide.md"
+        filled = write('# Voice guide\n\nNo "as a [senior title]" framing, ever.\n')
+        st, n = doc.state(filled, shipped)
+        self.assertEqual(doc.OK, st, f"counted the writer's own prose as {n} blank(s)")
+
+    def test_absent_file_is_reported_as_absent_not_empty(self):
+        st, n = doc.state(Path(tempfile.mkdtemp()) / "nope.md",
+                          ROOT / "knowledge" / "voice-guide.md")
+        self.assertEqual(doc.MISSING, st)
+
+    def test_shipped_templates_resolve_when_nothing_is_configured(self):
+        cfg, whose = doc.config_dir()
+        self.assertTrue(cfg.is_dir())
+        self.assertIn(whose, ("yours", "the shipped templates"))

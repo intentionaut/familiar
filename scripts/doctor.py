@@ -42,11 +42,21 @@ def config_dir(explicit=None):
     return shipped, "the shipped templates"
 
 
-def state(path):
+def state(path, shipped=None):
+    """Filled, still a template, or absent.
+
+    A bracket is only a blank if the shipped template has the same one. The
+    writer's own prose contains brackets too: a voice guide that bans "as a
+    [senior title]" framing is finished, not unfilled, and counting that as a
+    blank tells a writer their voice guide is empty when it is not.
+    """
     if not path.is_file():
         return MISSING, 0
-    n = len(PLACEHOLDER.findall(path.read_text()))
-    return (TEMPLATE if n else OK), n
+    text = path.read_text()
+    found = set(PLACEHOLDER.findall(text))
+    if shipped is not None and shipped.is_file() and shipped.resolve() != path.resolve():
+        found &= set(PLACEHOLDER.findall(shipped.read_text()))
+    return (TEMPLATE if found else OK), len(found)
 
 
 def commands_installed():
@@ -80,9 +90,9 @@ def main():
 
     unfilled = []
     for name in ESSENTIAL:
-        st, n = state(cfg / name)
+        st, n = state(cfg / name, HOME / "knowledge" / name)
         mark = "ok " if st == OK else "-> "
-        extra = f" ({n} left to fill in)" if st == TEMPLATE else ""
+        extra = f" ({n} blank{'s' if n != 1 else ''} left)" if st == TEMPLATE else ""
         print(f"  {mark}{name:<24}{st}{extra}")
         if st != OK:
             unfilled.append(name)
@@ -92,8 +102,8 @@ def main():
         st = "ready" if (cfg / name).is_file() else MISSING
         print(f"     {name:<24}{st} (ships usable, edit when you disagree)")
     for name in OPTIONAL:
-        st, n = state(cfg / name)
-        extra = f" ({n} left to fill in)" if st == TEMPLATE else ""
+        st, n = state(cfg / name, HOME / "knowledge" / name)
+        extra = f" ({n} blank{'s' if n != 1 else ''} left)" if st == TEMPLATE else ""
         print(f"     {name:<24}{st}{extra}")
 
     print()

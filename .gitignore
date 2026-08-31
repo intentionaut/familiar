@@ -10,3 +10,7 @@ pieces/*/
 REFLECTIONS.md
 knowledge/private/
 knowledge/proposals/
+
+# Python bytecode from running the scripts
+__pycache__/
+*.pyc

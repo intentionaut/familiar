@@ -98,9 +98,12 @@ def next_monday(today=None):
     return today + dt.timedelta(days=ahead)
 
 
-def query(channel_id):
-    """Ask the scheduler for this channel's scheduled posts. Returns raw text."""
-    req = "\n".join([
+def list_request(channel_id):
+    """The JSON-RPC lines that ask a scheduler for a channel's queue.
+
+    Split out from query() so its shape can be checked without a network call.
+    """
+    return "\n".join([
         json.dumps({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
             "protocolVersion": "2025-06-18", "capabilities": {},
             "clientInfo": {"name": "familiar-queue-check", "version": "1.0"}}}),
@@ -110,6 +113,11 @@ def query(channel_id):
             # Buffer wants status as an array; a bare string is rejected.
             "arguments": {"channelId": channel_id, "status": ["scheduled"]}}}),
     ]) + "\n"
+
+
+def query(channel_id):
+    """Ask the scheduler for this channel's scheduled posts. Returns raw text."""
+    req = list_request(channel_id)
     try:
         proc = subprocess.run(
             [str(HOME / "scripts" / "buffer-mcp.sh")],

@@ -1,9 +1,9 @@
 # Trigger evals for /familiar (Dex skill package).
-#   3 positive paraphrases  — MUST fire this skill
-#   2 negative / collision  — MUST NOT fire; must route to the named neighbor
-#   1 ambiguous             — should ASK rather than silently fire
-#   1 missing-prerequisite  — should degrade honestly, not fake a result
-#   1 failure-recovery      — must not claim success when the underlying action failed
+#   3 positive paraphrases  : MUST fire this skill
+#   2 negative / collision  : MUST NOT fire; must route to the named neighbor
+#   1 ambiguous             : should ASK rather than silently fire
+#   1 missing-prerequisite  : should degrade honestly, not fake a result
+#   1 failure-recovery      : must not claim success when the underlying action failed
 #
 # `expect: fire` / `no-fire` / `ask` / `degrade` / `honest-failure`.
 

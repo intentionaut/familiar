@@ -55,3 +55,17 @@ next person. Same rule: real examples, no invented ones.
 - Never a key, token or personal account id in any file.
 - Prompts propose; the writer decides. A change that makes a stage apply
   something without confirmation will not be merged.
+
+## Tests
+
+```sh
+python3 -m unittest discover -s tests -t .
+```
+
+Standard library only, no install, under a second. They run in CI on every
+push. They check that the repo holds together, that every stage has a command,
+that nothing references a file which is not there, and that shipped prose obeys
+Familiar's own style rules.
+
+If you fix a bug, leave a test behind. `tests/README.md` says what is covered
+and what is deliberately not.

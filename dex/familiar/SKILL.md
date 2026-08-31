@@ -25,7 +25,7 @@ specific background-work approval for this run.
 ## Paths this host declares
 
 - **Familiar home:** `{{FAMILIAR_HOME}}`
-- **Config:** `06-Resources/Familiar/knowledge/` — positioning, voice guide,
+- **Config:** `06-Resources/Familiar/knowledge/`: positioning, voice guide,
   style rules, social schedule, links, reflection, models, examples, languages.
   This is the `knowledge/` any prompt refers to.
 - **Pieces:** `04-Projects/Writing/YYYY-MM-DD-slug/`. Wherever a prompt says

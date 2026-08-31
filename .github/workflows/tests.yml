@@ -1,0 +1,21 @@
+name: Tests
+
+# Structural checks and unit tests. No model, no network, no key: these catch
+# the mistakes that have actually shipped, like a stage added without a command.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run the tests
+        # Standard library only, so there is nothing to install.
+        run: python3 -m unittest discover -s tests -t . -v

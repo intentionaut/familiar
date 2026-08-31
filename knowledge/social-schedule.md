@@ -28,7 +28,7 @@ Set `scheduler: none`, or delete this block, and `publish` prints a paste-ready
 table instead of calling anything. Nothing else about the stage changes.
 
 - **scheduler:** buffer
-- **key:** `$BUFFER_API_KEY` — the *name* of an environment variable. Never
+- **key:** `$BUFFER_API_KEY`, the *name* of an environment variable. Never
   write a key or token in this file.
 
 | Channel | Channel id | Limit | Link goes |

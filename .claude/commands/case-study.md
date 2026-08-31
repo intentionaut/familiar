@@ -1,5 +1,5 @@
 ---
-description: Familiar: Turn a Captain's Log build log into a brief and interview questions
+description: "Familiar: Turn a build log or a coding session into a brief and interview questions"
 ---
 Run the Familiar **case-study** stage. Familiar lives at `{{FAMILIAR_HOME}}`.
 

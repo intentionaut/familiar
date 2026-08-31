@@ -4,6 +4,35 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.5.0 (2026-08-31)
+
+Familiar now sits beside the work itself. Captain's Log has been folded in.
+
+**What this gives you:**
+
+- **A build log for every project, not just the ones you remembered.**
+  `familiar log` scans your projects folder and shows which keep a build log
+  and which shipped this week without one. `familiar log add <project>` wires
+  the automatic entry, written when a session ends or compacts, and records
+  the log's filename so one called anything at all is found. The format stays
+  one block you can paste into any project.
+- **Reflection, on your cadence.** Two questions about how the work is going,
+  answers recorded word for word. Opt in and pick weekly, fortnightly or
+  monthly in `knowledge/reflection.md`, edit the question bank there too.
+  Familiar offers one at the end of a stage when one is due, once per session,
+  and drops it the moment you are not in the mood. Off means off.
+- **Threads that notice you changing your mind.** Ideas you are developing get
+  worked into every second or third reflection from a new angle, and when an
+  answer contradicts an earlier one, Familiar says so and asks. That is where
+  a view actually changes, and it is the hardest thing to catch yourself.
+- **Your answers stay yours.** Reflections live in a private folder you name,
+  never in this repo, and the nudge is a quiet notification that always writes
+  a log line so you can tell it ran.
+- **Captain's Log is archived.** Its build-log format, hook, reflection ritual
+  and design notes all live here now; the old repo points this way. The origin
+  story, including the honest paid-versus-free assessment, is kept as written
+  in `docs/origin.md`.
+
 ## 0.4.2 (2026-08-30)
 
 The board is a real command now, and you can tidy it, not only read it.

@@ -7,7 +7,7 @@ into a claude.ai Project.
 ## Pipeline
 
 ```
-/case-study → brief.md + interview-questions.md   (from a Captain's Log build log; preps the interview, never runs it)
+/case-study → brief.md + interview-questions.md   (from a build log or a session transcript; preps the interview, never runs it)
 /interview  → notes.md        (one question at a time; thesis, stakes, evidence, themes)
 /outline    → outline.md      (three structures; the writer picks)
 /draft      → draft.md        (full draft in voice, [NEEDS SOURCE] brackets over inventions)
@@ -15,6 +15,8 @@ into a claude.ai Project.
 /line-edit  → edits/line-edit-report.md  (mechanical pass, exact fixes per flag)
 /social     → social.md       (candidate pool → the writer picks per channel → finalise → schedule on confirm)
 /learn      → knowledge/proposals/*.md  (ingest past writing, or diff draft vs final; proposes rules, applies only what is accepted)
+/reflect    → <reflections>/<project>.md  (two questions about the work, recorded verbatim; where the voice comes from)
+/log        → a build log per project   (what shipped, decisions, went wrong, numbers; the hook writes an (auto) entry at session end)
 ```
 
 Each piece lives in `pieces/YYYY-MM-DD-slug/`. Stages are gated: never advance
@@ -40,6 +42,20 @@ directions. Treat these as the default, not the exception:
 - **Pick up at the writer's pace.** Read the piece's `SESSION-CONTEXT.md` on
   resume and say in one line where the piece is and what the open decision was.
   Do not summarise the whole history and do not push towards the next stage.
+
+## Offering a reflection
+
+Reflection is something Familiar does with the writer, so notice when one is due
+rather than waiting to be asked.
+
+When a stage finishes and `knowledge/reflection.md` says a reflection is due on
+its cadence, offer one in a single line and stop. At a stage exit only, never
+during the work. Once per session. If they say no, or say nothing about it, drop
+it and do not raise it again in that session. Never offer when reflection is
+off, and never when the settings are still the template.
+
+A reflection is a stage, so it has a gate like any other: it ends where
+`prompts/reflect.md` says it ends.
 
 ## Commands, and how they differ from stages
 
@@ -101,6 +117,7 @@ behalf.
 - `knowledge/style-rules.md`: mechanical checklist for line edits
 - `knowledge/editor-report.md`: dev-edit taxonomy and report spec
 - `knowledge/examples/canonical.md`: annotated excerpts of the writer's published work
+- `knowledge/reflection.md`: whether reflection is on, its cadence, where the answers live, and the question bank
 - `knowledge/social-schedule.md`: channels, cadence, send times, slot shapes; the scaffold the social stage fills
 - `knowledge/languages/<code>.md`: per-language rule overrides and tells; `_template.md` to add one
 - `knowledge/humanizer-check.md`: weekly diff against humanizer's tell list; candidates, never applied

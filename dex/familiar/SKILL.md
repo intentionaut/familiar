@@ -60,6 +60,7 @@ in one line, with this list:
 | `social` | `prompts/social.md` | two gates, then an explicit "confirm" before anything is scheduled |
 | `learn ingest <path>` / `learn diff <piece>` | `prompts/learn.md` | proposals the writer applies per section |
 | `case-study <LOG.md \| transcript.jsonl \| session [dir]>` | `prompts/case-study.md` | hands off to `interview` |
+| `reflect` | `prompts/reflect.md` | two questions, recorded verbatim |
 | `board` | `scripts/board.py` (a command, no gate) | a page the writer opens |
 
 For every stage:
@@ -114,6 +115,14 @@ behalf.
 - **Context log.** Familiar's `SESSION-CONTEXT.md` lives in the piece folder,
   which is Familiar's rule everywhere, and it means Familiar never writes a
   session file to the vault root where Dex keeps its own.
+
+## Offering a reflection
+
+When a stage finishes and `06-Resources/Familiar/knowledge/reflection.md` says
+one is due on its cadence, offer a reflection in a single line and stop. At a
+stage exit only, once per session, never when it is off. If they decline, drop
+it for the session. The answers go to the reflections folder named in those
+settings, not into the vault.
 
 ## Honesty rules
 

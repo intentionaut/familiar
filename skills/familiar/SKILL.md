@@ -40,6 +40,7 @@ one, in a line, and list them:
 | `social` | `prompts/social.md` | A week of posts on the writer's cadence; scheduled only on final confirm |
 | `case-study <LOG.md \| transcript.jsonl \| session [dir]>` | `prompts/case-study.md` | Brief and questions from a build log or a coding session |
 | `learn ingest <path>` / `learn diff <piece>` | `prompts/learn.md` | Propose voice rules from past writing or from draft-vs-final |
+| `reflect` | `prompts/reflect.md` | Two questions about the work, recorded in the writer's own words |
 | `board` | `scripts/board.py` | Every piece in flight and what each needs; a command, so no gate |
 
 ## Commands
@@ -55,6 +56,13 @@ what they have on, or needs catching up on a piece that has sat for a while.
 
 `--serve` adds Archive and Delete to each card, for the writer's hand only. A
 piece that has been sent cannot be deleted there. Never use them yourself.
+
+## Offering a reflection
+
+When a stage finishes and `knowledge/reflection.md` says one is due on its
+cadence, offer a reflection in a single line and stop. At a stage exit only,
+once per session, and never when reflection is off. If they decline, drop it for
+the session.
 
 ## Moving back and forth
 

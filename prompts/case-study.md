@@ -1,6 +1,6 @@
 # Stage: case-study (from a build log or a coding session)
 
-Turn a Captain's Log build log, or a Claude Code session transcript, into a
+Turn a build log, or a Claude Code session transcript, into a
 briefed, question-ready starting point for the standard interview stage. You do NOT run the interview. You prepare it:
 read the log, write a brief and a set of drafted interview questions, then hand
 off to /interview so the human can follow the normal one-question-at-a-time
@@ -12,7 +12,8 @@ process.
    scope in positioning.md and the voice to classify the
    material and to phrase questions that draw specifics.
 2. Take the source from $ARGUMENTS. It is one of:
-   - a Captain's Log build log (`<PROJECT>-LOG.md`), optionally followed by a
+   - a build log kept per prompts/log.md (`<PROJECT>-LOG.md` or similar; check
+     knowledge/build-logs.md for the project's registered filename), optionally followed by a
      path to a REFLECTIONS.md. If only the log is given, look alongside it for
      a REFLECTIONS.md, or use the inline "<NAME>'s notes" sections.
    - a Claude Code session transcript (`.jsonl`), or the word `session` with
@@ -49,7 +50,7 @@ process.
   - Contradictions: if the human's notes disagree with an earlier entry or with
     each other, flag it. That's where a view is changing, and it's interview gold.
 - Draft **interview-questions.md**: an ordered list, one question per line, each
-  grounded in a specific log entry. Follow Captain's Log's own interview rules:
+  grounded in a specific log entry. Follow the interview stage's own rules:
   chase specifics (names, numbers, the moment of realising); ask about the ten
   minutes after a mistake, not "tell me more"; mark gaps that would need an
   [ASK THE WRITER: …] versus [NEEDS SOURCE: …]. Aim for 8-12 questions; the live

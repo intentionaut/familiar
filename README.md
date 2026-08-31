@@ -24,7 +24,27 @@ it, issue after issue.
 | 5 | `/familiar-line-edit` | The mechanical pass: AI tells, house spelling, reading ease. An exact fix for every flag |
 | 6 | `/familiar-social` | A week of posts on your own cadence: one pool of candidates, you pick per channel, exact send times, and nothing scheduled without a final confirm. Works with a scheduler or hands you a paste-ready list |
 | 7 | `/familiar-learn ingest <path>` / `learn diff <piece>` | Teach it your voice. Ingest reads your past issues in bulk and drafts the voice files from evidence; diff compares Familiar's draft with what you actually published and turns your edits into rules. Both propose; you accept per section |
-| 0 (optional) | `/familiar-case-study <LOG.md>` | Optional first step. Turns a [Captain's Log](https://github.com/intentionaut/captains-log) build log, or a Claude Code session transcript (`session` for the latest one), into a brief and a set of interview questions grounded in what actually happened |
+| 0 (optional) | `/familiar-case-study <LOG.md>` | Optional first step. Turns a build log (see `familiar log`), or a Claude Code session transcript (`session` for the latest one), into a brief and a set of interview questions grounded in what actually happened |
+
+### Where the material comes from
+
+Familiar can sit beside the work itself, before there is a piece.
+
+- **`familiar log`** shows which of your projects keep a build log, and wires
+  one up in a command: entries for what shipped, what was decided, what went
+  wrong and what it cost, written while you still remember, plus an automatic
+  entry when a session ends or compacts. The format is `prompts/log.md`, one
+  block you can also just paste into a project's `CLAUDE.md`.
+- **`familiar reflect`** asks you two questions about how the work is going and
+  records your answers word for word. Opt in and pick a cadence in
+  `knowledge/reflection.md`; Familiar offers one at the end of a stage when one
+  is due, and drops it the moment you are not in the mood. The answers are the
+  rawest voice reference the drafting stages have.
+
+Both feed `case-study`, which turns a log or a session into a brief and
+interview questions. The pipeline turns material into an issue; these are where
+the material comes from. (They started life as a separate tool, Captain's Log,
+whose story is in [`docs/origin.md`](docs/origin.md).)
 
 ### See what you have in flight
 

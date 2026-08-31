@@ -8,6 +8,7 @@
   --ink: #38234a;
   --muted: #74607b;
   --line: #e0d2cb;
+  --slate: #e0d2cb;
   --accent: #c85060;
 
   --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
@@ -105,13 +106,28 @@ a { color: var(--accent); }
 .aside dt { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .aside dd { margin: 0.15rem 0 0; }
 
-.stages { display: grid; gap: 0; margin-top: 2rem; }
-.stage { display: grid; gap: 0.35rem 1.2rem; padding: 1.2rem 0; border-top: 1px solid var(--line); }
-@media (min-width: 48rem) { .stage { grid-template-columns: 3rem 9rem 1fr; align-items: baseline; } }
-.stage-n { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); }
-.stage-name { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; }
-.stage-what { margin: 0; max-width: 60ch; }
-.stage code { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); display: block; margin-top: 0.3rem; }
+/* The step ladder. The number is set large in the display face and the command
+   sits directly under the stage name, so the two read together. Ported from
+   intentionaut.com's linear stage list. */
+.stage-list { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; gap: 0; }
+.stage {
+  display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 1.5rem;
+  padding: 2rem 0; border-top: 1px solid var(--slate);
+}
+.stage:last-child { border-bottom: 1px solid var(--slate); }
+.stage-n {
+  font-family: var(--font-display); font-size: 2rem; line-height: 1;
+  color: var(--accent); font-variation-settings: 'opsz' 144, 'SOFT' 100;
+}
+.stage-body h3 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; margin: 0 0 0.5rem; }
+.stage-cmd {
+  display: inline-block; font-family: var(--mono); font-size: 0.8rem;
+  color: var(--muted); background: var(--slate); border: 1px solid var(--slate);
+  border-radius: 5px; padding: 0.2rem 0.55rem; margin-bottom: 1rem;
+  max-width: 100%; overflow-wrap: anywhere;
+}
+.stage-body p { max-width: 62ch; margin: 0; }
+@media (max-width: 48rem) { .stage { grid-template-columns: 3rem minmax(0, 1fr); gap: 1rem; } }
 
 /* The install pill cannot wrap by default, which pushed the whole page wider
    than a 390px screen and made it scroll sideways. intentionaut.com solves it

@@ -201,6 +201,12 @@ boring mechanical pass last. The one rule that matters most came from watching
 models fill gaps with invented detail: a bracket is always better than a
 fabrication.
 
+## The letter
+
+Familiar is built in public, and the build stories land first in
+[Intentionaut](https://intentionaut.com/subscribe/?utm_source=github-familiar):
+what shipped, what went wrong, and what it cost. Roughly weekly.
+
 ## Status
 
 Free, and a prompt pack rather than a product. Issues and pull requests

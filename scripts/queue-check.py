@@ -107,7 +107,8 @@ def query(channel_id):
         json.dumps({"jsonrpc": "2.0", "method": "notifications/initialized"}),
         json.dumps({"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {
             "name": "list_posts",
-            "arguments": {"channelId": channel_id, "status": "scheduled"}}}),
+            # Buffer wants status as an array; a bare string is rejected.
+            "arguments": {"channelId": channel_id, "status": ["scheduled"]}}}),
     ]) + "\n"
     try:
         proc = subprocess.run(

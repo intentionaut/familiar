@@ -76,6 +76,7 @@ Sweep for every pattern below. Each flag gets the exact rewritten line. When uns
 - Overly symmetrical paragraph structure
 - Closing with an inspirational call to action or rhetorical question
 - Summarising points already made in the opening paragraph
+- Tightening that costs a specific. When a rewrite is shorter but has lost a number, the name of a thing, or the mechanic that made the claim checkable, the edit went the wrong way. Tidier and says less. Cut abstraction, never a concrete: if a passage must be shorter, the adjectives go first and the evidence goes last.
 - Treating every topic as though the reader has zero prior knowledge
 - Vague openers: "This", "That", "It" starting a sentence with no clear noun antecedent
 - Rule-of-three padding: three parallel items where two (or one) would do

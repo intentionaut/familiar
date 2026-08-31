@@ -11,21 +11,26 @@ Project.
 
 ## What it does
 
-Writing a newsletter about your own work is hard for a specific reason: the
-good material is the part you take for granted. Familiar's job is to notice
-it, issue after issue.
+Writing about your own work is hard for a specific reason: the good material is
+the part you take for granted. You shipped the thing. The reasons were obvious
+in June and they are gone by September, and what is left is a repo that tells
+you what happened and nothing about why.
 
-| Stage | Command | What you get |
-|-------|---------|--------------|
-| 1 | `/familiar-interview <idea>` | One question at a time until the idea is sharp. Ends with a thesis, the stakes, an evidence list and the lines worth building on |
-| 2 | `/familiar-outline` | Three genuinely different shapes for the piece. You pick one |
-| 3 | `/familiar-draft` | A full draft in your voice, with `[NEEDS SOURCE]` wherever it would otherwise have invented something |
-| 4 | `/familiar-dev-edit` | An editor's report: where the spark is, whether the argument holds, what to fix and in what order. Nothing changed for you |
-| 5 | `/familiar-line-edit` | The mechanical pass: AI tells, house spelling, reading ease. An exact fix for every flag |
-| 6 | `/familiar-social` | A week of posts on your own cadence: one pool of candidates, you pick per channel, exact send times. Ends at copy you have approved |
-| 7 | `/familiar-publish` | Puts approved posts into your scheduler. Builds every link and counts the finished post before it schedules, so a post that fits in the draft still fits once the tracking parameters are on. Optional: with no scheduler it hands you a paste-ready table |
-| 8 | `/familiar-learn ingest <path>` / `learn diff <piece>` | Teach it your voice. Ingest reads your past issues in bulk and drafts the voice files from evidence; diff compares Familiar's draft with what you actually published and turns your edits into rules. Both propose; you accept per section |
-| 0 (optional) | `/familiar-case-study <LOG.md>` | Optional first step. Turns a build log (see `familiar log`), or a Claude Code session transcript (`session` for the latest one), into a brief and a set of interview questions grounded in what actually happened |
+Familiar takes you through a series of gates. Each one asks for the part only
+you can give, writes your answer down in your words, and then stops. The next
+gate works from what the last one got. At the end you have the piece, and the
+posts that carry it out into the world, and there is no sentence in either of
+them you did not agree to.
+
+The stopping is the whole design. A model left to run from one end to the other
+gives you something smooth and slightly wrong, because each step inherits the
+last step's small errors and nobody is standing there to catch them. Familiar
+puts you in that gap, every time.
+
+You can walk backwards through it. Return to the interview and your notes grow.
+Rework one section and the rest is left where it was. A piece sits in its folder
+between gates for as long as you need, which some weeks is an hour and other
+weeks is a fortnight.
 
 ### Where the material comes from
 
@@ -152,6 +157,24 @@ The script installs the `/familiar-*` commands for Claude Code and opencode so
 they work from any folder. Each piece gets its own folder under `pieces/`;
 `pieces/README.md` shows the layout the stages write into.
 
+The gates, in the order a piece usually meets them. Every one of them can be
+run again, and out of order:
+
+```
+familiar interview <idea>      find the thesis, one question at a time
+familiar outline               three shapes, you pick
+familiar draft                 a draft in your voice, brackets over inventions
+familiar dev-edit              an editor's report, nothing applied
+familiar line-edit             the mechanical pass, an exact fix per flag
+familiar repurpose             short: a week of posts. long: seed a companion piece
+familiar social                the posts, ending at copy you approved
+familiar publish               approved posts into your scheduler
+familiar learn ingest <path>   teach it your voice from what you have published
+familiar reflect               two questions about how the work is going
+familiar case-study <log>      start from a build log or a coding session
+familiar board                 what you have in flight, and what each piece needs
+```
+
 Or install it as a skill:
 
 ```sh
@@ -193,9 +216,10 @@ across Dex updates, so the command carries it.
 
 ## Where it came from
 
-Familiar started as the private newsroom behind
-[Intentionaut](https://intentionaut.com), a letter on design, product, data and
-AI. The story of how it came to be, and why it refuses to rewrite, is at
+Familiar is what makes [Intentionaut](https://intentionaut.com), a letter on
+design, product, data and AI. Every issue goes through it. It is open source
+because the problem is not mine alone, and because a tool that shapes how
+someone writes should be one they can read. The story of how it came to be, and why it refuses to rewrite, is at
 [intentionaut.com/open-source/familiar](https://intentionaut.com/open-source/familiar/). The stages are shaped by how good editors actually work: interview first,
 propose structures rather than pick one, report rather than rewrite, and run the
 boring mechanical pass last. The one rule that matters most came from watching

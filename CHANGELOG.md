@@ -248,7 +248,7 @@ most active list out there.
 
 ## 0.1.0 (2026-08-30)
 
-The first public version. Familiar is the newsroom behind Intentionaut with
+The first public version. Familiar is what makes Intentionaut, with
 the personal parts taken out and the voice files turned into templates with
 questions in them.
 

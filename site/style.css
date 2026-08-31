@@ -31,8 +31,11 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 1.5rem; }
-section { padding: 3.5rem 0; }
+/* Longhand on purpose. Every section also carries .wrap, and a shorthand
+   `padding` on the class beats the element selector outright, which silently
+   zeroed the vertical padding on every section. */
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-left: 1.5rem; padding-right: 1.5rem; }
+section { padding-top: 3.5rem; padding-bottom: 3.5rem; }
 section + section { border-top: 1px solid var(--line); }
 
 h1, h2 { font-family: var(--font-display); font-weight: 600; line-height: 1.15; margin: 0 0 1rem; }
@@ -48,8 +51,8 @@ a { color: var(--accent); }
 }
 .lede { font-size: 1.15rem; }
 
-.hero { display: grid; gap: 2.5rem; align-items: start; padding-top: 4rem; }
-@media (min-width: 62rem) { .hero { grid-template-columns: 1fr 1fr; gap: 3rem; } }
+.hero { display: grid; gap: 2.5rem; align-items: start; padding-top: 4.5rem; padding-bottom: 4.5rem; }
+@media (min-width: 62rem) { .hero { grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; } }
 
 .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 1.5rem; }
 .btn-primary {
@@ -109,6 +112,16 @@ a { color: var(--accent); }
 .stage-name { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; }
 .stage-what { margin: 0; max-width: 60ch; }
 .stage code { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); display: block; margin-top: 0.3rem; }
+
+/* The install pill cannot wrap by default, which pushed the whole page wider
+   than a 390px screen and made it scroll sideways. intentionaut.com solves it
+   the same way. */
+@media (max-width: 40rem) {
+  /* `white-space: normal` alone is not enough: the clone command is one long
+     unbreakable URL token, so it needs permission to break mid-word too. */
+  .pill { white-space: normal; overflow-wrap: anywhere; }
+  .term-body { font-size: 0.72rem; }
+}
 
 footer { padding: 3rem 0 4rem; color: var(--muted); font-size: 0.95rem; }
 footer a { color: var(--muted); }

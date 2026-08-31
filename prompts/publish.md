@@ -106,10 +106,26 @@ the writer edits a post here, apply the edit verbatim, re-run
 
 Only after confirmation, and only the posts under `## Chosen`.
 
+**One post per call, in order, and confirm each before starting the next.**
+Never batch several creates into one command. Two reasons, and the first is
+the one that matters:
+
+- A batch that fails halfway leaves you unable to say what landed. One call
+  per post means the id and time come back for each, and a failure names
+  exactly one post.
+- Observed in practice: a compound command that both built a payload and
+  posted it was refused by a permission layer, while the same call on its own
+  went through. Keep the local work and the outward call in separate steps.
+
 For each post, call the scheduler's create operation with the channel id, the
 finished text and the timestamp. With Buffer that is `create_post`; if the
 client has no Buffer MCP configured, run `scripts/buffer-mcp.sh` and drive it
-over stdio.
+over stdio. Buffer wants `status` as an array when listing, and a timestamp
+with an explicit offset, built from the account's own timezone.
+
+When every post is created, list the queue back and check what is actually in
+it against what you meant to schedule. A create that returned an id is not the
+same as a post sitting in the queue at the right minute.
 
 For a thread, create the posts in order and link them if the API supports it.
 If it does not, schedule them a minute apart and tell the writer they may need

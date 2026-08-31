@@ -4,6 +4,41 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.6.0 (2026-08-31)
+
+Familiar goes all the way to scheduled now, and it works the same whether or not
+you run it inside anything else.
+
+**What this gives you:**
+
+- **Publishing, as its own step.** `/familiar-publish` takes the posts you
+  already approved and schedules them. It is separate from `/familiar-social`
+  on purpose: you can schedule a day later, or a week later, without anyone
+  reopening copy you already said yes to. It reads only what you chose; posts
+  you held back cannot be scheduled by accident.
+- **A post that fits still fits once the link is on it.** Links are built,
+  tagged and counted before anything is scheduled, in that order. A post that
+  passed at 291 characters and quietly became 337 once its tracking parameters
+  went on is the exact thing this stops. Over the limit, Familiar stops and
+  tells you by how much. It never trims your words to make room; the only cut
+  it will offer is to the tracking parameters, which you did not write.
+- **A scheduler is optional.** Buffer works out of the box if you connect it.
+  Turn it off, or never turn it on, and you get a clean table of every post
+  with its channel, time and finished text, ready to paste. No nagging.
+- **It tells you what the scheduler cannot do.** A link that belongs in a
+  pinned first comment comes back as a short checklist with times, because
+  schedulers create posts and not comments. It will not silently move the link
+  into the post instead.
+- **Familiar no longer assumes where it is running.** Every stage works on its
+  own, with no vault and no other tools. If you do run it inside Dex, Dex adds
+  what it can, and now says so in one short profile instead of a second copy of
+  the whole pipeline. Nothing about the Dex experience is lost.
+- **Every stage installs.** The installer used to work from a hand-written list,
+  so a stage added later never got a command. `repurpose` was missing because of
+  it. It now installs whatever is there.
+
+---
+
 ## 0.5.0 (2026-08-31)
 
 Familiar now sits beside the work itself. Captain's Log has been folded in.

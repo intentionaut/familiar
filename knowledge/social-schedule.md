@@ -21,12 +21,37 @@ are what the stage checks against.
 | Threads | [handle] | first person | 500 chars | [by hand] |
 | X | [handle] | first person | 280 chars | [by hand] |
 
-If a channel is scheduled through a tool with an API (Buffer, for example),
-record what the stage needs to call it here, but **never a key or token**:
+## Scheduler
 
-- Scheduler: [name]
-- How the stage reaches it: [an MCP tool name, a local script, or "not connected, produce a paste-ready list"]
-- Channel ids, if the tool needs them: [id per channel]
+Optional. The `publish` stage reads this block; the `social` stage does not care.
+Set `scheduler: none`, or delete this block, and `publish` prints a paste-ready
+table instead of calling anything. Nothing else about the stage changes.
+
+- **scheduler:** buffer
+- **key:** `$BUFFER_API_KEY` — the *name* of an environment variable. Never
+  write a key or token in this file.
+
+| Channel | Channel id | Limit | Link goes |
+|---------|-----------|-------|-----------|
+| linkedin | [id from your scheduler] | 3000 | pinned first comment |
+| bluesky | [id from your scheduler] | 300 | inline |
+
+`publish` counts against the **Limit** column after tracking parameters are
+appended, and stops rather than truncating.
+
+**Link goes** tells `publish` what the scheduler cannot do for you. A link in a
+pinned first comment has to be added and pinned by hand after the post is live,
+because schedulers create posts, not comments. `publish` emits those as a
+checklist with times rather than dropping them.
+
+### Writing another scheduler
+
+Buffer is the only one implemented. A fork needs two operations:
+
+- create a post on a channel at a given timestamp
+- list scheduled posts on a channel
+
+`scripts/buffer-mcp.sh` is fifteen lines and is the worked example.
 
 If a shared account carries both your work posts and your personal ones, say
 which the stage may write (usually: work topics only) and what it must never

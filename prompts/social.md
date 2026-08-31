@@ -8,12 +8,13 @@ moves, two gates:
    channel, in voice, self-checked. Shown, not filed yet.
 2. **Shortlist** *(gate)*: the writer picks the posts for each channel and
    names the week.
-3. **Finalise and schedule**: map the picks onto that week's slots, finish the
-   copy, propose exact send times. *(gate)* The writer edits and approves each.
-   Then, on one final confirmation, schedule them, or hand over a paste-ready
-   list if no scheduler is connected.
+3. **Finalise**: map the picks onto that week's slots, finish the copy, propose
+   exact send times. *(gate)* The writer edits and approves each one.
 
-Nothing is scheduled until the writer confirms at the end. Never skip a gate.
+This stage ends at approved copy. Getting it into a scheduler is the `publish`
+stage, which exists so that scheduling can be re-run, deferred or done a week
+later without anyone re-opening copy the writer already said yes to. Never skip
+a gate.
 
 This stage only produces the **scheduled posts**. Replies, quote-posts and
 conversation are the writer's live work, not this stage's.
@@ -86,7 +87,7 @@ Stop. Present the building blocks and the numbered pool. Say which candidate
 you would put in each slot and why, in a line each. Then ask the writer to pick
 for each channel and confirm the week. Do not proceed until they answer.
 
-## Part 2: Finalise and schedule
+## Part 2: Finalise
 
 Once the writer has picked and named the week:
 
@@ -123,26 +124,21 @@ Stop. Show the finished posts and the schedule tables. Ask the writer to edit
 inline and approve each one. Apply their edits verbatim. Re-run style-rules.md
 on anything they changed.
 
-### Schedule
+### Hand off to publish
 
-Only after every post is approved:
+Only after every post is approved. This stage does not schedule anything.
 
-1. Show the final confirmation block, grouped by channel: day, date, time,
-   shape, character count for each post, then "Confirm to schedule".
-2. On the writer's explicit "confirm" (anything less is a no):
-   - **If `social-schedule.md` names a way to reach a scheduler** (an MCP tool,
-     a local script): create each post with its channel id, text and the slot's
-     ISO timestamp. For a thread, create the posts in order and link them if
-     the API supports it; otherwise schedule them a minute apart and say the
-     writer may need to thread them by hand. If a channel is not connected or a
-     call fails, schedule the rest, leave that channel's finished posts in
-     `social.md`, and say exactly what did not land.
-   - **If no scheduler is named**: produce a paste-ready list, one block per
-     post with channel, date, time and text, in schedule order. That is the
-     deliverable; say so plainly.
-3. Report back: for each post, the scheduler's id and time, or the exact
-   error, or "ready to paste". If any call fails, stop and report; never retry
-   silently or partially reschedule without saying what landed.
+Write the approved copy and the schedule tables into `social.md` under
+`## Chosen`, which is the section `publish` reads. Everything the writer did not
+pick goes under a clearly separate heading (`## Held` or `## Candidate pool`);
+`publish` ignores those by design, so a held post cannot be scheduled by
+accident.
+
+Leave any unresolved link as its marker rather than guessing. `publish` builds
+every URL, appends tracking parameters and counts the finished string before it
+schedules, which is where an unresolved link gets caught.
+
+Then say, in one line: the copy is approved and `publish` will schedule it.
 
 ## Exit
 
@@ -153,17 +149,19 @@ Write `social.md` in the piece folder (for a quiet week, in a dated folder
 # Social: <piece title or "quiet week of <date>">
 ## Building blocks
 ## Candidate pool (all of them, with tags, shape, self-check)
-## Chosen: <channel> (final copy, first comment if any, threads numbered)
-## Schedule (a table per channel, with ISO timestamps)
-## Result (scheduler ids + times, or errors, or "paste-ready")
+## Chosen (final copy per channel, first comment if any, threads numbered)
+## Schedule (a table per channel, with slots and timestamps)
+## Held (anything finished but deliberately not run this week, and why)
 ## Email framing (two sentences the writer could send someone directly)
 ```
 
-Then one line: what is scheduled, on which channels, and anything still needed
-(a link to add, a channel to connect, a comment to pin, a thread to link by
-hand).
+`## Chosen` and `## Schedule` are what `publish` reads. `## Held` and
+`## Candidate pool` are what it must ignore, so keep the headings distinct.
+
+Then one line: the copy is approved, what is in it, and anything still missing
+before it can be scheduled (a link that has not resolved, a channel not
+connected).
 
 - **Context log:** append to the piece's own `SESSION-CONTEXT.md` per
   knowledge/context-log.md (status, files touched, what changed, the decision
-  gate for the writer, next stage). Note whether this stage wrote to a
-  scheduler, so a resumed session knows posts already exist.
+  gate for the writer, next stage: `publish`).

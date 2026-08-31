@@ -13,7 +13,9 @@ into a claude.ai Project.
 /draft      → draft.md        (full draft in voice, [NEEDS SOURCE] brackets over inventions)
 /dev-edit   → edits/dev-edit-report.md   (report only, never auto-apply)
 /line-edit  → edits/line-edit-report.md  (mechanical pass, exact fixes per flag)
-/social     → social.md       (candidate pool → the writer picks per channel → finalise → schedule on confirm)
+/repurpose  → short: social.md | long: a companion piece's brief.md (you pick first; long seeds the pipeline, never drafts)
+/social     → social.md       (candidate pool → the writer picks per channel → finalise; ends at approved copy)
+/publish    → social.md ## Scheduled  (schedules approved copy only; builds and counts URLs first, one confirm gate)
 /learn      → knowledge/proposals/*.md  (ingest past writing, or diff draft vs final; proposes rules, applies only what is accepted)
 /reflect    → <reflections>/<project>.md  (two questions about the work, recorded verbatim; where the voice comes from)
 /log        → a build log per project   (what shipped, decisions, went wrong, numbers; the hook writes an (auto) entry at session end)
@@ -118,7 +120,9 @@ behalf.
 - `knowledge/editor-report.md`: dev-edit taxonomy and report spec
 - `knowledge/examples/canonical.md`: annotated excerpts of the writer's published work
 - `knowledge/reflection.md`: whether reflection is on, its cadence, where the answers live, and the question bank
-- `knowledge/social-schedule.md`: channels, cadence, send times, slot shapes; the scaffold the social stage fills
+- `knowledge/social-schedule.md`: channels, cadence, send times, slot shapes; the scaffold the social stage fills, plus the optional `## Scheduler` block publish reads
+- `knowledge/links.md`: where posts point and how clicks are tracked; publish builds every URL from it before counting characters
+- `knowledge/longform-channels.md`: channels that take a full companion piece; the scaffold the long branch of repurpose fills
 - `knowledge/languages/<code>.md`: per-language rule overrides and tells; `_template.md` to add one
 - `knowledge/humanizer-check.md`: weekly diff against humanizer's tell list; candidates, never applied
 - `knowledge/models.md`: per-stage model recommendations and fallback rule

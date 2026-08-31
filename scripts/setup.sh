@@ -8,11 +8,15 @@ CC="$HOME/.claude/commands"
 OC="$HOME/.config/opencode/command"
 mkdir -p "$CC" "$OC"
 
-for stage in case-study interview outline draft dev-edit line-edit social learn board reflect; do
+# Every adapter in .claude/commands/ installs. Deliberately a glob and not a
+# list: a hardcoded list silently skips any stage added later, which is how
+# `repurpose` shipped without a command.
+for adapter in "$DIR"/.claude/commands/*.md; do
+  stage="$(basename "$adapter" .md)"
   # The adapters carry a placeholder for the repo path; render it here so the
   # installed command knows where the prompts live.
-  sed "s|{{FAMILIAR_HOME}}|$DIR|g" "$DIR/.claude/commands/$stage.md" > "$CC/familiar-$stage.md"
-  sed "s|{{FAMILIAR_HOME}}|$DIR|g" "$DIR/.claude/commands/$stage.md" > "$OC/familiar-$stage.md"
+  sed "s|{{FAMILIAR_HOME}}|$DIR|g" "$adapter" > "$CC/familiar-$stage.md"
+  sed "s|{{FAMILIAR_HOME}}|$DIR|g" "$adapter" > "$OC/familiar-$stage.md"
 done
 
 # /reflect is muscle memory from Captain's Log, so keep the short alias.

@@ -1,6 +1,6 @@
 ---
 name: familiar
-description: A companion for your newsletter. Interview, outline, draft, dev-edit, line-edit, social and learn stages for writing about your own work in your own voice; every stage stops for the writer's decision. Use when the user says "familiar", wants to interview themselves about an idea, draft or edit a newsletter issue, turn a piece into social posts, or teach Familiar their voice from past writing.
+description: A companion for your newsletter. Interview, outline, draft, dev-edit, line-edit, social and learn stages for writing about your own work in your own voice; every stage stops for the writer's decision. Use when the user says "familiar", wants to interview themselves about an idea, draft or edit a newsletter issue, turn a piece into social posts, schedule approved posts, or teach Familiar their voice from past writing.
 ---
 
 # Familiar
@@ -25,6 +25,47 @@ mkdir -p ~/Projects && git clone https://github.com/intentionaut/familiar.git ~/
 
 and stop. Do not improvise a pipeline without the prompts.
 
+## Find the config and the pieces
+
+The writer's filled `knowledge/` files, and the folder their pieces live in, are
+resolved separately from the tool. A host may tell you where they are; it never
+decides where they must be.
+
+**Config**, first that exists:
+
+1. `$FAMILIAR_CONFIG`
+2. the path a host declares (see below)
+3. `./knowledge/`
+4. `~/.familiar/knowledge/`
+5. `<home>/knowledge/` (the shipped templates)
+
+**Pieces**, first that exists:
+
+1. `$FAMILIAR_PIECES`
+2. the path a host declares
+3. `<home>/pieces/`
+
+## Hosts
+
+Familiar runs standalone. Every stage completes with no host, no vault and no
+MCP tools, and that is the default assumption in every prompt.
+
+A host is a place Familiar has been installed into that can offer more. It
+declares paths, and it declares capabilities:
+
+| Capability | What a host offering it can do |
+|---|---|
+| `people` | Resolve a name to a page and link it |
+| `search` | Search the writer's own notes for evidence before asking them |
+| `tasks` | Turn an open decision at a gate into a tracked task |
+| `corpus` | Point `learn ingest` at the writer's past published work |
+
+Use a capability only if the host declares it. Never assume one is present,
+never name a specific tool in a prompt, and never treat an absent capability as
+a problem: with no host, every one of these is absent and every stage still
+finishes. If a declared capability turns out to be unavailable at run time, say
+the lookup could not be done. That is not the same as finding nothing.
+
 ## Pick the stage
 
 The first word of the arguments names the stage. If it is missing, ask which
@@ -37,7 +78,9 @@ one, in a line, and list them:
 | `draft` | `prompts/draft.md` | Full draft in the writer's voice, brackets over inventions |
 | `dev-edit` | `prompts/dev-edit.md` | Editorial report, nothing applied |
 | `line-edit` | `prompts/line-edit.md` | Mechanical pass, exact fix per flag |
-| `social` | `prompts/social.md` | A week of posts on the writer's cadence; scheduled only on final confirm |
+| `repurpose short\|long` | `prompts/repurpose.md` | The writer picks short or long first; long seeds a companion piece and hands to interview |
+| `social` | `prompts/social.md` | A week of posts on the writer's cadence; ends at approved copy |
+| `publish [file]` | `prompts/publish.md` | Schedules already-approved posts; builds and counts URLs first, never rewrites copy |
 | `case-study <LOG.md \| transcript.jsonl \| session [dir]>` | `prompts/case-study.md` | Brief and questions from a build log or a coding session |
 | `learn ingest <path>` / `learn diff <piece>` | `prompts/learn.md` | Propose voice rules from past writing or from draft-vs-final |
 | `reflect` | `prompts/reflect.md` | Two questions about the work, recorded in the writer's own words |
@@ -79,9 +122,9 @@ restarts the piece.
    names the `knowledge/` files to read first; all paths are relative to the
    Familiar home.
 3. Pass the remaining arguments to the stage as `$ARGUMENTS`.
-4. Write outputs into `<home>/pieces/` as the prompt specifies.
+4. Write outputs into the resolved pieces folder as the prompt specifies.
 5. Stop where the prompt says to stop. The writer decides when to move on.
 
-If `knowledge/positioning.md` or `knowledge/voice-guide.md` is still the
+If the resolved `positioning.md` or `voice-guide.md` is still the
 unfilled template, say so before drafting anything and offer
 `learn ingest <path to past writing>` as the fastest way to fill them.

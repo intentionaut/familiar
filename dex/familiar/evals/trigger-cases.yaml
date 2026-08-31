@@ -41,3 +41,21 @@ failure_recovery:
   - utterance: "Confirm, schedule the week."  # scheduler rejects the Bluesky posts
     expect: honest-failure
     why: report the LinkedIn posts that landed and the Bluesky ones that did not, leave the finished copy in social.md, and never claim the week is scheduled.
+  - utterance: "Schedule these."  # an approved post is 37 chars over once its tracking parameters are appended
+    expect: honest-failure
+    why: publish builds the URL, appends parameters, then counts. Over the limit it stops and reports the count and overage. It never truncates and never edits the writer's words; shortening the tracking parameters is the only cut it may propose.
+
+publish_is_not_social:
+  - utterance: "Schedule the posts we agreed on Friday."
+    expect: fire
+    route_to: publish
+    why: the copy is already approved. publish schedules it; it must not regenerate a candidate pool over posts the writer already picked.
+  - utterance: "Turn this issue into posts for the week."
+    expect: fire
+    route_to: social
+    why: no approved copy exists yet, so this is the social stage, which ends at approved copy and hands off to publish.
+
+scheduler_absent:
+  - utterance: "Schedule these."  # knowledge/social-schedule.md has scheduler: none
+    expect: degrade
+    why: the scheduler is optional and off is a supported way to work. Print the paste-ready table with URLs built and counted, in a calm tone, with no setup nagging.

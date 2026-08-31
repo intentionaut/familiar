@@ -22,8 +22,9 @@ it, issue after issue.
 | 3 | `/familiar-draft` | A full draft in your voice, with `[NEEDS SOURCE]` wherever it would otherwise have invented something |
 | 4 | `/familiar-dev-edit` | An editor's report: where the spark is, whether the argument holds, what to fix and in what order. Nothing changed for you |
 | 5 | `/familiar-line-edit` | The mechanical pass: AI tells, house spelling, reading ease. An exact fix for every flag |
-| 6 | `/familiar-social` | A week of posts on your own cadence: one pool of candidates, you pick per channel, exact send times, and nothing scheduled without a final confirm. Works with a scheduler or hands you a paste-ready list |
-| 7 | `/familiar-learn ingest <path>` / `learn diff <piece>` | Teach it your voice. Ingest reads your past issues in bulk and drafts the voice files from evidence; diff compares Familiar's draft with what you actually published and turns your edits into rules. Both propose; you accept per section |
+| 6 | `/familiar-social` | A week of posts on your own cadence: one pool of candidates, you pick per channel, exact send times. Ends at copy you have approved |
+| 7 | `/familiar-publish` | Puts approved posts into your scheduler. Builds every link and counts the finished post before it schedules, so a post that fits in the draft still fits once the tracking parameters are on. Optional: with no scheduler it hands you a paste-ready table |
+| 8 | `/familiar-learn ingest <path>` / `learn diff <piece>` | Teach it your voice. Ingest reads your past issues in bulk and drafts the voice files from evidence; diff compares Familiar's draft with what you actually published and turns your edits into rules. Both propose; you accept per section |
 | 0 (optional) | `/familiar-case-study <LOG.md>` | Optional first step. Turns a build log (see `familiar log`), or a Claude Code session transcript (`session` for the latest one), into a brief and a set of interview questions grounded in what actually happened |
 
 ### Where the material comes from
@@ -205,7 +206,7 @@ fabrication.
 
 Familiar is built in public, and the build stories land first in
 [Intentionaut](https://intentionaut.com/subscribe/?utm_source=github-familiar):
-what shipped, what went wrong, and what it cost. Roughly weekly.
+what shipped, what went wrong, and what it cost. Roughly fortnightly.
 
 ## Status
 

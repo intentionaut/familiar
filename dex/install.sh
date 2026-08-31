@@ -22,7 +22,7 @@ mkdir -p "$DEST/evals" "$VAULT/04-Projects/Writing" "$VAULT/06-Resources/Familia
 # Seed the writer's voice files into the vault from the templates, never overwriting.
 K="$VAULT/06-Resources/Familiar/knowledge"
 mkdir -p "$K/examples" "$K/languages"
-for f in positioning.md voice-guide.md style-rules.md editor-report.md social-schedule.md context-log.md models.md examples/canonical.md languages/README.md languages/_template.md; do
+for f in positioning.md voice-guide.md style-rules.md editor-report.md social-schedule.md links.md longform-channels.md reflection.md context-log.md models.md examples/canonical.md languages/README.md languages/_template.md; do
   [ -f "$K/$f" ] || cp "$HOME_DIR/knowledge/$f" "$K/$f"
 done
 sed "s|{{FAMILIAR_HOME}}|$HOME_DIR|g" "$HOME_DIR/dex/familiar/SKILL.md" > "$DEST/SKILL.md"

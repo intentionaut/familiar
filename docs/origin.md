@@ -45,3 +45,21 @@ pruned every superseded decision.
 The first Friday log entry had to be reconstructed from `git log`, and it reads
 like a changelog. That's the whole argument for the tool, demonstrated
 accidentally.
+
+## What the interview is for
+
+The draft is not the value. The interview is.
+
+A model turning a log into a post produces mush, because the log contains what
+happened and posts are made of why it mattered. Asking "what did you do in the
+ten minutes after you realised the migration was destructive" extracts the thing
+only the person who was there knows.
+
+Three sharp exchanges beat a ten-question form, and the pushing back is load
+bearing: a stage that accepts a vague answer writes a vague piece.
+
+One property of this fell out rather than being designed in. Because the log
+records the writer's own words under their own heading, the file accumulates
+voice samples as a side effect. The longer it is used, the more the drafts sound
+like the person using it.
+

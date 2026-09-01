@@ -32,6 +32,19 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.14.1 (2026-09-01)
+
+Housekeeping.
+
+**What this changes:**
+
+- **The repo carries the tool, not the plans for it.** A design note about a
+  possible future hosted tier has moved out of `docs/`. Nothing about how
+  Familiar works has changed, and the promise it recorded is unchanged: free,
+  MIT, local, with your files on your own machine.
+
+---
+
 ## 0.14.0 (2026-09-01)
 
 The line edit now catches writing that talks somebody down.
@@ -314,9 +327,8 @@ Familiar now sits beside the work itself. Captain's Log has been folded in.
   never in this repo, and the nudge is a quiet notification that always writes
   a log line so you can tell it ran.
 - **Captain's Log is archived.** Its build-log format, hook, reflection ritual
-  and design notes all live here now; the old repo points this way. The origin
-  story, including the honest paid-versus-free assessment, is kept as written
-  in `docs/origin.md`.
+  and design notes all live here now, and the old repo points this way. Nothing
+  it did has been dropped.
 
 ## 0.4.2 (2026-08-30)
 
@@ -498,9 +510,8 @@ most active list out there.
 
 ## 0.1.0 (2026-08-30)
 
-The first public version. Familiar is what makes Intentionaut, with
-the personal parts taken out and the voice files turned into templates with
-questions in them.
+The first public version. Six gated stages for writing about your own work,
+with the voice files shipped as templates you fill in from your own writing.
 
 **What this gives you:**
 

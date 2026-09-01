@@ -2,6 +2,25 @@
 
 New changes to Familiar. Written for the writer using it, not the developer.
 
+## How these are written
+
+Hard rules. An entry that breaks one of them does not ship.
+
+1. **Nothing from anyone's private use.** No dates from a working session, no
+   piece titles, no counts of what a real writer's run produced, no detail
+   traceable to one person's setup. A release note is not an incident report and
+   the maintainer's own work is not evidence to publish.
+2. **Nothing from a conversation.** What was said while building this is
+   private, including when it was the reason for the change.
+3. **Never disparage the tool, past or present.** Describe what it does now. A
+   change that corrects earlier behaviour says what is better in one clause and
+   moves on. No adjectives about how bad the old way was, and no jokes at the
+   product's expense.
+4. **Benefit first, mechanism second.** The reader is deciding whether to
+   update, not reviewing the diff.
+5. **Plain words.** If a term would send a non-technical reader to a search
+   engine, explain it in the clause or cut it.
+
 ---
 
 ## 0.13.0 (2026-09-01)
@@ -15,9 +34,8 @@ Familiar now knows where your files are, and says so.
   people keep their real, filled-in versions somewhere else. Nothing told the
   stages that, so a stage could quietly read the blanks, fall back to defaults
   for things like spelling, and hand you an edit against rules that were not
-  yours. It happened on 30 August and produced ten corrections nobody could
-  trust. The failure looks like a bad edit rather than a missing file, which is
-  what made it worth fixing properly.
+  yours. Nothing errored when that happened, which is why it is worth having
+  the address written down rather than inferred.
 - **One place to say where things live.** A `.familiar` file next to the tool,
   or the environment variables you may already have set. Both are read by
   everything now, rather than by one script that happened to know.
@@ -66,10 +84,10 @@ The things you cut stop disappearing.
   still true. A section cut because it is really its own piece is a piece nobody
   has written down. Anything substantial that comes out of a piece is now
   recorded in `cuts.md` with one line on why.
-- **Three flags, and they are the whole point.** `dead` means wrong and settled,
-  which stops a later stage cheerfully proposing the same thing again. `reusable`
-  means right, but not here. `blocked` means right and wanted, waiting on a
-  source or a permission or a decision you have not made yet.
+- **Three flags, and they do the work.** `dead` means wrong and settled, so a
+  later stage will not propose the same thing again. `reusable` means right, but
+  not here. `blocked` means right and wanted, waiting on a source or a
+  permission or a decision you have not made yet.
 - **The board shows you what is waiting to be revived.** A piece with reusable
   cuts carries a count on its card, and its own page lists them with the reason
   each was cut. The idea you had to drop stops being something you have to
@@ -122,7 +140,7 @@ The choices you make while writing stop disappearing into the conversation.
   cannot pick between two summaries without asking questions first, and the
   questions were the expensive part.
 - **Two to four options, never one and never five.** One is a recommendation in
-  disguise. Five is the tool refusing to think.
+  disguise, and five is not a decision, it is a shrug.
 - **Why you picked is now recorded next to what you picked.** Every choice is
   logged with your reason in your own words, one line. This is the part that
   turns out to matter: the reason is a rule you already hold, said out loud once,
@@ -168,9 +186,10 @@ gets a way to be found before anyone starts making posts about it.
   social both stop and point you at `finalise` if the title is still provisional.
   Scheduled posts that point at a title you later changed are a quiet mess, and
   this is the cheapest possible way to not have it.
-- **Correcting 0.7.0.** That release settled the title during the developmental
-  edit. Still too early: a piece can move a long way through a line edit. The
-  developmental edit now leaves the title alone entirely and says so.
+- **Refining 0.7.0.** That release settled the title during the developmental
+  edit. It now waits until the line edit is done too, so the title is chosen
+  against the finished piece. The developmental edit leaves it alone and says
+  so.
 
 ---
 

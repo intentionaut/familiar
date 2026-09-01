@@ -5,9 +5,9 @@ about the work you do, asks the questions that pull out what only you know,
 and helps you shape it into an issue worth sending. It keeps your voice rules
 so the writing sounds like you, not like a model.
 
-It is a set of plain markdown prompts. No app, no account, nothing to install
-beyond a folder. Works in Claude Code, opencode, or pasted into a claude.ai
-Project.
+It is plain markdown prompts in a folder you own, so it works in Claude Code,
+opencode, or pasted into a claude.ai Project, and it keeps working when any of
+those change.
 
 ## What it does
 
@@ -100,8 +100,8 @@ write it into `style-rules.md` and it will not come back.
 
 ## How Familiar is different
 
-Most writing skills do one of two things: generate text from a description of
-your voice, or clean AI text after the fact. Familiar does neither.
+Familiar starts from things you have actually said and written, and hands back
+reports you act on rather than text you have to undo.
 
 **It works from human material.** The interview is you answering questions,
 one at a time, in your own words. The voice files are built from your

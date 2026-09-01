@@ -103,16 +103,56 @@ class Dates(unittest.TestCase):
 
 class Request(unittest.TestCase):
     def test_status_is_sent_as_an_array(self):
-        """Buffer rejects a bare string with a validation error, which made the
-        check report 'could not check' on every single run."""
+        """The scheduler rejects a bare string with a validation error, which
+        made the check report 'could not check' on every single run."""
         call = json.loads(qc.list_request("6a91b471ccaf649a673455a5").splitlines()[-1])
         args = call["params"]["arguments"]
         self.assertIsInstance(args["status"], list)
         self.assertEqual(["scheduled"], args["status"])
 
     def test_request_names_the_channel_asked_for(self):
-        call = json.loads(qc.list_request("abc").splitlines()[-1])
-        self.assertEqual("abc", call["params"]["arguments"]["channelId"])
+        """Channels are sent as a list, and the organisation id travels with
+        them, because a listing without it is refused."""
+        call = json.loads(qc.list_request("abc", "org1").splitlines()[-1])
+        args = call["params"]["arguments"]
+        self.assertEqual(["abc"], args["channelIds"])
+        self.assertEqual("org1", args["organizationId"])
+
+
+class Responses(unittest.TestCase):
+    """The scheduler's answers, and the two ways reading them has gone wrong:
+    a validation error searched for slot dates and read as 'every slot empty',
+    and a UTC due time compared against a local calendar day."""
+
+    def test_error_response_is_not_a_listing(self):
+        self.assertIsNone(qc.tool_payload({"jsonrpc": "2.0", "id": 11,
+                                           "error": {"message": "organizationId required"}}))
+
+    def test_connection_shape_yields_posts(self):
+        payload = {"edges": [{"node": {"id": "p1", "dueAt": "2026-09-07T07:30:00Z"}}]}
+        self.assertEqual(["p1"], [p["id"] for p in qc.posts_of(payload)])
+
+    def test_plain_list_still_yields_posts(self):
+        self.assertEqual(2, len(qc.posts_of([{"id": "a"}, {"id": "b"}])))
+
+    def test_due_times_land_on_the_local_day(self):
+        """23:30 in London on Monday is 22:30Z; 00:30 London on Tuesday is
+        23:30Z Monday. Only the local conversion puts them on the right day."""
+        posts = [{"dueAt": "2026-09-07T22:30:00Z"}, {"dueAt": "2026-09-07T23:30:00Z"}]
+        got = qc.local_dates(posts, "Europe/London")
+        self.assertEqual({dt.date(2026, 9, 7), dt.date(2026, 9, 8)}, got)
+
+    def test_organisation_id_is_found_wherever_it_sits(self):
+        self.assertEqual("0123456789abcdef01234567", qc.organization_id(
+            {"account": {"organizations": [{"id": "0123456789abcdef01234567", "name": "x"}]}}))
+        self.assertIsNone(qc.organization_id({"organizations": []}))
+
+    def test_timezone_comes_from_the_cadence_table(self):
+        self.assertEqual("Europe/London", qc.timezone_of(FILLED))
+        header_only = FILLED.replace("| Default time | Timezone |", "| Default time (Europe/Berlin) |") \
+                            .replace("| 08:30 | Europe/London |", "| 08:30 |") \
+                            .replace("| 12:30 | Europe/London |", "| 12:30 |")
+        self.assertEqual("Europe/Berlin", qc.timezone_of(header_only))
 
 
 if __name__ == "__main__":

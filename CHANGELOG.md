@@ -85,6 +85,34 @@ An optional guard that keeps your working notes out of a repository you push.
 
 ---
 
+## 0.15.0 (2026-09-01)
+
+The queue check now reads the scheduler as it is today, and says so when it
+cannot.
+
+**What this gives you:**
+
+- **A week check you can plan on.** `scripts/queue-check.py` asks your
+  scheduler for the account first, then lists each channel with everything the
+  listing now requires, and reads the answer as data rather than searching it
+  for dates. A full week reports as full.
+- **Slots counted on your calendar, not the server's.** Due times come back in
+  UTC; the check converts them to the timezone in your `social-schedule.md`
+  before deciding which day a post belongs to, so an early or late slot lands
+  on the right day.
+- **Unknown is never empty.** If the scheduler cannot be reached, the key is
+  missing, or the answer is not what was expected, the check prints
+  `queue: unknown` and exits 2. A host reading it can tell "nothing scheduled"
+  from "could not look".
+- **It finds your schedule file the same way every other script does**: the
+  environment, then `.familiar`, then the usual folders. No separate address to
+  keep in step.
+- **One session per check.** The account and every channel are read over a
+  single connection, so a check finishes in seconds rather than one bridge
+  start per channel.
+
+---
+
 ## 0.14.1 (2026-09-01)
 
 Housekeeping.

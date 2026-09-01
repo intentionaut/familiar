@@ -277,6 +277,31 @@ def next_action(folder, state, brackets, has_social, has_draft=True):
         return "Run the interview from the questions"
     return "Start the interview"
 
+def read_cuts(folder):
+    """Cuts made during the writing, from cuts.md.
+
+    One entry per H3, with a Flag: line of dead, reusable or blocked. Only
+    reusable ones are surfaced: a dead cut is settled and a blocked one is
+    waiting on something the board cannot see.
+    """
+    raw = read(folder / "cuts.md")
+    if not raw:
+        return []
+    out = []
+    for block in re.split(r"^###\s+", raw, flags=re.M)[1:]:
+        head, _, rest = block.partition("\n")
+        flag = ""
+        m = re.search(r"^\s*(?:\*\*)?Flag(?:\*\*)?:\s*(\w+)", rest, re.M | re.I)
+        if m:
+            flag = m.group(1).lower()
+        why = ""
+        m = re.search(r"^\s*(?:\*\*)?Why(?:\*\*)?:\s*(.+)", rest, re.M | re.I)
+        if m:
+            why = m.group(1).strip()
+        out.append({"what": head.strip(), "flag": flag, "why": why})
+    return out
+
+
 def newest_mtime(folder):
     best = folder.stat().st_mtime
     for p in folder.rglob("*"):
@@ -348,6 +373,7 @@ def gather(folder, now, stale_days, source=""):
     if len(snippet) > 240:
         snippet = snippet[:237].rsplit(" ", 1)[0] + "..."
 
+    cuts = read_cuts(folder)
     ctx = last_context_entry(folder)
     ts = newest_mtime(folder)
     words, fre = reading_ease(re.sub(r"\[(NEEDS SOURCE|ASK THE WRITER)[^\]]*\]", "", draft_body))
@@ -369,6 +395,8 @@ def gather(folder, now, stale_days, source=""):
         "action": action, "from_log": from_log,
         "ago": ago(ts, now), "stale": (now - ts) > stale_days * 86400,
         "ctx": ctx, "words": words, "fre": fre, "brackets": brackets,
+        "cuts": cuts,
+        "reusable": [c for c in cuts if c["flag"] == "reusable"],
         "subtitle": fm.get("subtitle", ""),
         "files": sorted(p.relative_to(folder).as_posix()
                         for p in folder.rglob("*")
@@ -390,6 +418,10 @@ body{margin:0;background:var(--paper);color:var(--ink);
 font:15px/1.6 ui-sans-serif,-apple-system,"Segoe UI",system-ui,sans-serif;
 -webkit-font-smoothing:antialiased}
 a{color:inherit}
+.pill.reuse{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+ul.cuts{margin:0;padding-left:18px}
+ul.cuts li{margin:.3em 0}
+ul.cuts .why{display:block;color:var(--muted);font-size:.9em}
 header.top{padding:28px 32px 8px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
 header.top h1{margin:0;font-size:1.3rem;font-weight:650;letter-spacing:-.01em}
 header.top .meta{color:var(--muted);font-size:.85rem}
@@ -505,6 +537,9 @@ def card_html(p, token=""):
     if p["brackets"]:
         n = len(p["brackets"])
         pills.append(f'<span class="pill brk">{n} bracket{"s" if n != 1 else ""}</span>')
+    if p["reusable"]:
+        n = len(p["reusable"])
+        pills.append(f'<span class="pill reuse">{n} to revive</span>')
     if p["source"]:
         pills.append(f'<span class="pill src">{html.escape(p["source"])}</span>')
     label = "Waiting on you" if p["from_log"] else "Next"
@@ -564,6 +599,15 @@ def piece_page(p, prefix="familiar"):
     if p["subtitle"]:
         parts.append(f'<p class="sub">{html.escape(p["subtitle"])}</p>')
     parts.append(f'<div class="facts">{"".join(facts)}</div></div>')
+
+    if p["reusable"]:
+        rows = "".join(
+            f'<li><b>{html.escape(c["what"])}</b>'
+            + (f'<span class="why">{html.escape(c["why"])}</span>' if c["why"] else "")
+            + '</li>'
+            for c in p["reusable"])
+        parts.append('<div class="panel"><h2>Cut, and worth reviving</h2>'
+                     f'<ul class="cuts">{rows}</ul></div>')
 
     ctx = p["ctx"]
     parts.append(

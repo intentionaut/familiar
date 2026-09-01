@@ -42,6 +42,10 @@ answer, write it as an options block per AGENTS.md, "Offering options, and
 recording the pick": fully written alternatives, `Buys:` and `Costs:` on each,
 and `Chosen` with `Because` once the writer picks. Never only in conversation.
 
+**Cuts.** Anything substantial removed at this stage goes to `cuts.md` per
+AGENTS.md, "The cutting room", with a `Flag:` of dead, reusable or blocked. A
+cut section or a dropped set of evidence is material, not waste.
+
 ## Exit
 
 Write to `edits/dev-edit-report.md` next to the draft. Tell the writer the report

@@ -4,6 +4,30 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.11.0 (2026-09-01)
+
+The things you cut stop disappearing.
+
+**What this gives you:**
+
+- **A cutting room for every piece.** Material gets cut for good reasons and it
+  is still good material. A statistic dropped because your argument moved is
+  still true. A section cut because it is really its own piece is a piece nobody
+  has written down. Anything substantial that comes out of a piece is now
+  recorded in `cuts.md` with one line on why.
+- **Three flags, and they are the whole point.** `dead` means wrong and settled,
+  which stops a later stage cheerfully proposing the same thing again. `reusable`
+  means right, but not here. `blocked` means right and wanted, waiting on a
+  source or a permission or a decision you have not made yet.
+- **The board shows you what is waiting to be revived.** A piece with reusable
+  cuts carries a count on its card, and its own page lists them with the reason
+  each was cut. The idea you had to drop stops being something you have to
+  remember and becomes something the board tells you about.
+- **Nothing is ever deleted from it.** When a cut does become a piece, its flag
+  changes and it names where it went, so the trail stays readable.
+
+---
+
 ## 0.10.0 (2026-09-01)
 
 Familiar can now learn from the choices you make, not only the edits you make.

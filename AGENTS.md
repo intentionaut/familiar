@@ -78,6 +78,38 @@ off, and never when the settings are still the template.
 A reflection is a stage, so it has a gate like any other: it ends where
 `prompts/reflect.md` says it ends.
 
+## The cutting room
+
+Material gets cut for good reasons and it is still good material. A statistic
+dropped because the thesis moved is still true. A section cut because it is its
+own piece is a piece nobody has written down.
+
+**Any stage that cuts something substantial writes it to `cuts.md` in the piece
+folder**, at its exit. Not a sentence trimmed in a line edit: a section, an
+argument, a scene, a set of evidence, a title that was seriously considered.
+
+```markdown
+### <what was cut>
+From: <stage> · <YYYY-MM-DD>
+Why: <one line>
+Flag: dead | reusable | blocked
+<the material itself, if it is short enough to keep here>
+```
+
+The flags, and they are the whole point of the file:
+
+- **`dead`** means wrong, settled, do not revive. Recording it stops a later
+  stage proposing the same thing again.
+- **`reusable`** means right, but not here. It belongs in another piece.
+- **`blocked`** means right and wanted, waiting on something: a source, a
+  permission, a decision the writer has not made.
+
+**The board reads `reusable`** and marks the piece with how many are waiting, so
+a cut idea surfaces as work rather than being lost in a file nobody opens.
+
+Never delete from `cuts.md`. If a reusable cut becomes a piece, change its flag
+to `dead` and name the piece it went to.
+
 ## Offering options, and recording the pick
 
 Every stage reaches points where there is more than one defensible answer. Those

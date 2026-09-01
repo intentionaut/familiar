@@ -238,10 +238,10 @@ you run it inside anything else.
   reopening copy you already said yes to. It reads only what you chose; posts
   you held back cannot be scheduled by accident.
 - **A post that fits still fits once the link is on it.** Links are built,
-  tagged and counted before anything is scheduled, in that order. A post that
-  passed at 291 characters and quietly became 337 once its tracking parameters
-  went on is the exact thing this stops. Over the limit, Familiar stops and
-  tells you by how much. It never trims your words to make room; the only cut
+  tagged and counted before anything is scheduled, in that order. A post can
+  pass a character limit in the draft and fail it once the tracking parameters
+  go on the end, and that is the thing this stops. Over the limit, Familiar
+  stops and tells you by how much. It never trims your words to make room; the only cut
   it will offer is to the tracking parameters, which you did not write.
 - **A scheduler is optional.** Buffer works out of the box if you connect it.
   Turn it off, or never turn it on, and you get a clean table of every post

@@ -129,6 +129,32 @@ time with a real example, never as a bulk import; a bloated list means false
 positives for every writer using it. Humanizer is the right tool when you have
 AI text and want it cleaned. Familiar is for when the text starts with you.
 
+## Keeping notes out of a public repo
+
+Writing about your own work means keeping notes about it, and those notes end up
+next to the code. Familiar ships an optional commit guard that stops the ones
+that were never meant to ship from shipping.
+
+```
+scripts/install-guard.sh            # this repository
+scripts/install-guard.sh --global   # every repository on this machine
+```
+
+Opt-in. Nothing installs it for you, and `--uninstall` takes it off.
+
+**It only runs where a commit can leave your machine.** A repository with no
+remote is skipped entirely, so a private vault or a scratch folder is never
+blocked.
+
+It refuses a commit that stages markdown at the repository root outside the
+usual set, an email address, phone number, postcode or private key anywhere, or
+words about health, money, sexuality or a dispute outside your published content
+folders. It names the file and the line and stops. It never edits anything.
+
+Two committed files tune it: `.mdscope` for extra paths where markdown belongs,
+and `.piiallow` for patterns that are known-safe in your repository. A genuine
+false positive gets through with `git commit --no-verify`.
+
 ## Languages
 
 The mechanical rules were written for English, and some of them are about

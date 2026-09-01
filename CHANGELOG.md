@@ -60,6 +60,31 @@ Reflections you can keep private, and a log for days that span several projects.
   `familiar log` counts Familiar's own build-log hook, so the projects it shows
   as covered are the ones you can rely on.
 
+## 0.15.0 (2026-09-01)
+
+An optional guard that keeps your working notes out of a repository you push.
+
+**What this gives you:**
+
+- **The notes you keep while writing stay yours.** Writing about your own work
+  means keeping notes about it, and they end up next to the code. `scripts/
+  install-guard.sh` installs a commit guard that stops the ones that were never
+  meant to ship. Per repository by default, `--global` for all of them.
+- **Your private folders are never blocked.** It only runs where a commit can
+  leave your machine, so a repository with no remote, a vault or a scratch
+  folder, is skipped entirely.
+- **It names the file and the line, and stops there.** An email address, a phone
+  number, a postcode, a private key, stray markdown at the root, or words about
+  health, money or a dispute outside your content folders. It never edits
+  anything and never rewrites a commit.
+- **You can teach it your repository.** `.mdscope` adds paths where markdown
+  belongs and `.piiallow` marks patterns that are fine here. Both are committed,
+  so they travel with the project.
+- **Opt-in, and reversible.** Nothing installs it for you, `--uninstall` takes
+  it off, and a real false positive still gets through with `--no-verify`.
+
+---
+
 ## 0.14.1 (2026-09-01)
 
 Housekeeping.

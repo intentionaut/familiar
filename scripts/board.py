@@ -421,6 +421,14 @@ body{margin:0;background:var(--paper);color:var(--ink);
 font:15px/1.6 ui-sans-serif,-apple-system,"Segoe UI",system-ui,sans-serif;
 -webkit-font-smoothing:antialiased}
 a{color:inherit}
+.tools{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.tools button{font:inherit;font-size:.78rem;color:var(--muted);background:transparent;
+border:1px solid var(--line);border-radius:6px;padding:2px 8px;cursor:pointer}
+.tools button:hover,.tools .filelink:hover{color:var(--ink);border-color:var(--muted)}
+.tools .filelink{font-size:.78rem;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 8px;text-decoration:none}
+label.filter{font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer}
+body.waiting-only .card:not([data-waiting]){display:none}
+body.waiting-only .col:has(.card:not([data-waiting])):not(:has(.card[data-waiting])) h2 span{opacity:.4}
 .pill.reuse{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
 ul.cuts{margin:0;padding-left:18px}
 ul.cuts li{margin:.3em 0}
@@ -525,6 +533,49 @@ align-items:center;gap:14px;box-shadow:0 12px 32px -12px rgba(0,0,0,.5);z-index:
 text-decoration:underline;cursor:pointer;padding:0}
 """
 
+BOARD_JS = """
+// Copy to clipboard. navigator.clipboard needs a secure context and the board
+// is usually opened as a file, so fall back to the old way rather than fail.
+function copyText(text, btn) {
+  const done = () => {
+    const was = btn.textContent;
+    btn.textContent = "copied";
+    setTimeout(() => { btn.textContent = was; }, 1200);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done, () => fallback(text, done));
+  } else { fallback(text, done); }
+}
+function fallback(text, done) {
+  const ta = document.createElement("textarea");
+  ta.value = text; ta.setAttribute("readonly", "");
+  ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); done(); } catch (e) {}
+  document.body.removeChild(ta);
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-copy]");
+  if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  copyText(b.getAttribute("data-copy"), b);
+});
+
+// Show only the pieces carrying a note from the writer.
+document.addEventListener("change", (e) => {
+  if (e.target.id !== "waiting-only") return;
+  document.body.classList.toggle("waiting-only", e.target.checked);
+  try { localStorage.setItem("familiarWaitingOnly", e.target.checked ? "1" : ""); } catch (err) {}
+});
+try {
+  if (localStorage.getItem("familiarWaitingOnly")) {
+    const box = document.getElementById("waiting-only");
+    if (box) { box.checked = true; document.body.classList.add("waiting-only"); }
+  }
+} catch (err) {}
+"""
+
+
 def page(title, body, css_depth=0):
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
@@ -532,9 +583,10 @@ def page(title, body, css_depth=0):
 <title>{html.escape(title)}</title>
 <style>{CSS}</style></head><body>
 {body}
+<script>{BOARD_JS}</script>
 </body></html>"""
 
-def card_html(p, token=""):
+def card_html(p, token="", prefix="familiar"):
     pills = [f'<span class="pill">{html.escape(p["date"] or "no date")}</span>',
              f'<span class="pill{" stale" if p["stale"] else ""}">{p["ago"]}</span>']
     if p["brackets"]:
@@ -556,11 +608,28 @@ def card_html(p, token=""):
             buttons += ('<button class="danger" data-act="delete" '
                         'title="Delete the folder">Delete</button>')
         act = f'<span class="act">{buttons}</span>' 
-    return f"""<a class="card" href="{html.escape(p['page'])}.html" data-id="{html.escape(p['page'])}">{act}
+    # The card is one big link, so these are buttons rather than nested anchors.
+    # Both copy: opening a local file from a page is blocked in most browsers,
+    # and a path on the clipboard works everywhere the board does.
+    cmd = NEXT_COMMAND.get(p["stage"], "").format(slug=p["slug"])
+    tools = []
+    if cmd:
+        full = f"{prefix} {cmd.split(' ', 1)[1]}" if prefix != "familiar" else cmd
+        tools.append(f'<button data-copy="{html.escape(full, quote=True)}" '
+                     f'title="Copy the command for what this piece needs next">'
+                     f'copy command</button>')
+    draft = p["folder"] / "draft.md"
+    if draft.is_file():
+        tools.append(f'<button data-copy="{html.escape(str(draft), quote=True)}" '
+                     f'title="Copy the path to the draft">copy path</button>')
+    tool_row = f'<div class="tools">{"".join(tools)}</div>' if tools else ""
+    waiting_attr = ' data-waiting="1"' if p["from_log"] else ""
+    return f"""<a class="card" href="{html.escape(p['page'])}.html" data-id="{html.escape(p['page'])}"{waiting_attr}>{act}
   <h3>{html.escape(p['title'])}</h3>
   <div class="sub">{''.join(pills)}</div>
   <p>{html.escape(p['snippet']) or '<span class="none">nothing written yet</span>'}</p>
   {w}
+  {tool_row}
 </a>"""
 
 def command_prefix(pieces_dir):
@@ -631,9 +700,18 @@ def piece_page(p, prefix="familiar"):
     parts.append(
         '<div class="panel next"><h2>Pick it back up</h2>'
         f'<p>The piece is at <b>{html.escape(dict(STAGES)[p["stage"]])}</b>. '
-        'Open the folder, or run the next stage.</p>'
+        'Open the draft, or run the next stage.</p>'
         f'<code>{html.escape(str(p["folder"]))}</code>'
         + (f'<code>{html.escape(cmd)}</code>' if cmd else "")
+        # Nothing wraps this page in a link, so a real file link is valid here.
+        # It opens when the board is viewed as a file, which is the default.
+        + '<div class="tools">'
+        + (f'<a class="filelink" href="file://{html.escape(str(p["folder"] / "draft.md"))}">'
+           'open draft.md</a>' if (p["folder"] / "draft.md").is_file() else "")
+        + (f'<button data-copy="{html.escape(cmd, quote=True)}">copy command</button>'
+           if cmd else "")
+        + f'<button data-copy="{html.escape(str(p["folder"]), quote=True)}">copy folder</button>'
+        + '</div>'
         + '</div>')
 
     # Supporting files, folded away.
@@ -738,9 +816,13 @@ def board_page(pieces, pieces_dirs, prefix="familiar", archived=(), token=""):
         cols.append(
             f'<div class="col{"" if inc else " empty"}"><h2>{label}'
             f'<span>{len(inc)}</span></h2>'
-            + "".join(card_html(p, token) for p in inc) + "</div>")
+            + "".join(card_html(p, token, prefix) for p in inc) + "</div>")
+    waiting_toggle = (
+        '<label class="filter"><input type="checkbox" id="waiting-only">'
+        'only what is waiting on me</label>') if waiting else ""
     body = (f'<header class="top"><h1>Familiar</h1>'
-            f'<div class="meta">{meta} &middot; built {now}</div></header>'
+            f'<div class="meta">{meta} &middot; built {now}</div>'
+            f'{waiting_toggle}</header>'
             f'<div class="board">{"".join(cols)}</div>'
             + archive_html(archived, token)
             + ('<div id="toast"></div>' + CLIENT_JS.replace("__TOKEN__", token)

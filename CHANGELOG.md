@@ -4,6 +4,35 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.10.0 (2026-09-01)
+
+Familiar can now learn from the choices you make, not only the edits you make.
+
+**What this gives you:**
+
+- **A third way of learning your voice: `learn decisions`.** Until now Familiar
+  learned by comparing its draft against what you actually published. That only
+  ever catches what you changed. It cannot catch what you chose, because
+  choosing happens before there is any text to compare. This reads the reasons
+  you gave when you picked between options and turns the ones that recur into
+  proposed rules.
+- **Three occurrences before anything becomes a rule.** One pick is a
+  preference. Two is a coincidence. Below three it is listed as something to
+  watch, with the picks attached, and said plainly not to be a rule yet.
+- **The most useful thing it can find is a contradiction.** If a reason you gave
+  goes against what your voice guide says, that is surfaced as a contradiction
+  rather than quietly written in as a new rule. Either the guide is out of date
+  or you have changed, and only you can say which.
+- **Reviews get offered instead of remembered.** Turn on `voice-review.md` and
+  Familiar will mention, once, at the end of a stage, that enough decisions have
+  built up to be worth a look. Off by default. The cadence is a floor rather
+  than an alarm, and a missed review costs nothing because the evidence keeps.
+- **It proposes, never applies.** Same gate as everything else here. You accept,
+  reject or rewrite each rule, and the proposal file stays as the record either
+  way.
+
+---
+
 ## 0.9.0 (2026-09-01)
 
 The choices you make while writing stop disappearing into the conversation.

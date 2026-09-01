@@ -1,12 +1,14 @@
 # Stage: learn
 
-Teach Familiar the writer's voice from real material. Two modes. Both
-propose; neither edits a knowledge file without the writer saying yes.
+Teach Familiar the writer's voice from real material. Three modes. All
+propose; none edits a knowledge file without the writer saying yes.
 
 - **Ingest**: read a body of previously published writing in bulk and draft
   the voice files from it. For a new setup, or a refresh.
 - **Diff**: compare Familiar's draft of a piece with the version the writer
   actually published, and turn the differences into rules.
+- **Decisions**: read the choices the writer made when stages offered options,
+  and turn the reasons they gave into rules.
 
 ## Setup
 
@@ -20,6 +22,9 @@ propose; neither edits a knowledge file without the writer saying yes.
    - `diff <piece folder>`: a piece folder containing `draft.md` and a
      `final.md` (the writer's published version). If `final.md` is missing,
      ask for it; a URL or pasted text is fine, save it as `final.md`.
+   - `decisions [since <date>]`: every `Chosen` and `Because` pair across all
+     pieces, or since the date given. Default is since the last review recorded
+     in `knowledge/proposals/`.
    - Nothing: ask which mode, in one line.
 
 ## Ingest
@@ -80,6 +85,43 @@ proposal.
 Stop. Show the proposed rules. The writer accepts, rejects or edits each.
 Apply only the accepted ones, appending to the right file under a dated
 comment so the origin is traceable. Keep the proposal file.
+
+## Decisions
+
+A diff catches what the writer changed. It cannot catch what they chose, because
+choosing happens before there is any text to compare. This mode reads the other
+half.
+
+1. Collect every `Chosen` / `Because` pair from `SESSION-CONTEXT.md` and any
+   `options.md` across the pieces in scope. Say how many you found and over what
+   period.
+2. Group by the reason, not by the stage. A title picked for being plainer and a
+   passage picked for being more generous may be the same rule wearing two
+   coats. Read the `Because` lines as a body of text and look for what recurs.
+3. **A rule needs three occurrences.** One pick is a preference. Two is a
+   coincidence. Below three, list it as a watch item with its picks, and say
+   plainly that it is not yet a rule.
+4. Write the rules the way `diff` does: each one names the picks it came from,
+   quoted, and says which file it belongs in. Most will be `voice-guide.md`,
+   because reasons for choosing are about how the writer wants to sound and what
+   they are willing to trade. Some belong in `positioning.md`, when the reason
+   is about what the publication is for.
+5. Write `knowledge/proposals/YYYY-MM-DD-decisions.md`.
+
+**Do not turn a reason into advice.** "Prefer the more generous option when the
+only cost is length" is a rule. "Consider your audience" is advice, and advice
+is what these files exist to replace.
+
+**Watch for the reason that contradicts the voice guide.** It is the most
+valuable thing this mode can find: it means the guide is out of date, or the
+writer has changed. Surface it as a contradiction, not as a new rule, and let
+them decide which is wrong.
+
+### Gate
+
+Stop. Same as the other modes: accept, reject or edit each rule, apply only what
+is accepted, keep the proposal file as the record. Record the date of the review
+in the proposal so the next `decisions` run knows where to start.
 
 ## Rules
 

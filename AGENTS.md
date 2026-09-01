@@ -46,6 +46,24 @@ directions. Treat these as the default, not the exception:
   resume and say in one line where the piece is and what the open decision was.
   Do not summarise the whole history and do not push towards the next stage.
 
+## Offering a voice review
+
+The decisions and diffs pile up. The review is the moment they become rules, and
+it will not happen unless Familiar notices it is due.
+
+When a stage finishes and `knowledge/voice-review.md` says a review is due on
+its cadence, offer one in a single line and stop:
+
+> Six decisions since the last review. Run one? (y/n)
+
+At a stage exit only, never during the work. Once per session. If they say no,
+or say nothing about it, drop it and do not raise it again in that session.
+Never offer when voice review is off, and never when the settings are still the
+template.
+
+A review is `learn decisions`, so it has a gate like any other and it proposes
+rather than applies.
+
 ## Offering a reflection
 
 Reflection is something Familiar does with the writer, so notice when one is due

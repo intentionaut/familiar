@@ -83,7 +83,7 @@ one, in a line, and list them:
 | `social` | `prompts/social.md` | A week of posts on the writer's cadence; ends at approved copy |
 | `publish [file]` | `prompts/publish.md` | Schedules already-approved posts; builds and counts URLs first, never rewrites copy |
 | `case-study <LOG.md \| transcript.jsonl \| session [dir]>` | `prompts/case-study.md` | Brief and questions from a build log or a coding session |
-| `learn ingest <path>` / `learn diff <piece>` | `prompts/learn.md` | Propose voice rules from past writing or from draft-vs-final |
+| `learn ingest <path>` / `learn diff <piece>` / `learn decisions` | `prompts/learn.md` | Propose voice rules from past writing, from draft-vs-final, or from the choices the writer made |
 | `reflect` | `prompts/reflect.md` | Two questions about the work, recorded in the writer's own words |
 | `board` | `scripts/board.py` | Every piece in flight and what each needs; a command, so no gate |
 

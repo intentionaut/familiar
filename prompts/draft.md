@@ -41,8 +41,8 @@ in their voice, not in model voice.
   Write it plainly: what the piece contends, in the writer's own words from
   notes.md. A crafted title here is worse than a dull one, because every later
   stage will quietly edit towards it and the piece drifts to serve a headline
-  that was chosen before the argument had settled. The hook comes at dev-edit,
-  once there is a finished argument to hook. No em dashes anywhere.
+  that was chosen before the argument had settled. The hook comes at `finalise`,
+  once the piece is written and edited and there is a finished journey to name. No em dashes anywhere.
 
 ## Exit
 

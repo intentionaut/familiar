@@ -1,6 +1,6 @@
 ---
 name: familiar
-description: A companion for your newsletter. Interview, outline, draft, dev-edit, line-edit, social and learn stages for writing about your own work in your own voice; every stage stops for the writer's decision. Use when the user says "familiar", wants to interview themselves about an idea, draft or edit a newsletter issue, turn a piece into social posts, schedule approved posts, or teach Familiar their voice from past writing.
+description: A companion for your newsletter. Interview, outline, draft, dev-edit, line-edit, finalise, social and learn stages for writing about your own work in your own voice; every stage stops for the writer's decision. Use when the user says "familiar", wants to interview themselves about an idea, draft or edit a newsletter issue, turn a piece into social posts, schedule approved posts, or teach Familiar their voice from past writing.
 ---
 
 # Familiar
@@ -78,6 +78,7 @@ one, in a line, and list them:
 | `draft` | `prompts/draft.md` | Full draft in the writer's voice, brackets over inventions |
 | `dev-edit` | `prompts/dev-edit.md` | Editorial report, nothing applied |
 | `line-edit` | `prompts/line-edit.md` | Mechanical pass, exact fix per flag |
+| `finalise` | `prompts/finalise.md` | Title, framing, subject line and SEO, once the piece is finished |
 | `repurpose short\|long` | `prompts/repurpose.md` | The writer picks short or long first; long seeds a companion piece and hands to interview |
 | `social` | `prompts/social.md` | A week of posts on the writer's cadence; ends at approved copy |
 | `publish [file]` | `prompts/publish.md` | Schedules already-approved posts; builds and counts URLs first, never rewrites copy |

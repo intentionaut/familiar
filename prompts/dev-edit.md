@@ -18,13 +18,13 @@ Follow the report spec in knowledge/editor-report.md exactly:
 1. **Spark assessment**: top / buried / missing / needs sharpening. Quote it, locate it.
 2. **Thesis check**: one sentence as written, does it hold, quote any drift with locations.
 3. **Critical fixes**: structural only, each paired with an exact rewrite in their voice.
-3a. **Settle the title.** The draft carried a working title chosen before the
-   argument was final. Now there is a finished argument, so test the title
-   against it: does it name what the piece actually contends, or what an early
-   draft was reaching for? Say which, offer three options drawn from the piece's
-   own strongest lines, and tell the writer to set `title_settled: true` once
-   they pick. A title that flatters the ending over the argument is the common
-   failure; name it when you see it.
+3a. **The title is not your business.** The draft carries a working title with
+   `title_settled: false`. Do not propose alternatives and do not edit the piece
+   to fit it. If a section serves the argument but not the headline, say the
+   headline is wrong and leave it there: `finalise` settles it once the editing
+   is done. Flag only the case where the title actively misdescribes what the
+   piece now argues, and flag it as information, not as a fix.
+
 4. **Line-level refinement map**: quote each flaw directly, follow with the sharper alternative.
 5. **Implementation roadmap**: five steps or fewer, step one is always the opening.
 6. **Gut check**: what the piece will do to a reader once fixed.

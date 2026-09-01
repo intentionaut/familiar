@@ -52,6 +52,11 @@ it. A companion piece drafted straight from the working files is the failure
 mode this branch exists to prevent, and the writer will be reworking it a dozen
 times to get their own voice back into it.
 
+**Precondition: the title is settled.** These posts point at the piece by name,
+and a title that changes afterwards leaves scheduled copy pointing at something
+that no longer exists. If `draft.md` has `title_settled: false` or no such
+field, say so and offer `finalise` first. The writer may override.
+
 ## Setup
 
 1. Read knowledge/positioning.md and knowledge/voice-guide.md.

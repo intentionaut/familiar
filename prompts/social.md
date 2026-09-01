@@ -19,6 +19,11 @@ a gate.
 This stage only produces the **scheduled posts**. Replies, quote-posts and
 conversation are the writer's live work, not this stage's.
 
+**Precondition: the title is settled.** These posts point at the piece by name,
+and a title that changes afterwards leaves scheduled copy pointing at something
+that no longer exists. If `draft.md` has `title_settled: false` or no such
+field, say so and offer `finalise` first. The writer may override.
+
 ## Setup
 
 1. Read AGENTS.md, knowledge/style-rules.md, knowledge/voice-guide.md,

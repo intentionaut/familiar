@@ -13,6 +13,7 @@ into a claude.ai Project.
 /draft      → draft.md        (full draft in voice, [NEEDS SOURCE] brackets over inventions)
 /dev-edit   → edits/dev-edit-report.md   (report only, never auto-apply)
 /line-edit  → edits/line-edit-report.md  (mechanical pass, exact fixes per flag)
+/finalise   → title, subject line, SEO   (the last creative act; repurpose and social need a settled title)
 /repurpose  → short: social.md | long: a companion piece's brief.md (you pick first; long seeds the pipeline, never drafts)
 /social     → social.md       (candidate pool → the writer picks per channel → finalise; ends at approved copy)
 /publish    → social.md ## Scheduled  (schedules approved copy only; builds and counts URLs first, one confirm gate)
@@ -68,9 +69,13 @@ arguing. Treat it as a label, not a decision.
 is true, **no stage may edit the piece to serve its title**. If a section fits
 the argument but not the headline, the headline is what is wrong.
 
-`dev-edit` settles it, because that is the first point where the argument is
-final. It offers options drawn from the piece's own strongest lines, and the
-writer sets `title_settled: true`.
+`finalise` settles it, after the editing is done. It offers options drawn from
+the piece's own strongest lines, and the writer sets `title_settled: true`.
+
+It goes last because a title summarises the whole journey of positioning and
+crafting, and that journey is not over until the editing is. Settling it at
+dev-edit, which is what 0.7.0 did, was still too early: the piece can move
+through a line edit.
 
 The failure this prevents: a good-sounding title generated early becomes an
 attractor. Later stages tune towards it, the piece over-commits to a direction

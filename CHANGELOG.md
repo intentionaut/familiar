@@ -4,6 +4,42 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.8.0 (2026-09-01)
+
+Naming a piece is now its own step, at the end, where it belongs. And the piece
+gets a way to be found before anyone starts making posts about it.
+
+**What this gives you:**
+
+- **The title comes last, because that is when you know what you wrote.** There
+  is a new step, `finalise`, that runs once the writing and editing are done. It
+  reads the finished piece, tells you in one sentence what it actually argues,
+  which is not always what you set out to argue, and offers three titles drawn
+  from the piece's own strongest lines. Each one comes with what it buys you and
+  what it costs. The working title from the draft is treated as one candidate
+  among three with no head start, because by then it has had the whole edit to
+  become familiar, and familiar is not the same as right.
+- **Your subject line is a different decision from your title.** A title labels
+  the argument for somebody already reading. A subject line has to earn the open
+  from somebody who is not. The same words rarely do both jobs, so `finalise`
+  asks for them separately and records which kind you picked, so you can see a
+  pattern across issues instead of guessing every time.
+- **Being findable is part of finishing.** Slug, description, headings, links to
+  your own related pieces, and the one thing a person might search that this
+  piece deserves to answer. If you keep your own notes on search, it works from
+  those rather than telling you what it thinks. And it will never trade a
+  sentence you chose for a better ranking: anything that would change your
+  writing arrives as a suggestion you can refuse.
+- **Posts cannot be made for a piece that has no name yet.** Repurposing and
+  social both stop and point you at `finalise` if the title is still provisional.
+  Scheduled posts that point at a title you later changed are a quiet mess, and
+  this is the cheapest possible way to not have it.
+- **Correcting 0.7.0.** That release settled the title during the developmental
+  edit. Still too early: a piece can move a long way through a line edit. The
+  developmental edit now leaves the title alone entirely and says so.
+
+---
+
 ## 0.7.0 (2026-09-01)
 
 Two changes that came out of using it. Your piece stops drifting towards a title

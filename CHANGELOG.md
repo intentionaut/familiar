@@ -25,6 +25,35 @@ Hard rules. An entry that breaks one of them does not ship.
    update, not reviewing the diff.
 5. **Plain words.** If a term would send a non-technical reader to a search
    engine, explain it in the clause or cut it.
+6. **Write the capability, not the correction.** When a change exists because
+   something was wrong, this is the one place that must not show. Name what the
+   reader now has. A rule that only removes something is half written until it
+   says what fills the space.
+
+---
+
+## 0.14.0 (2026-09-01)
+
+The line edit now catches writing that talks somebody down.
+
+**What this gives you:**
+
+- **A former employer or client, mentioned in passing.** "The data team there
+  was a mess and nobody had owned it in years" tells a reader more than you
+  meant about people who cannot reply. Familiar offers "nobody owned the data
+  model, so every team kept their own copy": the same fact, about the system
+  instead of the people. You keep the criticism and lose the character
+  judgement.
+- **Your own earlier work.** Changing your mind is worth writing about. It stops
+  reading that way when the sentence is about how bad the old version was rather
+  than what the new one does. "The first version was embarrassing" becomes "the
+  first version asked for the title too early. This one waits."
+- **A product you are describing, including your own.** A joke at a tool's
+  expense reads differently in a public archive a year later than it did on the
+  day you wrote it.
+
+As with every line-edit finding, it is a flag with the exact rewrite attached.
+Take it, change it, or leave it.
 
 ---
 
@@ -238,10 +267,10 @@ you run it inside anything else.
   reopening copy you already said yes to. It reads only what you chose; posts
   you held back cannot be scheduled by accident.
 - **A post that fits still fits once the link is on it.** Links are built,
-  tagged and counted before anything is scheduled, in that order. A post can
-  pass a character limit in the draft and fail it once the tracking parameters
-  go on the end, and that is the thing this stops. Over the limit, Familiar
-  stops and tells you by how much. It never trims your words to make room; the only cut
+  tagged and counted before anything is scheduled, in that order. A post that
+  fits at 291 characters is 337 once its tracking parameters are on the end,
+  and that is the thing this stops. Over the limit, Familiar stops and tells
+  you by how much. It never trims your words to make room; the only cut
   it will offer is to the tracking parameters, which you did not write.
 - **A scheduler is optional.** Buffer works out of the box if you connect it.
   Turn it off, or never turn it on, and you get a clean table of every post

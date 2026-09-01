@@ -62,6 +62,11 @@ and `Chosen` with `Because` once the writer picks. Never only in conversation.
 AGENTS.md, "The cutting room", with a `Flag:` of dead, reusable or blocked. A
 cut section or a dropped set of evidence is material, not waste.
 
+**Framing people and products fairly.** Run the check in
+knowledge/style-rules.md, "Framing people and products fairly": a named
+person or company talked down, the writer's own earlier work, or a product
+the piece describes. Flag with the exact rewrite, as with any other finding.
+
 ## Exit
 
 Write to `edits/line-edit-report.md`: findings, then the summary table from the

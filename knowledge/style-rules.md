@@ -113,6 +113,44 @@ Sweep for every pattern below. Each flag gets the exact rewritten line. When uns
 - Unsourced quotes, statistics, or claims of fact
 - Exclamation marks outside quoted speech (rare exceptions only)
 
+## Framing people and products fairly
+
+Writing about your own work means writing about employers, clients, colleagues
+and tools that let you down. The line edit flags where the piece talks one of
+them down, and offers the version that keeps the point.
+
+This is a flag with an exact rewrite, like every other line-edit finding. The
+writer accepts, rejects or revises it.
+
+### A named person or company
+
+Most often a former employer or client, mentioned in passing on the way to
+something else. The reader fills in more than the sentence said, and the subject
+cannot reply.
+
+> Flagged: The data team there was a mess and nobody had owned it in years.
+> Offered: Nobody owned the data model, so every team kept their own copy.
+
+The second one is the same fact and it is about the system rather than the
+people. Keep the criticism, lose the character judgement.
+
+### The writer's own earlier work
+
+Changing your mind is worth writing about and it reads as authority. It stops
+doing that when the sentence is about how bad the old version was rather than
+what the new one does.
+
+> Flagged: The first version was embarrassing, I have no idea what I was
+> thinking.
+> Offered: The first version asked for the title too early. This one waits until
+> the piece is finished.
+
+### A product or tool the piece describes
+
+Including the writer's own. Say what it does now. If something changed, one
+clause on what is better is enough, and jokes at a product's expense read
+differently in a public archive than they did on the day.
+
 ## House style details
 
 - Reading ease target: 60+ (Flesch), grade level ~8 or below for main body text

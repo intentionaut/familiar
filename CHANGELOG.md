@@ -6,10 +6,15 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 Hard rules. An entry that breaks one of them does not ship.
 
-1. **Nothing from anyone's private use.** No dates from a working session, no
-   piece titles, no counts of what a real writer's run produced, no detail
-   traceable to one person's setup. A release note is not an incident report and
-   the maintainer's own work is not evidence to publish.
+1. **Nothing that reports on a person's working.** No dates from a session, no
+   piece titles, no description of how someone wrote or how their run went, no
+   detail traceable to one person's setup. A release note is not an incident
+   report, and the maintainer's own work is not evidence to publish.
+
+   The test is attributability, not origin. A concrete number that illustrates a
+   failure mode is good writing and stays, because a stranger reads it as an
+   example. The same number stops being an example the moment it carries a date,
+   a name, or a sentence about whose run produced it.
 2. **Nothing from a conversation.** What was said while building this is
    private, including when it was the reason for the change.
 3. **Never disparage the tool, past or present.** Describe what it does now. A

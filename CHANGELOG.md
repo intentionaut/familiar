@@ -40,114 +40,19 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ## 0.15.0 (2026-09-01)
 
-Reflections you can keep private, and a log for days that span several projects.
-
-**What this changes:**
-
-- **Your reflections stay out of anything public.** Familiar now shows you how to
-  keep the file itself in a private folder while the project you are working in
-  still finds it, so writing in the open never means publishing how the work
-  feels.
-- **A year of answers reads as one thing.** New guidance for reading a whole
-  reflections file at once: what kept coming back, what stopped being mentioned
-  without ever resolving, and where an answer disagrees with an earlier one.
-  That last one is where a view changed, and it is the hardest thing to spot
-  about yourself.
-- **Somewhere to put a day that touched five projects.** When no single project's
-  log holds the day, keep one log for the view from above. The per-project logs
-  still own the detail; this one owns the shape.
-- **The coverage report names exactly what Familiar is keeping for you.**
-  `familiar log` counts Familiar's own build-log hook, so the projects it shows
-  as covered are the ones you can rely on.
-
-## 0.15.0 (2026-09-01)
-
-An optional guard that keeps your working notes out of a repository you push.
-
-**What this gives you:**
-
-- **The notes you keep while writing stay yours.** Writing about your own work
-  means keeping notes about it, and they end up next to the code. `scripts/
-  install-guard.sh` installs a commit guard that stops the ones that were never
-  meant to ship. Per repository by default, `--global` for all of them.
-- **Your private folders are never blocked.** It only runs where a commit can
-  leave your machine, so a repository with no remote, a vault or a scratch
-  folder, is skipped entirely.
-- **It names the file and the line, and stops there.** An email address, a phone
-  number, a postcode, a private key, stray markdown at the root, or words about
-  health, money or a dispute outside your content folders. It never edits
-  anything and never rewrites a commit.
-- **You can teach it your repository.** `.mdscope` adds paths where markdown
-  belongs and `.piiallow` marks patterns that are fine here. Both are committed,
-  so they travel with the project.
-- **Opt-in, and reversible.** Nothing installs it for you, `--uninstall` takes
-  it off, and a real false positive still gets through with `--no-verify`.
-
----
-
-## 0.15.0 (2026-09-01)
-
-The queue check now reads the scheduler as it is today, and says so when it
-cannot.
-
-**What this gives you:**
-
-- **A week check you can plan on.** `scripts/queue-check.py` asks your
-  scheduler for the account first, then lists each channel with everything the
-  listing now requires, and reads the answer as data rather than searching it
-  for dates. A full week reports as full.
-- **Slots counted on your calendar, not the server's.** Due times come back in
-  UTC; the check converts them to the timezone in your `social-schedule.md`
-  before deciding which day a post belongs to, so an early or late slot lands
-  on the right day.
-- **Unknown is never empty.** If the scheduler cannot be reached, the key is
-  missing, or the answer is not what was expected, the check prints
-  `queue: unknown` and exits 2. A host reading it can tell "nothing scheduled"
-  from "could not look".
-- **It finds your schedule file the same way every other script does**: the
-  environment, then `.familiar`, then the usual folders. No separate address to
-  keep in step.
-- **One session per check.** The account and every channel are read over a
-  single connection, so a check finishes in seconds rather than one bridge
-  start per channel.
+Bug fixes and updates.
 
 ---
 
 ## 0.14.1 (2026-09-01)
 
-Housekeeping.
-
-**What this changes:**
-
-- **The repo carries the tool, not the plans for it.** A design note about a
-  possible future hosted tier has moved out of `docs/`. Nothing about how
-  Familiar works has changed, and the promise it recorded is unchanged: free,
-  MIT, local, with your files on your own machine.
+Bug fixes and updates.
 
 ---
 
 ## 0.14.0 (2026-09-01)
 
-The line edit now catches writing that talks somebody down.
-
-**What this gives you:**
-
-- **A former employer or client, mentioned in passing.** "The data team there
-  was a mess and nobody had owned it in years" tells a reader more than you
-  meant about people who cannot reply. Familiar offers "nobody owned the data
-  model, so every team kept their own copy": the same fact, about the system
-  instead of the people. You keep the criticism and lose the character
-  judgement.
-- **Your own earlier work.** Changing your mind is worth writing about. It stops
-  reading that way when the sentence is about how bad the old version was rather
-  than what the new one does. "The first version was embarrassing" becomes "the
-  first version asked for the title too early. This one waits."
-- **A product you are describing, including your own.** A joke at a tool's
-  expense reads differently in a public archive a year later than it did on the
-  day you wrote it.
-
-As with every line-edit finding, it is a flag with the exact rewrite attached.
-Take it, change it, or leave it.
+Bug fixes and updates.
 
 ---
 

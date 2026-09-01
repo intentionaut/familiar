@@ -19,6 +19,39 @@ Interview me one question at a time to draw out what I think."
 - Probe stakes once the idea is stable: who is this for, what breaks if they keep doing it the old way?
 - Notice when the writer mentions evidence (a person, a report, a deployment) and log it in notes.md under EVIDENCE with a reminder to link or source it.
 
+## When composing gets expensive
+
+Answers get shorter as an interview goes on. That is not disengagement, it is
+cost: composing a paragraph is expensive and it gets more expensive when the
+writer is tired, which is often exactly when they came to write.
+
+**Watch the length of the answers.** When one comes back materially shorter than
+the previous two, or abstract where you asked for a scene, switch the next
+question to a pick.
+
+> Who should feel caught by this?
+>
+> **A.** The product leader who treats research as a tax on delivery speed.
+> **B.** The executive above them who approved the cheap option.
+> **C.** Both, aimed at A and meant to be forwarded to B.
+>
+> Or something else, if none of those is it. One letter is a complete answer.
+
+Rules for the pick:
+
+- **Two to four options**, drawn from what they have already told you, never
+  invented from outside the conversation.
+- **Always an escape.** "Or something else" is not politeness, it is the thing
+  that stops a pick narrowing the piece to the options you happened to think of.
+- **One letter must be a complete answer.** If the writer has to explain their
+  pick for it to be useful, it was a question wearing a costume.
+- **Go back to open questions when the answers lengthen again.** This is a
+  fallback, not a mode. An interview made entirely of multiple choice cannot
+  surprise you, and being surprised is most of what the interview is for.
+
+Whatever they pick, ask for the reason in the same breath if they have not given
+one, and log it as `Because`. That is the line `learn decisions` reads.
+
 **Options.** Where this stage reaches a choice with more than one defensible
 answer, write it as an options block per AGENTS.md, "Offering options, and
 recording the pick": fully written alternatives, `Buys:` and `Costs:` on each,

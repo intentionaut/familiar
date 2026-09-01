@@ -4,6 +4,29 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.12.0 (2026-09-01)
+
+The interview notices when you are running out of road, and does more of the
+work instead of less.
+
+**What this gives you:**
+
+- **It offers you a choice when writing an answer gets expensive.** Answers get
+  shorter as an interview goes on. That is not you losing interest, it is
+  composing costing more, and it costs most when you are tired, which is often
+  exactly when you sat down to write. When an answer comes back much shorter
+  than the last two, or general where a specific was asked for, the next
+  question arrives as two to four options instead. One letter is a complete
+  answer.
+- **The options come from what you already said.** Never from somewhere else,
+  and there is always an "or something else", so a pick can never quietly
+  narrow your piece down to whatever the tool happened to think of.
+- **It goes back to open questions when your answers lengthen again.** This is a
+  fallback and not a mode. An interview made entirely of multiple choice cannot
+  surprise you, and being surprised is most of what an interview is for.
+
+---
+
 ## 0.11.0 (2026-09-01)
 
 The things you cut stop disappearing.

@@ -35,7 +35,14 @@ in their voice, not in model voice.
 - Coined terms italicised on first use, defined immediately.
 - Headers sound like a person (see canonical examples). Sentence case.
 - End with the invitation to reply, phrased as a real question they would want answered.
-- Include headline plus two alternates at the top of the file, and a one-sentence subtitle. No em dashes anywhere.
+- **Working title only, and say so.** Include a headline, two alternates and a
+  one-sentence subtitle, with `title_settled: false` in the frontmatter. At
+  draft stage the title is a label for the argument, not a hook for a reader.
+  Write it plainly: what the piece contends, in the writer's own words from
+  notes.md. A crafted title here is worse than a dull one, because every later
+  stage will quietly edit towards it and the piece drifts to serve a headline
+  that was chosen before the argument had settled. The hook comes at dev-edit,
+  once there is a finished argument to hook. No em dashes anywhere.
 
 ## Exit
 
@@ -46,6 +53,7 @@ Write the full piece to `draft.md` in the piece folder, frontmatter first:
 title: "..."
 subtitle: "..."
 alternates: ["...", "..."]
+title_settled: false
 date: YYYY-MM-DD
 ---
 ```

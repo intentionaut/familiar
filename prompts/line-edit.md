@@ -59,6 +59,9 @@ Write to `edits/line-edit-report.md`: findings, then the summary table from the
 spec (flags per category, reading ease, grade level, top three highest-impact fixes).
 They apply what they agree with. Nothing is auto-applied.
 
+Then ask whether to open the report and the draft, one line, yes or no. See
+AGENTS.md, "Opening the file at an edit stage". Open both on yes; drop it on no.
+
 - **Context log:** append to the piece's own `SESSION-CONTEXT.md` per
   knowledge/context-log.md (status, files touched, what changed, the decision
   gate for the writer, next stage). Terse; this is what makes the article easy to

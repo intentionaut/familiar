@@ -4,6 +4,33 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.7.0 (2026-09-01)
+
+Two changes that came out of using it. Your piece stops drifting towards a title
+you picked too early, and the edit reports open somewhere you can actually read
+them.
+
+**What this gives you:**
+
+- **A title can no longer steer the piece.** Familiar used to write a
+  finished-sounding headline at draft stage, before the argument had settled.
+  That headline then pulled every later edit towards it, and the piece ended up
+  serving a direction the writing was not going. The drift is hard to spot,
+  because each individual edit looks like an improvement. Drafts now get a plain
+  working title that labels the argument and is meant to be dull. The real title
+  gets chosen at the developmental edit, once there is a finished argument to
+  name, with options drawn from the piece's own strongest lines. Until you
+  settle it, no stage is allowed to edit the piece to fit its headline. If a
+  section fits the argument but not the title, the title is the thing that is
+  wrong.
+- **The edit reports offer to open themselves.** A developmental or line edit
+  hands you a report you work through by hand, usually with the draft open next
+  to it. That is not a thing you can do in a terminal. Familiar now asks once,
+  at the end of an edit, whether to open the report and the draft together. Yes
+  or no. Say no and it drops it and does not ask again.
+
+---
+
 ## 0.6.0 (2026-08-31)
 
 Familiar goes all the way to scheduled now, and it works the same whether or not

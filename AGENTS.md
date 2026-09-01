@@ -59,6 +59,44 @@ off, and never when the settings are still the template.
 A reflection is a stage, so it has a gate like any other: it ends where
 `prompts/reflect.md` says it ends.
 
+## Titles are provisional until the argument is
+
+A title written at draft stage was chosen before the piece knew what it was
+arguing. Treat it as a label, not a decision.
+
+`draft` writes a working title and sets `title_settled: false`. Until that flag
+is true, **no stage may edit the piece to serve its title**. If a section fits
+the argument but not the headline, the headline is what is wrong.
+
+`dev-edit` settles it, because that is the first point where the argument is
+final. It offers options drawn from the piece's own strongest lines, and the
+writer sets `title_settled: true`.
+
+The failure this prevents: a good-sounding title generated early becomes an
+attractor. Later stages tune towards it, the piece over-commits to a direction
+the content was not going, and the drift is invisible because every individual
+edit looked like an improvement.
+
+## Opening the file at an edit stage
+
+An edit stage produces a report the writer has to work through by hand, usually
+against the draft at the same time. Reading that in a terminal is the wrong
+shape for the job.
+
+So at the exit of `dev-edit` and `line-edit`, after saying the report is ready,
+**ask whether to open it**. One line, a yes or no, and nothing else in the
+question:
+
+> Open the report and the draft? (y/n)
+
+On yes, open the report and the draft together, because the writer works one
+against the other. Use whatever the host platform provides: `open` on macOS,
+`xdg-open` on Linux, `start` on Windows. On no, drop it and do not ask again in
+that session.
+
+Ask only at an edit stage exit. Never mid-report, never at the other stages,
+never twice for the same report.
+
 ## Commands, and how they differ from stages
 
 `board` is a command, not a stage. It makes no editorial decision, so it has no

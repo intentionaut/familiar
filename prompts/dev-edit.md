@@ -18,6 +18,13 @@ Follow the report spec in knowledge/editor-report.md exactly:
 1. **Spark assessment**: top / buried / missing / needs sharpening. Quote it, locate it.
 2. **Thesis check**: one sentence as written, does it hold, quote any drift with locations.
 3. **Critical fixes**: structural only, each paired with an exact rewrite in their voice.
+3a. **Settle the title.** The draft carried a working title chosen before the
+   argument was final. Now there is a finished argument, so test the title
+   against it: does it name what the piece actually contends, or what an early
+   draft was reaching for? Say which, offer three options drawn from the piece's
+   own strongest lines, and tell the writer to set `title_settled: true` once
+   they pick. A title that flatters the ending over the argument is the common
+   failure; name it when you see it.
 4. **Line-level refinement map**: quote each flaw directly, follow with the sharper alternative.
 5. **Implementation roadmap**: five steps or fewer, step one is always the opening.
 6. **Gut check**: what the piece will do to a reader once fixed.
@@ -35,6 +42,9 @@ Follow the report spec in knowledge/editor-report.md exactly:
 Write to `edits/dev-edit-report.md` next to the draft. Tell the writer the report
 is ready and how many fixes landed in each section. They accept, reject or revise
 each item themselves. If they want changes applied, they will say which ones.
+
+Then ask whether to open the report and the draft, one line, yes or no. See
+AGENTS.md, "Opening the file at an edit stage". Open both on yes; drop it on no.
 
 - **Context log:** append to the piece's own `SESSION-CONTEXT.md` per
   knowledge/context-log.md (status, files touched, what changed, the decision

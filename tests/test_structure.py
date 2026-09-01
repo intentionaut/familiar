@@ -99,6 +99,19 @@ class Structure(unittest.TestCase):
         missing = sorted((stems(PROMPTS) - PROMPTS_WITHOUT_A_COMMAND) - listed)
         self.assertEqual([], missing, f"stages absent from the skill's table: {missing}")
 
+    def test_the_site_lists_every_stage(self):
+        """familiar.intentionaut.com is the product page, and its stage list is
+        hand-written. A hardcoded list that nobody updates is how `repurpose`
+        once shipped without a command; this is the same shape of mistake with
+        a slower feedback loop, so it gets the same kind of check."""
+        site = ROOT / "site" / "index.html"
+        if not site.is_file():
+            self.skipTest("no site/ in this checkout")
+        listed = set(re.findall(r'class="stage-cmd">familiar ([a-z-]+)',
+                                site.read_text()))
+        missing = sorted((stems(PROMPTS) - PROMPTS_WITHOUT_A_COMMAND) - listed)
+        self.assertEqual([], missing, f"stages missing from the site: {missing}")
+
     def test_no_em_dashes_in_shipped_prose(self):
         """Familiar's own first style rule bans them, so its prose must obey.
 

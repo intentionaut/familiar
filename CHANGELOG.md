@@ -4,6 +4,34 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.13.0 (2026-09-01)
+
+Familiar now knows where your files are, and says so.
+
+**What this gives you:**
+
+- **Your writing rules get read, instead of the blank ones that ship with the
+  tool.** Familiar comes with a `knowledge` folder full of templates, and most
+  people keep their real, filled-in versions somewhere else. Nothing told the
+  stages that, so a stage could quietly read the blanks, fall back to defaults
+  for things like spelling, and hand you an edit against rules that were not
+  yours. It happened on 30 August and produced ten corrections nobody could
+  trust. The failure looks like a bad edit rather than a missing file, which is
+  what made it worth fixing properly.
+- **One place to say where things live.** A `.familiar` file next to the tool,
+  or the environment variables you may already have set. Both are read by
+  everything now, rather than by one script that happened to know.
+- **Every command carries the answer.** When you install, the resolved location
+  is written into the commands themselves, so a stage is told where your files
+  are rather than working it out. If it ever lands on the templates, it now says
+  so out loud instead of proceeding.
+- **The board stops needing to be told.** `board.py` with no arguments finds
+  every folder your pieces live in, including more than one.
+- **`python3 scripts/paths.py`** prints what resolved and whether it found your
+  files or the shipped templates. Worth thirty seconds when an edit feels wrong.
+
+---
+
 ## 0.12.0 (2026-09-01)
 
 The interview notices when you are running out of road, and does more of the

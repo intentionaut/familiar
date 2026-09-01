@@ -4,7 +4,8 @@ description: "Familiar: Schedule already-approved posts; builds and counts URLs 
 Run the Familiar **publish** stage. Familiar lives at `{{FAMILIAR_HOME}}`.
 
 1. Read `{{FAMILIAR_HOME}}/AGENTS.md` for the rules.
-2. Read `{{FAMILIAR_HOME}}/prompts/publish.md` and follow every instruction in it exactly. It names the `knowledge/` files you must read first; all paths are relative to the Familiar folder above.
-3. Arguments: $ARGUMENTS
-4. This stage takes approved copy and schedules it. It never writes, re-picks or improves posts. If the copy is not finished, run `/familiar-social` instead.
-5. Nothing reaches a scheduler without an explicit confirmation at the gate.
+2. **Knowledge lives at `{{FAMILIAR_KNOWLEDGE}}`.** Every `knowledge/<file>.md` a prompt names is read from there, not from the Familiar folder. If that path ends in the repo's own `knowledge/`, those are the shipped templates: say so and do not edit against them.
+3. Read `{{FAMILIAR_HOME}}/prompts/publish.md` and follow every instruction in it exactly. It names the knowledge files you must read first.
+4. Arguments: $ARGUMENTS
+5. Write outputs into the writer's piece folder as the prompt specifies.
+6. Never skip a decision gate: the stage ends where the prompt says it ends, and waits for the writer.

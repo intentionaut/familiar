@@ -13,6 +13,8 @@ import sys
 from pathlib import Path
 
 HOME = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from paths import knowledge_dir  # noqa: E402
 
 # The two Familiar cannot do good work without.
 ESSENTIAL = ["positioning.md", "voice-guide.md"]
@@ -29,17 +31,8 @@ OK, TEMPLATE, MISSING = "ready", "still a template", "not there yet"
 
 
 def config_dir(explicit=None):
-    """Familiar's config resolution order. A host is one location, not the one."""
-    shipped = (HOME / "knowledge").resolve()
-    for c in (explicit, os.environ.get("FAMILIAR_CONFIG"),
-              "./knowledge", os.path.expanduser("~/.familiar/knowledge")):
-        if c and (Path(c) / "positioning.md").is_file():
-            found = Path(c).resolve()
-            # Resolving to the repo's own folder means these are the shipped
-            # templates, however we arrived at them. Say so rather than
-            # calling them the writer's.
-            return found, ("the shipped templates" if found == shipped else "yours")
-    return shipped, "the shipped templates"
+    """Familiar's config resolution order, shared with every other script."""
+    return knowledge_dir(explicit)
 
 
 def state(path, shipped=None):

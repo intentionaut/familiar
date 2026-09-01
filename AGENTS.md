@@ -230,8 +230,39 @@ the board: that file is the record of something that exists in the world and is
 what `learn diff` reads. Never archive or delete a piece on the writer's
 behalf.
 
+## Where knowledge lives
+
+**Every prompt says `knowledge/<file>.md`. That is a name, not a path.**
+
+The `knowledge/` folder in this repo holds the shipped templates, full of
+bracketed prompts. Most writers keep their filled-in copies somewhere else: a
+vault, a private repo, a synced folder. Resolve the name before reading it.
+
+Order, highest first, first hit wins:
+
+1. `FAMILIAR_KNOWLEDGE`, or `FAMILIAR_CONFIG` which is the older name and still
+   works
+2. a `knowledge = ` line in a `.familiar` file, next to this repo or in the
+   current folder
+3. `./knowledge`
+4. `~/.familiar/knowledge`
+5. this repo's `knowledge/`, which means the templates
+
+`python3 scripts/paths.py` prints what resolves, and whether it landed on the
+writer's files or the templates. Run it if you are unsure; it is cheaper than
+editing against the wrong house.
+
+**This is not a nicety.** On 30 August 2026 a line edit ran against the shipped
+templates without noticing, fell back to defaults for spelling and house rules,
+and produced ten flags nobody could trust. The failure looks like a bad edit,
+not a missing file, which is what makes it worth checking rather than assuming.
+
+**Pieces resolve the same way**: `FAMILIAR_PIECES`, then `pieces = ` lines in
+`.familiar`, then this repo's `pieces/`. There can be more than one.
+
 ## Rules for agents
 
+- Resolve `knowledge/` before reading it. See "Where knowledge lives" above.
 - Read the stage's prompt file and every knowledge file it lists before acting.
 - The house rules live in `knowledge/positioning.md` (language, spelling, dash
   policy, reading-ease target, whether pieces end on an invitation). Apply

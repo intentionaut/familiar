@@ -35,6 +35,9 @@ card says which folder it came from:
 """
 import argparse, datetime, html, json, os, pathlib, re, secrets, shutil, sys, threading, webbrowser
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from paths import pieces_dirs as resolved_pieces  # noqa: E402
+
 # --------------------------------------------------------------------------
 # Markdown to HTML, for display only
 #
@@ -963,7 +966,7 @@ def main():
     ap = argparse.ArgumentParser(description="Build a static board of every piece.")
     ap.add_argument("--pieces", action="append", default=[],
                     help="folder holding the piece folders; repeatable "
-                         "(default: ./pieces, or FAMILIAR_PIECES)")
+                         "(default: FAMILIAR_PIECES, .familiar, then ./pieces)")
     ap.add_argument("--out", default="", help="where to write the HTML (default: <first pieces>/.board)")
     ap.add_argument("--command", default="", help="how to invoke a stage in the hint")
     ap.add_argument("--stale-days", type=int, default=7)
@@ -973,8 +976,9 @@ def main():
     args = ap.parse_args()
 
     root = pathlib.Path(__file__).resolve().parent.parent
-    raw = args.pieces or [q for q in os.environ.get("FAMILIAR_PIECES", "").split(":") if q]
-    dirs = [pathlib.Path(q).expanduser().resolve() for q in raw] or [root / "pieces"]
+    # One resolver for every script: flags, then FAMILIAR_PIECES, then the
+    # `pieces =` lines in a .familiar file, then the repo's own folder.
+    dirs = resolved_pieces(args.pieces or None)
     missing = [d for d in dirs if not d.is_dir()]
     if missing:
         sys.exit("No such folder: " + ", ".join(str(m) for m in missing))

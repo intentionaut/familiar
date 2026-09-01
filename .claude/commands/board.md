@@ -6,20 +6,16 @@ Run the Familiar **board**. Familiar lives at `{{FAMILIAR_HOME}}`.
 `board` is a command, not a stage. It makes no editorial decision, so it has no
 gate: it reads the piece folders and writes static HTML beside them.
 
-1. Work out where the writer's pieces live. Check in this order and use every
-   folder that exists, passing `--pieces` once for each:
-   - any folder the writer names in `$ARGUMENTS`
-   - `$FAMILIAR_PIECES` (colon-separated)
-   - `{{FAMILIAR_HOME}}/pieces`
-   - in a Dex vault, `<vault>/04-Projects/Writing`
-   If the writer keeps pieces somewhere else as well, ask once and remember it
-   for the session.
+1. You do not need to work out where the pieces are. `board.py` resolves them
+   itself: `--pieces` flags first, then `$FAMILIAR_PIECES`, then any `pieces =`
+   lines in a `.familiar` file, then `{{FAMILIAR_HOME}}/pieces`. Pass `--pieces`
+   only when the writer names a folder in `$ARGUMENTS`.
 
 2. Run it, adding `--serve` when the writer wants to tidy up rather than only
    look, and `--open` otherwise:
 
    ```
-   python3 {{FAMILIAR_HOME}}/scripts/board.py --open --pieces <dir> [--pieces <dir>]
+   python3 {{FAMILIAR_HOME}}/scripts/board.py --open
    ```
 
 3. Report what it printed: how many pieces, how many carry a note from you, and

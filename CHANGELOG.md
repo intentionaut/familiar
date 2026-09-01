@@ -81,8 +81,8 @@ Familiar now knows where your files are, and says so.
   people keep their real, filled-in versions somewhere else. Nothing told the
   stages that, so a stage could quietly read the blanks, fall back to defaults
   for things like spelling, and hand you an edit against rules that were not
-  yours. Nothing errored when that happened, which is why it is worth having
-  the address written down rather than inferred.
+  yours. Now the location is written down, so every stage reads the same files
+  you filled in.
 - **One place to say where things live.** A `.familiar` file next to the tool,
   or the environment variables you may already have set. Both are read by
   everything now, rather than by one script that happened to know.
@@ -175,31 +175,24 @@ Familiar can now learn from the choices you make, not only the edits you make.
 
 ## 0.9.0 (2026-09-01)
 
-The choices you make while writing stop disappearing into the conversation.
+The choices you make while writing are written down, with your reason beside
+them.
 
 **What this gives you:**
 
-- **Options are written down, not talked about.** When a stage reaches a point
-  with more than one good answer, it now writes the alternatives into the piece
-  as finished text you can read and pick between, each with one line on what it
-  buys you and one on what it costs. Not "a version that names him", but the
-  actual paragraph. You can pick between two things you can read in seconds; you
-  cannot pick between two summaries without asking questions first, and the
-  questions were the expensive part.
-- **Two to four options, never one and never five.** One is a recommendation in
-  disguise, and five is not a decision, it is a shrug.
-- **Why you picked is now recorded next to what you picked.** Every choice is
-  logged with your reason in your own words, one line. This is the part that
-  turns out to matter: the reason is a rule you already hold, said out loud once,
-  and it is the only place some of them ever get said. Nothing is logged with a
-  reason invented for you.
-- **The options you turned down are kept.** They are the record of what was
-  considered, and the next stage gets to know a thing was looked at and rejected
-  rather than never thought of.
-- **A new settings file for reviewing all this later.** `voice-review.md` works
-  the way reflection does: off until you turn it on, a cadence that is a floor
-  rather than an alarm, and never a nag. What it turns on arrives in the next
-  release.
+- **Options arrive as finished text.** Where a stage has more than one good
+  answer, each one is written out in full in the piece, with a line on what it
+  buys and a line on what it costs. You read them and pick. There is nothing to
+  imagine and nothing to ask for first.
+- **Two to four of them.** One is a recommendation wearing a disguise. Five is a
+  shrug.
+- **Your reason is kept next to your choice.** One line, in your own words. It
+  is never written for you, and if you did not give one it says so.
+- **The ones you turned down stay in the file.** A later stage can see that a
+  thing was considered and rejected, rather than proposing it again.
+- **`voice-review.md`**, for reading all of that back later. Off until you turn
+  it on, and the cadence is a floor rather than an alarm. What it turns on
+  arrives in the next release.
 
 ---
 

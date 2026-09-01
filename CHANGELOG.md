@@ -38,6 +38,28 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.15.0 (2026-09-01)
+
+Reflections you can keep private, and a log for days that span several projects.
+
+**What this changes:**
+
+- **Your reflections stay out of anything public.** Familiar now shows you how to
+  keep the file itself in a private folder while the project you are working in
+  still finds it, so writing in the open never means publishing how the work
+  feels.
+- **A year of answers reads as one thing.** New guidance for reading a whole
+  reflections file at once: what kept coming back, what stopped being mentioned
+  without ever resolving, and where an answer disagrees with an earlier one.
+  That last one is where a view changed, and it is the hardest thing to spot
+  about yourself.
+- **Somewhere to put a day that touched five projects.** When no single project's
+  log holds the day, keep one log for the view from above. The per-project logs
+  still own the detail; this one owns the shape.
+- **The coverage report names exactly what Familiar is keeping for you.**
+  `familiar log` counts Familiar's own build-log hook, so the projects it shows
+  as covered are the ones you can rely on.
+
 ## 0.14.1 (2026-09-01)
 
 Housekeeping.

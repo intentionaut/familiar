@@ -61,7 +61,11 @@ def hooks_wired(folder):
     except Exception:
         return False
     blob = json.dumps(data.get("hooks", {}))
-    return "build-log-entry.sh" in blob or "captains-log-entry.sh" in blob
+    # Only Familiar's own hook counts as coverage. Captain's Log's hook was
+    # accepted here during the migration, which meant the one project still
+    # running the retired tool was the one reported as covered. `log add` still
+    # strips it when rewiring, so an old install upgrades cleanly.
+    return "build-log-entry.sh" in blob
 
 
 def last_commit(folder):

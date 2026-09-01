@@ -27,6 +27,41 @@ One file per project in the folder above, named after the project, plus a
 
 Keep that folder private. These answers are candid by design.
 
+### Never write reflections into a public repo
+
+Check a repository's visibility before putting a reflections file in it. These
+answers say how the work feels, what is worrying you, what you are avoiding and
+who the work is actually for. That is fine in a private repo and a mistake in a
+public one, especially if you are job hunting or working in the open.
+
+If the project repo is public, keep the file in the private reflections folder
+and symlink it into the project, so the tooling still finds it while the content
+stays out of that history:
+
+```sh
+ln -s ../reflections/<project>.md <project>/REFLECTIONS.md
+```
+
+Add `REFLECTIONS.md` to that project's `.gitignore` as well. The symlink is a
+convenience; the `.gitignore` line is the thing actually protecting you.
+
+Ask rather than assume. A wrong guess here is permanent and indexed.
+
+## Finding themes
+
+A single entry is a mood. The value is in the sequence, and it only appears when
+you read the whole file at once rather than entry by entry. Look for:
+
+- **What recurred.** A worry raised three times is a real one. An idea mentioned
+  repeatedly before it got built is the thread worth pulling.
+- **What resolved**, and what stopped being mentioned without ever resolving.
+  The second is usually more interesting, because nobody notices dropping it.
+- **Where an answer contradicts an earlier one.** This is where a view actually
+  changed, and it is the hardest thing to see about yourself. Quote both sides.
+
+Contradictions are usually the most interesting thing in the file. Surface them
+as a question, not as a correction.
+
 ## The questions
 
 Two per reflection, one at a time, never two of the same kind. Edit this list,

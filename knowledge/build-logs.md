@@ -10,6 +10,20 @@ Run `familiar log` to see every project and which ones are keeping one.
 ## Settings
 
 - Projects live in: ~/Projects
+- Cross-project log: [path, or "none"]
+
+## Cross-project days
+
+Some days span five repos, and no single project log holds them. A per-project
+log splits that day into five accounts, none of which says what the day was.
+
+For those, keep one cross-project log: same rules as any other (dated, newest at
+the bottom, append-only, record don't dramatise), but grouped by project under a
+single date and written as the view from above. Per-project logs still own the
+detail; this one owns the shape.
+
+Only worth starting once you regularly work across repos in a day. Below that it
+is just a second place to forget to write in.
 
 ## Watched
 

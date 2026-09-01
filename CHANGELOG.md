@@ -25,7 +25,13 @@ Hard rules. An entry that breaks one of them does not ship.
    update, not reviewing the diff.
 5. **Plain words.** If a term would send a non-technical reader to a search
    engine, explain it in the clause or cut it.
-6. **Write the capability, not the correction.** When a change exists because
+6. **Five bullets, and they say what the reader gets.** Five on average, and a
+   release that seems to need more is usually two releases or one bullet
+   repeated. Each one names the thing the writer can now do, in their language.
+   A bullet that describes a mechanism, or explains why the change was a good
+   idea, has not earned its place: the reader is deciding whether to update, not
+   reviewing the reasoning.
+7. **Write the capability, not the correction.** When a change exists because
    something was wrong, this is the one place that must not show. Name what the
    reader now has. A rule that only removes something is half written until it
    says what fills the space.
@@ -286,12 +292,9 @@ you run it inside anything else.
   schedulers create posts and not comments. It will not silently move the link
   into the post instead.
 - **Familiar no longer assumes where it is running.** Every stage works on its
-  own, with no vault and no other tools. If you do run it inside Dex, Dex adds
-  what it can, and now says so in one short profile instead of a second copy of
-  the whole pipeline. Nothing about the Dex experience is lost.
-- **Every stage installs.** The installer used to work from a hand-written list,
-  so a stage added later never got a command. `repurpose` was missing because of
-  it. It now installs whatever is there.
+  own, with no vault and no other tools, and every one of them installs. If you
+  do run it inside Dex, Dex adds what it can and says so in one short profile.
+  Nothing about the Dex experience is lost.
 
 ---
 

@@ -37,6 +37,11 @@ Follow the report spec in knowledge/editor-report.md exactly:
 - If the piece is genuinely strong somewhere, say so once, specifically. No compliment sandwiches.
 - Judge against positioning.md: is AI centred when it shouldn't be? Is there evidence under the opinions? Does it end with an invitation, if the house wants one?
 
+**Options.** Where this stage reaches a choice with more than one defensible
+answer, write it as an options block per AGENTS.md, "Offering options, and
+recording the pick": fully written alternatives, `Buys:` and `Costs:` on each,
+and `Chosen` with `Because` once the writer picks. Never only in conversation.
+
 ## Exit
 
 Write to `edits/dev-edit-report.md` next to the draft. Tell the writer the report

@@ -4,6 +4,36 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 ---
 
+## 0.9.0 (2026-09-01)
+
+The choices you make while writing stop disappearing into the conversation.
+
+**What this gives you:**
+
+- **Options are written down, not talked about.** When a stage reaches a point
+  with more than one good answer, it now writes the alternatives into the piece
+  as finished text you can read and pick between, each with one line on what it
+  buys you and one on what it costs. Not "a version that names him", but the
+  actual paragraph. You can pick between two things you can read in seconds; you
+  cannot pick between two summaries without asking questions first, and the
+  questions were the expensive part.
+- **Two to four options, never one and never five.** One is a recommendation in
+  disguise. Five is the tool refusing to think.
+- **Why you picked is now recorded next to what you picked.** Every choice is
+  logged with your reason in your own words, one line. This is the part that
+  turns out to matter: the reason is a rule you already hold, said out loud once,
+  and it is the only place some of them ever get said. Nothing is logged with a
+  reason invented for you.
+- **The options you turned down are kept.** They are the record of what was
+  considered, and the next stage gets to know a thing was looked at and rejected
+  rather than never thought of.
+- **A new settings file for reviewing all this later.** `voice-review.md` works
+  the way reflection does: off until you turn it on, a cadence that is a floor
+  rather than an alarm, and never a nag. What it turns on arrives in the next
+  release.
+
+---
+
 ## 0.8.0 (2026-09-01)
 
 Naming a piece is now its own step, at the end, where it belongs. And the piece

@@ -60,6 +60,56 @@ off, and never when the settings are still the template.
 A reflection is a stage, so it has a gate like any other: it ends where
 `prompts/reflect.md` says it ends.
 
+## Offering options, and recording the pick
+
+Every stage reaches points where there is more than one defensible answer. Those
+are the moments the writer should be spending their judgement on, and they are
+the moments most easily lost to conversation.
+
+**Options go into the piece, not into the chat.** Any stage may write an options
+block to the piece folder, in `options.md`, or inline in the file it is already
+producing when the choice belongs there.
+
+```markdown
+## Option set: <what is being chosen>        [stage: draft · YYYY-MM-DD]
+
+### A. <short label>
+<the full text, ready to use as it stands>
+Buys: <one line>
+Costs: <one line>
+
+### B. <short label>
+...
+
+Chosen: B
+Because: <the writer's reason, in their words, one line>
+```
+
+Three rules, and they are what make it work rather than ceremony:
+
+1. **Fully written, never described.** "A version that names him" is not an
+   option; the paragraph is. A writer can pick between two things they can read
+   in seconds. They cannot pick between two summaries without asking questions
+   first, and the questions are the cost this is avoiding.
+2. **Buys and costs on every option, one line each.** An option set without
+   trade-offs is a quiz. With them it is a decision.
+3. **Two to four options.** One is a recommendation wearing a costume. Five is
+   an abdication.
+
+**`Chosen` never appears without `Because`.** The pick is bookkeeping. The
+reason is the evidence: it is a rule the writer already holds, said out loud
+once, and `learn decisions` reads exactly these. One line in their words beats
+three in yours. If they gave no reason, ask for one before logging it, or write
+`Because: not given` rather than inventing it.
+
+Record both in the piece's `SESSION-CONTEXT.md` as well, per
+`knowledge/context-log.md`, so a decision survives without the options file
+having to be read.
+
+**Options the writer rejected are kept, never deleted.** They are the record of
+what was considered, and the next stage should know a thing was looked at and
+turned down.
+
 ## Titles are provisional until the argument is
 
 A title written at draft stage was chosen before the piece knew what it was

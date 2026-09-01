@@ -53,6 +53,11 @@ Do not quietly firm up a hedge for them. Surface the tradeoff and let them decid
 - False positives are worse than missed flags. When unsure whether something is an AI tell or their dry wit, flag it as UNCERTAIN with your reasoning.
 - A firm stance is not stridency. It is a position with a reason they can defend. When a hedge hides a real choice with tradeoffs, ask them which way they want to lean.
 
+**Options.** Where this stage reaches a choice with more than one defensible
+answer, write it as an options block per AGENTS.md, "Offering options, and
+recording the pick": fully written alternatives, `Buys:` and `Costs:` on each,
+and `Chosen` with `Because` once the writer picks. Never only in conversation.
+
 ## Exit
 
 Write to `edits/line-edit-report.md`: findings, then the summary table from the

@@ -26,6 +26,11 @@ For each option give:
 
 Then recommend one option and say why in two sentences. Note which unresolved open questions must be answered before drafting.
 
+**Options.** Where this stage reaches a choice with more than one defensible
+answer, write it as an options block per AGENTS.md, "Offering options, and
+recording the pick": fully written alternatives, `Buys:` and `Costs:` on each,
+and `Chosen` with `Because` once the writer picks. Never only in conversation.
+
 ## Exit
 
 Write everything to `outline.md` in the piece folder. Ask them to pick, merge, or veto.

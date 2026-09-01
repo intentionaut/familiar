@@ -76,6 +76,11 @@ Work from the writer's own SEO notes when they exist. When they do not:
 **Never trade the writing for the ranking.** If a recommendation would change a
 sentence the writer chose, it is a proposal for them to reject, not a fix.
 
+**Options.** Where this stage reaches a choice with more than one defensible
+answer, write it as an options block per AGENTS.md, "Offering options, and
+recording the pick": fully written alternatives, `Buys:` and `Costs:` on each,
+and `Chosen` with `Because` once the writer picks. Never only in conversation.
+
 ## Exit
 
 Write the decisions into `draft.md` frontmatter (`title`, `subtitle`,

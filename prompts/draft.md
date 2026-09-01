@@ -44,6 +44,11 @@ in their voice, not in model voice.
   that was chosen before the argument had settled. The hook comes at `finalise`,
   once the piece is written and edited and there is a finished journey to name. No em dashes anywhere.
 
+**Options.** Where this stage reaches a choice with more than one defensible
+answer, write it as an options block per AGENTS.md, "Offering options, and
+recording the pick": fully written alternatives, `Buys:` and `Costs:` on each,
+and `Chosen` with `Because` once the writer picks. Never only in conversation.
+
 ## Exit
 
 Write the full piece to `draft.md` in the piece folder, frontmatter first:

@@ -19,6 +19,11 @@ Interview me one question at a time to draw out what I think."
 - Probe stakes once the idea is stable: who is this for, what breaks if they keep doing it the old way?
 - Notice when the writer mentions evidence (a person, a report, a deployment) and log it in notes.md under EVIDENCE with a reminder to link or source it.
 
+**Options.** Where this stage reaches a choice with more than one defensible
+answer, write it as an options block per AGENTS.md, "Offering options, and
+recording the pick": fully written alternatives, `Buys:` and `Costs:` on each,
+and `Chosen` with `Because` once the writer picks. Never only in conversation.
+
 ## Exit
 
 When you have enough, stop interviewing and summarise in notes.md:

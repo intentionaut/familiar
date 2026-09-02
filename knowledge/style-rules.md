@@ -73,6 +73,13 @@ Sweep for every pattern below. Each flag gets the exact rewritten line. When uns
   "Everyone is scrambling to adopt, and few companies are ready to move the
   right pieces for sustainable growth." (Matches humanizer's overused-word
   list; adopted 2026-09-03 from a real draft.)
+- Enhance, as a marketing-register verb standing in for a plainer one, same
+  register as "leverage" and "harness" above. Before: "Early wins might look
+  modest, but when they enhance decision-making and human capability, they
+  multiply over time." After: "Early wins might look modest, but when they
+  improve decision-making and human capability, they multiply over time."
+  (Matches humanizer's overused-word list; adopted 2026-09-03 from a real
+  draft.)
 
 ### Structural tells
 

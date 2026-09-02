@@ -25,12 +25,12 @@ Hard rules. An entry that breaks one of them does not ship.
    update, not reviewing the diff.
 5. **Plain words.** If a term would send a non-technical reader to a search
    engine, explain it in the clause or cut it.
-6. **Five bullets, and they say what the reader gets.** Five on average, and a
-   release that seems to need more is usually two releases or one bullet
-   repeated. Each one names the thing the writer can now do, in their language.
-   A bullet that describes a mechanism, or explains why the change was a good
-   idea, has not earned its place: the reader is deciding whether to update, not
-   reviewing the reasoning.
+6. **Three to five bullets, and fewer is usually better.** A release that seems
+   to need more is usually two releases, or one bullet repeated. Each bullet
+   carries what the reader gets; the bold lead may name the capability or just
+   name the area it is in, whichever gets them to the sentence faster. What a
+   bullet may not do is explain why the change was a good idea. The reader is
+   deciding whether to update, not reviewing the reasoning.
 7. **Write the capability, not the correction.** When a change exists because
    something was wrong, this is the one place that must not show. Name what the
    reader now has. A rule that only removes something is half written until it
@@ -42,6 +42,12 @@ Hard rules. An entry that breaks one of them does not ship.
    conversation they were not in, and it leaves them wondering what they missed.
    The test is whether the absence was ever present in a version they used. If
    it was not, say where the work happens rather than where it does not.
+9. **A quiet release is a real release.** Not everything that ships is news. A
+   version whose changes the reader will never notice is written as "Bug fixes
+   and updates." and nothing else, and that entry is finished, not lazy.
+   Spending five bullets on housekeeping teaches people to skim the ones that
+   matter. Where something did move that a reader would want to know about, say
+   that one thing in a sentence under the line and leave the rest out.
 
 ---
 

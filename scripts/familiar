@@ -1,0 +1,239 @@
+#!/usr/bin/env python3
+"""familiar - onboarding and day-to-day commands for Familiar.
+
+Agent-neutral: works from any terminal, any AI assistant, or no assistant at
+all. The prompts and knowledge files are plain markdown; this script just
+scaffolds the right folders and points you at the right files.
+
+Usage:
+    familiar init                  set up Familiar in the current directory
+    familiar new-piece <slug>      scaffold a new piece folder
+    familiar status                what Familiar can see and what it still needs
+    familiar skill install [agent] install commands for a specific agent
+"""
+import argparse
+import os
+import shutil
+import sys
+from datetime import date
+from pathlib import Path
+
+HOME = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(HOME / "scripts"))
+from paths import knowledge_dir, pieces_dirs, read_config  # noqa: E402
+
+
+def _today_slug(raw):
+    """Normalise a slug: lowercase, hyphens for spaces/slashes, strip non-alnum."""
+    import re
+    slug = raw.strip().lower().replace(" ", "-").replace("/", "-")
+    slug = re.sub(r"[^a-z0-9-]", "", slug)
+    slug = re.sub(r"-{2,}", "-", slug).strip("-")
+    return slug
+
+
+def cmd_init(args):
+    """Set up Familiar in the current directory."""
+    cwd = Path.cwd()
+    familiar_file = cwd / ".familiar"
+    knowledge_dest = cwd / "knowledge"
+
+    # 1. Create .familiar if it does not exist
+    if familiar_file.is_file() and not args.force:
+        print(f".familiar already exists at {familiar_file}")
+        print("Use --force to overwrite.")
+        return 1
+
+    # Build the config
+    lines = [
+        "# Familiar config. See scripts/paths.py for the full resolution order.",
+        "",
+    ]
+
+    # Knowledge: use the repo's templates as defaults
+    if not knowledge_dest.is_dir():
+        knowledge_dest.mkdir(parents=True, exist_ok=True)
+        # Copy template knowledge files
+        shipped = HOME / "knowledge"
+        for f in sorted(shipped.glob("*.md")):
+            shutil.copy2(f, knowledge_dest / f.name)
+        # Copy subdirectories (languages, examples)
+        for d in shipped.iterdir():
+            if d.is_dir():
+                dest_d = knowledge_dest / d.name
+                dest_d.mkdir(exist_ok=True)
+                for f in d.glob("*"):
+                    shutil.copy2(f, dest_d / f.name)
+        print(f"Copied knowledge templates to {knowledge_dest}")
+
+    lines.append(f"knowledge = {knowledge_dest}")
+
+    # Pieces: default to ./pieces
+    pieces_dest = cwd / "pieces"
+    if not pieces_dest.is_dir():
+        pieces_dest.mkdir(parents=True, exist_ok=True)
+        # Copy the pieces README
+        readme = HOME / "pieces" / "README.md"
+        if readme.is_file():
+            shutil.copy2(readme, pieces_dest / "README.md")
+        print(f"Created pieces folder at {pieces_dest}")
+
+    lines.append(f"pieces = {pieces_dest}")
+    lines.append("")
+
+    familiar_file.write_text("\n".join(lines))
+    print(f"Wrote {familiar_file}")
+
+    # 2. Run setup.sh (it calls doctor.py at the end, so no need to repeat)
+    cc_dir = Path.home() / ".claude" / "commands"
+    installed = len(list(cc_dir.glob("familiar-*.md"))) if cc_dir.is_dir() else 0
+    if installed == 0 or args.force:
+        print()
+        print("Installing agent commands...")
+        os.system(f"bash {HOME}/scripts/setup.sh")
+    else:
+        print()
+        print(f"Agent commands already installed ({installed} commands).")
+        print(f"Run `bash {HOME}/scripts/setup.sh` to reinstall.")
+    return 0
+
+
+def cmd_new_piece(args):
+    """Scaffold a new piece folder."""
+    if not args.slug:
+        print("Usage: familiar new-piece <slug>")
+        print("  e.g. familiar new-piece my-essay-title")
+        return 1
+
+    slug = _today_slug(args.slug)
+    if not slug:
+        print("Slug is empty after normalisation. Use a descriptive name.")
+        return 1
+
+    # Find where pieces live
+    pieces = pieces_dirs()
+    if not pieces:
+        print("No pieces folder configured. Run 'familiar init' first.")
+        return 1
+
+    # Use the first pieces directory
+    pieces_dir = pieces[0]
+    today = date.today().isoformat()
+    folder_name = f"{today}-{slug}"
+    piece_dir = pieces_dir / folder_name
+
+    if piece_dir.is_dir() and not args.force:
+        print(f"Piece folder already exists: {piece_dir}")
+        return 1
+
+    piece_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create edits subfolder
+    (piece_dir / "edits").mkdir(exist_ok=True)
+
+    # Create SESSION-CONTEXT.md
+    session_ctx = piece_dir / "SESSION-CONTEXT.md"
+    session_ctx.write_text(
+        f"# {folder_name}\n"
+        f"\n"
+        f"## {today} 00:00  init  {folder_name}\n"
+        f"\n"
+        f"Status: created\n"
+        f"Files: none yet\n"
+        f"What changed: piece folder created\n"
+        f"Decision gate: run `familiar interview <idea>` to begin\n"
+        f"Next stage: interview\n"
+    )
+
+    # Create notes.md with a starter header
+    notes = piece_dir / "notes.md"
+    notes.write_text(f"# {folder_name}\n\n## Thesis\n\n## Evidence\n\n## Open questions\n\n")
+
+    print(f"Created piece folder: {piece_dir}")
+    print()
+    print("Next steps:")
+    print(f"  1. cd {piece_dir}")
+    print("  2. familiar interview <your idea>")
+    print()
+    print("The interview asks one question at a time and writes your")
+    print("answers into notes.md. Nothing moves to the next stage until")
+    print("you say so.")
+    return 0
+
+
+def cmd_status(args):
+    """Show what Familiar can see and what it still needs."""
+    os.system(f"python3 {HOME}/scripts/doctor.py")
+    return 0
+
+
+AGENTS = {
+    "claude": ("Claude Code", Path.home() / ".claude" / "commands"),
+    "opencode": ("opencode", Path.home() / ".config" / "opencode" / "command"),
+    "codex": ("Codex", Path.home() / ".codex" / "commands"),
+    "gemini": ("Gemini CLI", Path.home() / ".gemini" / "commands"),
+}
+
+
+def cmd_skill_install(args):
+    """Install /familiar-* commands for an agent."""
+    agent = args.agent
+    if agent == "all":
+        targets = AGENTS
+    elif agent in AGENTS:
+        targets = {agent: AGENTS[agent]}
+    else:
+        print(f"Unknown agent: {agent}")
+        print(f"Supported: {', '.join(sorted(AGENTS))}, all")
+        return 1
+
+    # Use setup.sh with --only for each agent
+    for key, (label, dest) in targets.items():
+        print(f"Installing for {label}...")
+        os.system(f"bash {HOME}/scripts/setup.sh --only {key}")
+    return 0
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="familiar",
+        description="Onboarding and day-to-day commands for Familiar.",
+    )
+    sub = parser.add_subparsers(dest="command")
+
+    # init
+    p_init = sub.add_parser("init", help="set up Familiar in the current directory")
+    p_init.add_argument("--force", action="store_true", help="overwrite existing config")
+
+    # new-piece
+    p_piece = sub.add_parser("new-piece", help="scaffold a new piece folder")
+    p_piece.add_argument("slug", nargs="?", help="a short slug for the piece")
+    p_piece.add_argument("--force", action="store_true", help="overwrite if exists")
+
+    # status
+    sub.add_parser("status", help="what Familiar can see and what it still needs")
+
+    # skill install
+    p_skill = sub.add_parser("skill", help="manage agent skills")
+    p_skill_sub = p_skill.add_subparsers(dest="skill_command")
+    p_install = p_skill_sub.add_parser("install", help="install commands for an agent")
+    p_install.add_argument("agent", nargs="?", default="all",
+                           help=f"agent to install for: {', '.join(sorted(AGENTS))}, all (default: all)")
+
+    args = parser.parse_args()
+
+    if args.command == "init":
+        sys.exit(cmd_init(args))
+    elif args.command == "new-piece":
+        sys.exit(cmd_new_piece(args))
+    elif args.command == "status":
+        sys.exit(cmd_status(args))
+    elif args.command == "skill" and args.skill_command == "install":
+        sys.exit(cmd_skill_install(args))
+    else:
+        parser.print_help()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

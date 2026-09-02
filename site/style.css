@@ -141,6 +141,11 @@ a { color: var(--accent); }
 
 footer { padding: 3rem 0 4rem; color: var(--muted); font-size: 0.95rem; }
 footer a { color: var(--muted); }
+footer .footer-links { margin-top: 1rem; }
+footer .footer-legal {
+  margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--slate);
+  font-size: 0.78rem; letter-spacing: 0.04em;
+}
 
 /* Release notes. Generated from CHANGELOG.md by scripts/build-site.py, so the
    markup here is the only place its shape is decided. Same ladder rhythm as

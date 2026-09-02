@@ -9,6 +9,8 @@ on:
     branches: [main]
     paths:
       - 'site/**'
+      - 'CHANGELOG.md'
+      - 'scripts/build-site.py'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -30,6 +32,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Render the release notes from CHANGELOG.md
+        run: python3 scripts/build-site.py
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

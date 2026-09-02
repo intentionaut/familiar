@@ -141,3 +141,44 @@ a { color: var(--accent); }
 
 footer { padding: 3rem 0 4rem; color: var(--muted); font-size: 0.95rem; }
 footer a { color: var(--muted); }
+
+/* Release notes. Generated from CHANGELOG.md by scripts/build-site.py, so the
+   markup here is the only place its shape is decided. Same ladder rhythm as
+   .stage: a rule between entries, the version in display type. */
+.release {
+  display: grid; grid-template-columns: 9rem minmax(0, 1fr);
+  /* The version row sizes to the number; everything left over goes to the
+     body. Without this the date lands at the top of a row as tall as the
+     entry, which floats it away from the version it belongs to. */
+  grid-template-rows: auto 1fr;
+  gap: 0 1.5rem;
+  padding: 2.5rem 0; border-top: 1px solid var(--slate);
+}
+.release:last-child { border-bottom: 1px solid var(--slate); }
+.release h2 {
+  font-family: var(--font-display); font-size: 1.75rem; line-height: 1;
+  color: var(--accent); margin: 0;
+  font-variation-settings: 'opsz' 144, 'SOFT' 100;
+}
+.release-date {
+  grid-column: 1; margin: 0.5rem 0 0;
+  font-size: 0.8rem; color: var(--muted); letter-spacing: 0.04em;
+}
+.release-body { grid-column: 2; grid-row: 1 / span 2; max-width: 62ch; }
+.release-body > :first-child { margin-top: 0; }
+.release-body p { margin: 0 0 1rem; }
+.release-body ul { margin: 0; padding-left: 1.1rem; }
+.release-body li { margin-bottom: 0.9rem; }
+.release-body li:last-child { margin-bottom: 0; }
+.release-body code {
+  font-family: var(--mono); font-size: 0.85em;
+  background: var(--slate); border-radius: 4px; padding: 0.1rem 0.35rem;
+  overflow-wrap: anywhere;
+}
+
+/* The version column is a luxury, not the content. On a phone it stacks. */
+@media (max-width: 48rem) {
+  .release { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; padding: 2rem 0; }
+  .release-date { margin: 0 0 1rem; }
+  .release-body { grid-column: 1; grid-row: auto; }
+}

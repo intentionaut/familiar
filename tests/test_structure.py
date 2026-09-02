@@ -5,6 +5,8 @@ without a command, a prompt referenced but never written, a knowledge file named
 in a prompt that does not exist. No model, no network, no key. Under a second.
 """
 import re
+import subprocess
+import sys
 import unittest
 from pathlib import Path
 
@@ -152,6 +154,25 @@ class Structure(unittest.TestCase):
         text = site.read_text()
         for cmd in ("board", "new-piece", "harvest"):
             self.assertIn(cmd, text, f"site missing slash command: {cmd}")
+
+    def test_the_release_notes_page_matches_the_changelog(self):
+        """The site is canonical for the product, so it cannot lag the source.
+
+        releases.html is generated from CHANGELOG.md. It is committed so the
+        site keeps its promise of needing no build step, which means it can be
+        committed stale. Regenerating and comparing is what stops that.
+        """
+        page = ROOT / "site" / "releases.html"
+        if not (ROOT / "site").is_dir():
+            self.skipTest("no site/ in this checkout")
+        self.assertTrue(page.is_file(),
+                        "site/releases.html is missing. Run scripts/build-site.py")
+        before = page.read_text()
+        subprocess.run([sys.executable, str(ROOT / "scripts" / "build-site.py")],
+                       capture_output=True, check=True)
+        self.assertEqual(before, page.read_text(),
+                         "site/releases.html is out of date with CHANGELOG.md. "
+                         "Run scripts/build-site.py and commit the result.")
 
     def test_no_prompt_fixes_anything_silently(self):
         """Every edit surfaces a decision; the writer accepts or rejects it.

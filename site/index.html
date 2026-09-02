@@ -56,9 +56,14 @@
       is the part you stopped noticing.
     </p>
     <p>
-      Familiar asks while the work is still warm. It interviews you, proposes
-      structures, drafts in your voice, and hands back an editor's report
-      instead of a rewrite. Every stage stops and waits for you.
+      I finished a product, sat down to write about how it got made, and found
+      nothing to write from. The repos told me what I did. Nothing told me why.
+      I had made every one of those decisions myself and I could not reconstruct
+      a single one.
+    </p>
+    <p>
+      So I built Familiar. It asks while the work is still warm, and writes down
+      what you said without tidying it. Every stage stops and waits for you.
     </p>
     <div class="cta-row">
       <a class="btn-primary" href="https://github.com/intentionaut/familiar?utm_source=familiar.intentionaut.com&utm_medium=referral&utm_campaign=site">Get it on GitHub</a>
@@ -86,7 +91,7 @@
 
 <span class="t-y">You</span>       Yes. That's it.
 
-<span class="t-d">  &rarr; notes.md  thesis &middot; stakes &middot; 3 evidence items (1 needs source)</span>
+<span class="t-d">  &rarr; notes.md  thesis &middot; stakes &middot; 3 evidence (1 unsourced)</span>
 
 <span class="t-p">$</span> <span class="t-c">familiar outline</span>
 
@@ -151,23 +156,26 @@
 
   <ol class="stage-list">
     <li class="stage">
-      <span class="stage-n">/board</span>
-      <div class="stage-body">
-        <h3>See everything in flight</h3>
-        <p>Your pieces by state, what each one needs next, what you cut and can reuse. A board you refresh in one command.</p>
-      </div>
-    </li>
-    <li class="stage">
-      <span class="stage-n">/new-piece</span>
+      <span class="stage-n">01</span>
       <div class="stage-body">
         <h3>Start something</h3>
+        <code class="stage-cmd">/familiar-new-piece the-churn-model</code>
         <p>Scaffolds the folder, then goes straight into the interview: one question at a time until the idea has a thesis and the stakes are on the page.</p>
       </div>
     </li>
     <li class="stage">
-      <span class="stage-n">/harvest</span>
+      <span class="stage-n">02</span>
+      <div class="stage-body">
+        <h3>Pick it back up</h3>
+        <code class="stage-cmd">/familiar-board</code>
+        <p>Your pieces by state, what each one needs next, what you cut and can reuse. A board you refresh in one command.</p>
+      </div>
+    </li>
+    <li class="stage">
+      <span class="stage-n">03</span>
       <div class="stage-body">
         <h3>When you do not know what to write about</h3>
+        <code class="stage-cmd">/familiar-harvest</code>
         <p>Reads your build logs across projects and extracts recurring themes, growth signals, and ready-to-go topics.</p>
       </div>
     </li>
@@ -223,6 +231,7 @@
   </p>
   <div class="cta-row">
     <a class="btn-primary" href="https://github.com/intentionaut/familiar?utm_source=familiar.intentionaut.com&utm_medium=referral&utm_campaign=site">Visit the repo</a>
+    <a class="link-arrow" href="./releases.html">What changed lately</a>
     <a class="link-arrow" href="https://intentionaut.com/open-source/familiar/?utm_source=familiar.intentionaut.com&utm_medium=referral&utm_campaign=site">Where it came from</a>
   </div>
   <p style="margin-top:1.5rem"><span class="pill"><span class="pill-prompt">$</span>&nbsp;git clone https://github.com/intentionaut/familiar.git</span></p>
@@ -230,6 +239,7 @@
 
 <footer class="wrap">
   <p>
+    <a href="./releases.html">Release notes</a> &middot;
     Made by <a href="https://intentionaut.com/?utm_source=familiar.intentionaut.com&utm_medium=referral&utm_campaign=site">Saielle DaSilva</a>.
     Every issue of Intentionaut, a fortnightly letter on design, product, data
     and AI, goes through it. The build stories land there first.

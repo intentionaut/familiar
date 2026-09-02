@@ -16,6 +16,8 @@ positive:
     expect: fire
   - utterance: "Turn last week's piece into a week of LinkedIn and Bluesky posts."
     expect: fire
+  - utterance: "I wrote this essay months ago and never shipped it. Can you read it and tell me what the argument actually is?"
+    expect: fire
 
 negative:
   - utterance: "Write a PRD for the new onboarding flow."
@@ -26,6 +28,14 @@ negative:
     expect: no-fire
     route_to: decision-log
     why: capturing a decision with rationale and a review date is decision-log, even if it might become an essay later.
+
+bring_is_not_repurpose:
+  - utterance: "Read this draft I have been sitting on and tell me what it is doing."
+    expect: fire
+    why: unfinished prose from outside Familiar is the bring stage. It maps the spine and audits the claims, and it never rewrites the file.
+  - utterance: "Take the piece I sent on Tuesday and get me a companion for LinkedIn."
+    expect: fire
+    why: a piece that already shipped through Familiar is repurpose, not bring. Bring is for words the pipeline has never seen.
 
 ambiguous:
   - utterance: "Help me write something about this week."

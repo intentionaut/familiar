@@ -19,10 +19,13 @@ if [ ! -d "$VAULT/.claude/skills" ]; then
 fi
 
 mkdir -p "$DEST/evals" "$VAULT/04-Projects/Writing" "$VAULT/06-Resources/Familiar/proposals"
-# Seed the writer's voice files into the vault from the templates, never overwriting.
+# Seed the writer's voice files into the vault from the templates, never
+# overwriting. Globbed, never enumerated: a hardcoded list silently skips any
+# knowledge file added later, and the stage that needs it then reads the
+# shipped template instead of the writer's house without anything erroring.
 K="$VAULT/06-Resources/Familiar/knowledge"
-mkdir -p "$K/examples" "$K/languages"
-for f in positioning.md voice-guide.md style-rules.md editor-report.md social-schedule.md links.md longform-channels.md reflection.md context-log.md models.md examples/canonical.md languages/README.md languages/_template.md; do
+( cd "$HOME_DIR/knowledge" && find . -name "*.md" ) | sed 's|^\./||' | while read -r f; do
+  mkdir -p "$K/$(dirname "$f")"
   [ -f "$K/$f" ] || cp "$HOME_DIR/knowledge/$f" "$K/$f"
 done
 sed "s|{{FAMILIAR_HOME}}|$HOME_DIR|g" "$HOME_DIR/dex/familiar/SKILL.md" > "$DEST/SKILL.md"

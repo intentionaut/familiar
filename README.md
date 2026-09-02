@@ -233,6 +233,7 @@ familiar social                the posts, ending at copy you approved
 familiar publish               approved posts into your scheduler
 familiar learn ingest <path>   teach it your voice from what you have published
 familiar reflect               two questions about how the work is going
+familiar bring <path>          start from a draft or notes you already have
 familiar case-study <log>      start from a build log or a coding session
 familiar board                 what you have in flight, and what each piece needs
 ```

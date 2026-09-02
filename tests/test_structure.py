@@ -56,6 +56,22 @@ class Structure(unittest.TestCase):
             "setup.sh no longer globs the adapters, so a stage added later "
             "will be silently skipped by the installer.")
 
+    def test_the_dex_installer_seeds_every_knowledge_file(self):
+        """It must glob knowledge/, never enumerate it.
+
+        Same shape of mistake as the hardcoded adapter list, with a quieter
+        failure: a knowledge file missing from the vault means the stage that
+        needs it reads the shipped template instead of the writer's house, and
+        nothing errors. The output looks like a bad edit rather than a missing
+        file, so it gets argued with instead of investigated.
+        """
+        install = (ROOT / "dex" / "install.sh").read_text()
+        self.assertNotIn("for f in positioning.md", install,
+                         "dex/install.sh enumerates the knowledge files again, "
+                         "so anything added later will not reach a vault.")
+        self.assertIn('find . -name "*.md"', install,
+                      "dex/install.sh no longer globs knowledge/.")
+
     def test_adapters_carry_the_home_placeholder(self):
         bad = [p.name for p in ADAPTERS.glob("*.md")
                if "{{FAMILIAR_HOME}}" not in p.read_text()]
@@ -111,6 +127,43 @@ class Structure(unittest.TestCase):
                                 site.read_text()))
         missing = sorted((stems(PROMPTS) - PROMPTS_WITHOUT_A_COMMAND) - listed)
         self.assertEqual([], missing, f"stages missing from the site: {missing}")
+
+    def test_no_prompt_fixes_anything_silently(self):
+        """Every edit surfaces a decision; the writer accepts or rejects it.
+
+        The social stage once told an agent to fix mechanical violations
+        silently, which made a self-graded one-word field the only quality
+        check a post ever got. This is that regression, written broadly enough
+        to catch the next prompt that reaches for the same shortcut.
+        """
+        pattern = re.compile(r"(fix|correct|appl|chang|rewrit)\w*[^.]{0,60}?"
+                             r"(silently|quietly|without (?:asking|telling))",
+                             re.IGNORECASE)
+        offenders = []
+        for path in PROMPTS.glob("*.md"):
+            # Whole file, whitespace collapsed: the wording this guards against
+            # was wrapped across two lines, so a line-by-line search misses it.
+            text = " ".join(path.read_text().split())
+            found = pattern.search(text)
+            if found:
+                offenders.append(f"{path.name}: {found.group(0)!r}")
+        self.assertEqual([], offenders, f"prompts fixing things silently: {offenders}")
+
+    def test_the_social_gate_runs_the_edit_stage(self):
+        """Gate 2 of `social` is where a picked post gets its edit pass.
+
+        Posts shipped for a while with no edit stage at all: `dev-edit` and
+        `line-edit` cover a piece, and nothing covered a post. If this gate
+        stops naming social-edit, that hole is back.
+        """
+        social = (PROMPTS / "social.md").read_text()
+        self.assertIn("prompts/social-edit.md", social,
+                      "the social stage no longer hands gate 2 to social-edit, "
+                      "so a picked post reaches the schedule unedited.")
+        for name in ("social-rules.md", "style-rules.md"):
+            self.assertIn(f"knowledge/{name}",
+                          (PROMPTS / "social-edit.md").read_text(),
+                          f"social-edit no longer reads {name}")
 
     def test_no_em_dashes_in_shipped_prose(self):
         """Familiar's own first style rule bans them, so its prose must obey.

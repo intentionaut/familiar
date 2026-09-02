@@ -35,6 +35,36 @@ Hard rules. An entry that breaks one of them does not ship.
    something was wrong, this is the one place that must not show. Name what the
    reader now has. A rule that only removes something is half written until it
    says what fills the space.
+8. **No relief from a burden they never carried.** A bullet that names what a
+   feature spares the reader ("no report to open", "no extra step", "without
+   leaving the terminal") only works when the reader lived through the thing
+   being spared. Where they never had it, the sentence is describing a design
+   conversation they were not in, and it leaves them wondering what they missed.
+   The test is whether the absence was ever present in a version they used. If
+   it was not, say where the work happens rather than where it does not.
+
+---
+
+## 0.16.0 (2026-09-02)
+
+Writing you already have gets a way in, and every post gets a pass before it
+ships.
+
+**What this gives you:**
+
+- **Bring a draft you already wrote.** `familiar bring <path>` walks a piece you
+  already have section by section, saying what each part is doing rather than
+  what it says, then names the argument it actually makes against the one you
+  meant. Where a draft promises three things and delivers one, that is the first
+  thing it tells you. Your file is copied in and never edited.
+- **Draft editing flexibility.** Challenged runs the pipeline from the interview
+  on. Tidied carries your words straight across to the line edit, sentence for
+  sentence. You choose at the gate.
+- **Social post editing.** `familiar social-edit` reads a post for whether it
+  says one thing, whether it makes sense to someone who has not read the piece,
+  and whether it ends on a thought or trails off into a link, all against your
+  own house rules. When a post is really two posts, it writes out the viewpoints
+  the material supports in full and asks what you actually think.
 
 ---
 
@@ -101,8 +131,9 @@ work instead of less.
   and there is always an "or something else", so a pick can never quietly
   narrow your piece down to whatever the tool happened to think of.
 - **It goes back to open questions when your answers lengthen again.** This is a
-  fallback and not a mode. An interview made entirely of multiple choice cannot
-  surprise you, and being surprised is most of what an interview is for.
+  fallback and not a mode. The picks carry the stretch where composing is
+  expensive, and the open questions are where an interview surprises you, which
+  is most of what it is for.
 
 ---
 
@@ -146,9 +177,9 @@ Familiar can now learn from the choices you make, not only the edits you make.
   preference. Two is a coincidence. Below three it is listed as something to
   watch, with the picks attached, and said plainly not to be a rule yet.
 - **The most useful thing it can find is a contradiction.** If a reason you gave
-  goes against what your voice guide says, that is surfaced as a contradiction
-  rather than quietly written in as a new rule. Either the guide is out of date
-  or you have changed, and only you can say which.
+  goes against what your voice guide says, it comes back to you named as a
+  contradiction. Either the guide is out of date or you have changed, and only
+  you can say which.
 - **Reviews get offered instead of remembered.** Turn on `voice-review.md` and
   Familiar will mention, once, at the end of a stage, that enough decisions have
   built up to be worth a look. Off by default. The cadence is a floor rather
@@ -168,8 +199,7 @@ them.
 
 - **Options arrive as finished text.** Where a stage has more than one good
   answer, each one is written out in full in the piece, with a line on what it
-  buys and a line on what it costs. You read them and pick. There is nothing to
-  imagine and nothing to ask for first.
+  buys and a line on what it costs. You read them and pick, in seconds.
 - **Two to four of them.** One is a recommendation wearing a disguise. Five is a
   shrug.
 - **Your reason is kept next to your choice.** One line, in your own words. It
@@ -266,15 +296,13 @@ you run it inside anything else.
   it will offer is to the tracking parameters, which you did not write.
 - **A scheduler is optional.** Buffer works out of the box if you connect it.
   Turn it off, or never turn it on, and you get a clean table of every post
-  with its channel, time and finished text, ready to paste. No nagging.
+  with its channel, time and finished text, ready to paste.
 - **It tells you what the scheduler cannot do.** A link that belongs in a
   pinned first comment comes back as a short checklist with times, because
-  schedulers create posts and not comments. It will not silently move the link
-  into the post instead.
+  schedulers create posts and not comments. The link stays where you put it.
 - **Familiar no longer assumes where it is running.** Every stage works on its
   own, with no vault and no other tools, and every one of them installs. If you
   do run it inside Dex, Dex adds what it can and says so in one short profile.
-  Nothing about the Dex experience is lost.
 
 ---
 

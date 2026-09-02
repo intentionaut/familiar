@@ -81,7 +81,9 @@ one, in a line, and list them:
 | `finalise` | `prompts/finalise.md` | Title, framing, subject line and SEO, once the piece is finished |
 | `repurpose short\|long` | `prompts/repurpose.md` | The writer picks short or long first; long seeds a companion piece and hands to interview |
 | `social` | `prompts/social.md` | A week of posts on the writer's cadence; ends at approved copy |
+| `social-edit [target]` | `prompts/social-edit.md` | The pass a post gets before it ships: viewpoint first, then the mechanics. Runs in the conversation, writes no report |
 | `publish [file]` | `prompts/publish.md` | Schedules already-approved posts; builds and counts URLs first, never rewrites copy |
+| `bring [draft\|notes] <path>` | `prompts/bring.md` | A draft or notes you already have: the spine it has, the claims it makes, the questions it cannot answer |
 | `case-study <LOG.md \| transcript.jsonl \| session [dir]>` | `prompts/case-study.md` | Brief and questions from a build log or a coding session |
 | `learn ingest <path>` / `learn diff <piece>` / `learn decisions` | `prompts/learn.md` | Propose voice rules from past writing, from draft-vs-final, or from the choices the writer made |
 | `reflect` | `prompts/reflect.md` | Two questions about the work, recorded in the writer's own words |

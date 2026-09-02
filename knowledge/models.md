@@ -16,6 +16,7 @@ where it is worth spending more or less.
 
 | Stage | Spend | Why |
 |-------|-------|-----|
+| /bring | more | Finding the argument inside finished prose, and telling a sourced claim from an asserted one |
 | /case-study | more | Long build log, several files; a strong reading tier pays off |
 | /interview | more | Turn by turn; must hold a growing transcript and notice what you skipped |
 | /outline | more | Reasoning across three structures |

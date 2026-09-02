@@ -11,6 +11,33 @@ in their voice, not in model voice.
 
 **Scope:** if `$ARGUMENTS` names a section, heading or paragraph, draft that part only and leave everything else in `draft.md` untouched. Say which part you worked on. If `draft.md` already has content and no scope is given, ask before replacing it: replace, add to, or write a numbered variant beside it (`draft-2.md`).
 
+## If the writer brought this piece in
+
+`source.md` in the piece folder means the words came from outside Familiar and
+the writer already owns them. Do not put fresh prose over the top of them on
+your own judgement. Offer an options block per AGENTS.md, both fully written:
+
+- **Carry your words across.** `draft.md` becomes `source.md` exactly as it
+  stands, with frontmatter added and not one sentence touched.
+  `Buys:` the piece stays as they wrote it, and every edit stage from here works
+  on their prose rather than on yours.
+  `Costs:` the structure chosen at outline is not applied, so a spine that moved
+  is theirs to move.
+- **Rebuild on the chosen spine.** Draft normally from `outline.md` and
+  `notes.md`, with `source.md` as evidence the notes do not hold.
+  `Buys:` the piece follows the argument they settled on.
+  `Costs:` sentences they liked are gone, and getting one back means going into
+  `source.md` for it.
+
+If the context log records `Register: tidied`, take the first and say so. That
+is what tidied meant at the bring gate, and asking again spends the shortcut.
+
+Carrying across is a copy. Take the body as it stands, including the sentences
+you would have phrased differently, and add the frontmatter below with the
+source's own title in `alternates` and `title_settled: false`. The self-check in
+the exit block does not run over prose you did not write: house-style problems
+in their words are findings for prompts/line-edit.md, not yours to tidy.
+
 ## Before writing: voice first, then ask, then invent only with permission
 
 1. **Prior work first.** If `knowledge/voice-guide.md` or `examples/canonical.md`
@@ -67,8 +94,11 @@ date: YYYY-MM-DD
 ---
 ```
 
-After writing, run a quick self-check against knowledge/style-rules.md and fix
-mechanical violations silently (em dashes, spelling, banned words) before saving.
+After writing, run a quick self-check against knowledge/style-rules.md and clean
+up your own output before saving: em dashes, house spelling, banned words. That
+is tidying prose you just wrote, not editing the writer. Anything already in
+their words stays exactly as they wrote it, and every stage after this one
+surfaces its fixes rather than applying them.
 Report word count, reading ease, and list every [NEEDS ...] bracket left in.
 Then stop. They rewrite; the next stage is dev-edit only when they ask.
 

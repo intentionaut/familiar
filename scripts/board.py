@@ -337,11 +337,14 @@ def gather(folder, now, stale_days, source=""):
     fm, draft_body = frontmatter(draft_raw)
     notes = read(folder / "notes.md")
     outline = read(folder / "outline.md")
+    # A piece that came in through /bring has prose before it has notes. Its
+    # spine is where the argument is written down, so it stands in for both.
+    spine = read(folder / "spine.md")
 
     title = fm.get("title") or ""
     if not title:
-        m = re.search(r"^#\s+(.+)", notes or outline, re.M)
-        title = m.group(1) if m else ""
+        m = re.search(r"^#\s+(.+)", notes or outline or spine, re.M)
+        title = re.sub(r"^Spine:\s*", "", m.group(1)) if m else ""
     if not title:
         words = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", folder.name).replace("-", " ").strip()
         title = (words[:1].upper() + words[1:]) if words else folder.name
@@ -367,11 +370,17 @@ def gather(folder, now, stale_days, source=""):
         m = re.search(r"^##\s*Working thesis\s*\n+(.+?)(?=\n#|\Z)", notes, re.S | re.M)
         if m:
             snippet = m.group(1).strip()
+    if not snippet and spine:
+        m = re.search(r"^##\s*The argument as found\s*\n+(.+?)(?=\n#|\Z)", spine, re.S | re.M)
+        if m:
+            snippet = m.group(1).strip()
     if not snippet:
-        for para in (notes or outline).split("\n\n"):
+        for para in (notes or outline or spine).split("\n\n"):
             para = para.strip()
             if para and not para.startswith(("#", ">", "-", "*", "```", "|")):
                 snippet = para; break
+    # Snippets are plain text, so emphasis markers would show as asterisks.
+    snippet = re.sub(r"\*\*?([^*]+)\*\*?", r"\1", snippet)
     snippet = " ".join(snippet.split())
     if len(snippet) > 240:
         snippet = snippet[:237].rsplit(" ", 1)[0] + "..."
@@ -715,7 +724,8 @@ def piece_page(p, prefix="familiar"):
         + '</div>')
 
     # Supporting files, folded away.
-    for name, label in (("notes.md", "Notes from the interview"),
+    for name, label in (("spine.md", "The spine it came in with"),
+                        ("notes.md", "Notes from the interview"),
                         ("outline.md", "The outline"),
                         ("edits/dev-edit-report.md", "Developmental edit"),
                         ("edits/line-edit-report.md", "Line edit"),

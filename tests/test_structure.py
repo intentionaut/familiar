@@ -155,6 +155,32 @@ class Structure(unittest.TestCase):
         for cmd in ("board", "new-piece", "harvest"):
             self.assertIn(cmd, text, f"site missing slash command: {cmd}")
 
+    def test_the_share_card_says_what_the_page_says(self):
+        """A pasted link is read in a feed, so it carries the hook, not the
+        search title.
+
+        The two are allowed to differ and do so on purpose. What they may not
+        do is drift: og:title and twitter:title must match the h1, so someone
+        arriving from a shared link lands on the line they clicked. <title>
+        keeps the category words and is deliberately not checked against them.
+        """
+        site = ROOT / "site" / "index.html"
+        if not site.is_file():
+            self.skipTest("no site/ in this checkout")
+        text = site.read_text()
+
+        h1 = re.search(r"<h1>(.*?)</h1>", text, re.S)
+        self.assertIsNotNone(h1, "the front page has no h1")
+        heading = re.sub(r"<[^>]+>", "", h1.group(1)).strip()
+
+        for prop in ('property="og:title"', 'name="twitter:title"'):
+            m = re.search(prop + r' content="([^"]*)"', text)
+            self.assertIsNotNone(m, f"{prop} is missing")
+            self.assertEqual(heading, m.group(1),
+                             f"{prop} no longer matches the h1. Either the "
+                             f"heading changed without the share card, or the "
+                             f"two were merged back together.")
+
     def test_the_release_notes_page_matches_the_changelog(self):
         """The site is canonical for the product, so it cannot lag the source.
 

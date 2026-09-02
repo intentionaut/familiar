@@ -65,6 +65,14 @@ Sweep for every pattern below. Each flag gets the exact rewritten line. When uns
   After: "People are losing the ability to think through the hard stuff, and
   nobody has noticed." (Matches humanizer §7; adopted 2026-08-30 from a real
   outline.)
+- Key, as an importance-filler adjective ("key players", "key questions").
+  It asserts significance instead of demonstrating it; a selector word like
+  "few" or "the" is already doing the real work. Before: "Everyone is
+  scrambling to adopt and few key players are ready to deliberately and
+  intentionally move the right pieces for sustainable growth." After:
+  "Everyone is scrambling to adopt, and few companies are ready to move the
+  right pieces for sustainable growth." (Matches humanizer's overused-word
+  list; adopted 2026-09-03 from a real draft.)
 
 ### Structural tells
 

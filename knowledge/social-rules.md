@@ -81,6 +81,24 @@ Fail on any of:
 - The same verbal tic in more than one post. A phrase that is fine once is a
   habit at twice and a signature at three times.
 
+## The house's rules on personal material apply here too
+
+`positioning.md` says what the publication is and, usually, how much of the
+writer's own life belongs in it. **Those rules are not relaxed for a post.**
+
+They get skipped more often here than anywhere else, because a post is short and
+the mechanical checks feel like the whole job. They are not. A post can pass
+every rule in `style-rules.md` and still be one the writer would not sign,
+because it says something about them they did not want said.
+
+Read `positioning.md` before judging any post. If it draws a line around
+personal material, that line runs through the posts as well as the pieces, and
+it usually runs hardest on whichever channel the writer's clients read.
+
+The trap worth naming: the material a house rules out is often the most vivid
+material available, so cutting it makes the post worse before a rewrite makes it
+better. Cut it anyway, then find the version that says what the work shows.
+
 ## When a post has no single viewpoint
 
 Do not hand back a list of fixes. A post with two ideas in it is not a post with

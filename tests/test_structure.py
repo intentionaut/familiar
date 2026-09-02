@@ -14,7 +14,7 @@ ADAPTERS = ROOT / ".claude" / "commands"
 
 # The three ways in. Only harvest is a prompt; board and new-piece are
 # script-backed. Every other stage is agent-routed.
-PROMPTS_WITH_COMMANDS = {"harvest"}
+PROMPTS_WITH_COMMANDS = {"harvest", "reflect"}
 # A command backed by a script instead of a prompt.
 COMMANDS_WITHOUT_A_PROMPT = {"board", "doctor", "new-piece"}
 
@@ -67,9 +67,22 @@ class Structure(unittest.TestCase):
         self.assertIn('for f in "$dir"/familiar-*.md', setup,
                       "setup.sh no longer scopes its cleanup to familiar-*.md, "
                       "so it may delete a command the writer wrote.")
-        self.assertIn('grep -q "Familiar" "$dir/reflect.md"', setup,
-                      "setup.sh removes reflect.md without checking it is "
-                      "Familiar's, so a writer's own /reflect is at risk.")
+        self.assertNotIn('rm -f "$dir/reflect.md"', setup,
+                         "setup.sh deletes the /reflect alias, which has a "
+                         "scheduled nudge pointing at it.")
+
+    def test_the_reflect_alias_is_installed(self):
+        """A scheduled nudge tells the writer to reflect, so /reflect must exist.
+
+        reflect is not a way into a piece, so it is not one of the three
+        commands, but reflection-nudge.sh points at it on a cadence. A nudge
+        naming a command the writer does not have is worse than no nudge.
+        """
+        setup = (ROOT / "scripts" / "setup.sh").read_text()
+        self.assertIn('ALIAS="reflect"', setup,
+                      "setup.sh no longer installs the /reflect alias.")
+        self.assertTrue((ADAPTERS / "reflect.md").is_file(),
+                        "the reflect adapter is missing.")
 
     def test_the_dex_installer_seeds_every_knowledge_file(self):
         """It must glob knowledge/, never enumerate it.

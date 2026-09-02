@@ -28,8 +28,12 @@ done
 # adapters say so when that is what they got. See scripts/paths.py.
 KDIR="$(python3 "$DIR/scripts/paths.py" --knowledge-only 2>/dev/null || echo "$DIR/knowledge")"
 
-# The three slash commands that do real work through the agent.
+# The three ways into a piece.
 COMMANDS="board new-piece harvest"
+# reflect is not a way into a piece; it is a standing practice with its own
+# scheduled nudge, and it installs unprefixed as /reflect. A nudge that names a
+# command the writer does not have is worse than no nudge at all.
+ALIAS="reflect"
 
 install_for() {
   local label="$1" dir="$2"
@@ -40,6 +44,12 @@ install_for() {
       sed -e "s|{{FAMILIAR_HOME}}|$DIR|g" -e "s|{{FAMILIAR_KNOWLEDGE}}|$KDIR|g" "$adapter" > "$dir/familiar-$cmd.md"
     fi
   done
+
+  # The standing practice, installed unprefixed.
+  alias_adapter="$DIR/.claude/commands/$ALIAS.md"
+  if [ -f "$alias_adapter" ]; then
+    sed -e "s|{{FAMILIAR_HOME}}|$DIR|g" -e "s|{{FAMILIAR_KNOWLEDGE}}|$KDIR|g" "$alias_adapter" > "$dir/$ALIAS.md"
+  fi
 
   # Take out commands an earlier version installed that are no longer part of
   # Familiar. A left-behind command is worse than a missing one: it still
@@ -59,13 +69,6 @@ install_for() {
       removed="$removed $stem"
     fi
   done
-
-  # Earlier versions also installed /reflect unprefixed. Check it is Familiar's
-  # before removing it, so a writer's own /reflect command is left alone.
-  if [ -f "$dir/reflect.md" ] && grep -q "Familiar" "$dir/reflect.md" 2>/dev/null; then
-    rm -f "$dir/reflect.md"
-    removed="$removed reflect"
-  fi
 
   if [ -n "$removed" ]; then
     echo "  $label: $dir"
@@ -98,7 +101,7 @@ if [ -z "$ONLY" ] || [ "$ONLY" = "gemini" ]; then
 fi
 
 echo
-echo "Installed /familiar-board, /familiar-new-piece, /familiar-harvest for:$installed"
+echo "Installed /familiar-board, /familiar-new-piece, /familiar-harvest and /reflect for:$installed"
 echo
 echo "Three ways in: start a piece, pick one back up, or find something to"
 echo "write about. Everything after that is a conversation. Tell the agent"

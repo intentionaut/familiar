@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Read the docs
+    url: https://familiar.intentionaut.com
+    about: Learn how Familiar works before opening an issue
+  - name: Intentionaut
+    url: https://intentionaut.com/subscribe
+    about: The newsletter Familiar was built for

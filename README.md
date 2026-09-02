@@ -170,26 +170,42 @@ writers are the way this gets built: see `CONTRIBUTING.md`.
 ## Use it
 
 ```sh
-mkdir -p ~/Projects
 git clone https://github.com/intentionaut/familiar.git ~/Projects/familiar
-~/Projects/familiar/scripts/setup.sh
+cd ~/Projects/familiar
+python3 scripts/familiar init
 ```
 
-`~/Projects/` is just a suggestion. Any working directory is fine: clone
-anywhere, then run `scripts/setup.sh` from there. It derives the folder it
-lives in and installs from it.
+The `familiar` CLI is agent-neutral: it works from any terminal, any AI
+assistant, or no assistant at all. It scaffolds the right folders, copies the
+knowledge templates, and installs commands for whichever agents you use.
 
-The script installs the `/familiar-*` commands for Claude Code and opencode so
-they work from any folder. Each piece gets its own folder under `pieces/`;
-`pieces/README.md` shows the layout the stages write into.
+```sh
+familiar init                  set up Familiar in the current directory
+familiar new-piece <slug>      scaffold a new piece folder
+familiar status                what Familiar can see and what it still needs
+familiar skill install         install commands for all agents
+familiar skill install codex   install commands for Codex only
+```
+
+Supported agents: Claude Code, opencode, Codex (OpenAI), and Gemini CLI.
+Each gets commands installed to its standard location. The prompts are plain
+markdown with no tool-specific syntax, so they work anywhere.
+
+`~/Projects/` is just a suggestion. Any working directory is fine: clone
+anywhere, then run `familiar init` from there. It copies the knowledge
+templates into `./knowledge/` and creates a `.familiar` config file that
+points at them.
+
+Each piece gets its own folder under `pieces/`; `pieces/README.md` shows
+the layout the stages write into.
 
 ### Your first hour
 
-Setup ends by telling you what Familiar can see and what it still needs. You can
-ask again at any point:
+`familiar status` tells you what Familiar can see and what it still needs.
+You can run it at any point:
 
 ```sh
-python3 scripts/doctor.py
+python3 scripts/familiar status
 ```
 
 It reports three states per file, and a missing optional file is fine.
@@ -271,11 +287,15 @@ across Dex updates, so the command carries it.
 ## How it's built
 
 - `prompts/` is the source of truth. One plain markdown file per stage, no tool-specific syntax.
+- `scripts/familiar` is the CLI entry point: `init`, `new-piece`, `status`, `skill install`.
 - `.claude/commands/` holds thin adapters that say "read prompts/X.md and follow it". `scripts/setup.sh` installs them globally.
+- `scripts/setup.sh` installs commands for Claude Code, opencode, Codex, and Gemini CLI with `--only <agent>` support.
 - `knowledge/` is yours. The templates ship tracked in the repo; only
   `knowledge/proposals/` and `knowledge/private/` are ignored. If your voice
   guide ever gets candid, keep the fork private.
+- `knowledge/styles/` has templates for different publication types: personal essay, research digest, company changelog, internal newsletter.
 - `pieces/` is where the writing happens. Ignored by git, so the repo stays a tool and your drafts stay with you.
+- `.github/ISSUE_TEMPLATE/` has templates for submitting stages, languages, styles, and publication styles.
 
 ## Where it came from
 
@@ -298,5 +318,6 @@ what shipped, what went wrong, and what it cost. Roughly fortnightly.
 ## Status
 
 Free, and a prompt pack rather than a product. Issues and pull requests
-welcome: language files, one tell at a time with a real example, and styles
-for other kinds of publication. `CONTRIBUTING.md` has the three shapes.
+welcome: language files, one tell at a time with a real example, stages for
+new gates, and styles for other kinds of publication. `CONTRIBUTING.md` has
+the four shapes.

@@ -1,9 +1,35 @@
 # Contributing
 
 Familiar is a prompt pack. Most contributions are a few lines of markdown.
-Three kinds are especially welcome.
+Four kinds are especially welcome.
 
-## 1. A language
+## 1. A stage
+
+A stage is a markdown prompt in `prompts/` that takes the writer through one
+gate of the editorial pipeline. If you have built a stage that works for your
+kind of publication, it likely works for others.
+
+To submit one:
+
+1. Write the prompt as `prompts/<name>.md`. Follow the existing prompts for
+   structure: a setup section, a method, clear stopping points, and no
+   silent rewrites.
+2. Add a command adapter at `.claude/commands/<name>.md` with the standard
+   `{{FAMILIAR_HOME}}` and `{{FAMILIAR_KNOWLEDGE}}` placeholders. Copy an
+   existing adapter and change the prompt name.
+3. If the stage reads knowledge files that are not yet in `knowledge/`, add
+   them as templates with bracketed prompts.
+4. Add a test case in `tests/test_structure.py` if the stage introduces a
+   new invariant (for example, a new knowledge file that must exist).
+5. Open a pull request titled `stage: <name>` with:
+   - what kind of publication it is for
+   - the gate it sits behind (after which stage, before which)
+   - one real example of its output
+
+Stages must follow the house rule: they propose, the writer decides. A stage
+that applies changes without confirmation will not be merged.
+
+## 2. A language
 
 Familiar's mechanical rules were written for English. Several of them are
 about English orthography (em dashes, spelling, sentence-case headings,
@@ -26,7 +52,7 @@ To add one:
 A native or fluent writer of the language should be one of the authors. We
 would rather have a short file that is right than a long one that is guessed.
 
-## 2. A pattern
+## 3. A pattern
 
 `knowledge/style-rules.md` lists AI tells. Additions are one pattern per pull
 request, with:
@@ -41,12 +67,25 @@ Bulk imports are declined. The false-positive cost of a bloated list lands on
 every writer using it. A weekly check against humanizer already surfaces
 candidates in an issue; picking from that issue is a good first contribution.
 
-## 3. A style
+## 4. A style
 
 If you have adapted Familiar to a different kind of publication (a research
 digest, a company changelog, a magazine), a short `knowledge/styles/<name>.md`
 describing what you changed in positioning, voice and slot shapes helps the
 next person. Same rule: real examples, no invented ones.
+
+## Getting started
+
+```sh
+git clone https://github.com/intentionaut/familiar.git
+cd familiar
+python3 scripts/familiar init
+python3 scripts/familiar status
+```
+
+The `init` command copies knowledge templates into the current directory and
+installs agent commands. Edit `knowledge/positioning.md` and
+`knowledge/voice-guide.md` before the first issue.
 
 ## House rules for the repo itself
 

@@ -16,12 +16,13 @@ into a claude.ai Project.
 /line-edit  → edits/line-edit-report.md  (mechanical pass, exact fixes per flag)
 /finalise   → title, subject line, SEO   (the last creative act; repurpose and social need a settled title)
 /repurpose  → short: social.md | long: a companion piece's brief.md (you pick first; long seeds the pipeline, never drafts)
-/social     → social.md       (candidate pool → the writer picks per channel → finalise; ends at approved copy)
-/social-edit→ social.md ## Chosen  (viewpoint before mechanics; in the conversation, no report; a reworked post comes back through it)
+/social     → social.md       (candidate pool → quality pass → the writer picks per channel → finalise; ends at approved copy)
 /publish    → social.md ## Scheduled  (schedules approved copy only; builds and counts URLs first, one confirm gate)
 /learn      → knowledge/proposals/*.md  (ingest past writing, or diff draft vs final; proposes rules, applies only what is accepted)
 /reflect    → <reflections>/<project>.md  (two questions about the work, recorded verbatim; where the voice comes from)
 /log        → a build log per project   (what shipped, decisions, went wrong, numbers; the hook writes an (auto) entry at session end)
+/harvest    → knowledge/patterns.md     (cross-project pattern extraction: themes, growth signals, ready topics)
+/inspire    → inspirations/<date>-<slug>.md  (clip a snippet, article, or quote for later; optional "why it stuck" note)
 ```
 
 Each piece lives in `pieces/YYYY-MM-DD-slug/`. Stages are gated: never advance
@@ -162,14 +163,15 @@ having to be read.
 what was considered, and the next stage should know a thing was looked at and
 turned down.
 
-## A post gets an edit stage too
+## Posts get an edit pass too
 
 A piece gets `dev-edit` and `line-edit` before it goes out. Posts went without
 one, on the assumption that something short is something simple. Short is where
 a bad decision is cheapest to make and hardest to see.
 
-`social-edit` is that pass. Two things make it different from the other edit
-stages, and both come from the shape of the work rather than from taste:
+The `social` stage includes that pass at gate 2. Two things make it different
+from the other edit stages, and both come from the shape of the work rather than
+from taste:
 
 **It runs in the conversation, not into a report.** A report exists so a writer
 can work through it against the draft, in an editor, at their own pace. For a
@@ -185,10 +187,10 @@ material already supports, fully written, with an escape. Then at most two
 questions, asking for judgement and never for recall, and the post is written
 from the answers.
 
-**A post reworked after approval comes back through it.** Including one already
-in a scheduler. An amendment is where a post gets built out of parts, so it is
-where the viewpoint test earns its keep, and it is the one moment the pass is
-easiest to skip because the copy was approved once already.
+**A post reworked after approval comes back through social.** Including one
+already in a scheduler. An amendment is where a post gets built out of parts, so
+it is where the viewpoint test earns its keep, and it is the one moment the pass
+is easiest to skip because the copy was approved once already.
 
 ## Titles are provisional until the argument is
 

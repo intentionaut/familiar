@@ -153,17 +153,20 @@ class Structure(unittest.TestCase):
         """Gate 2 of `social` is where a picked post gets its edit pass.
 
         Posts shipped for a while with no edit stage at all: `dev-edit` and
-        `line-edit` cover a piece, and nothing covered a post. If this gate
-        stops naming social-edit, that hole is back.
+        `line-edit` cover a piece, and nothing covered a post. The quality pass
+        was previously a separate social-edit stage; it is now inlined into
+        social.md at gate 2.
         """
         social = (PROMPTS / "social.md").read_text()
-        self.assertIn("prompts/social-edit.md", social,
-                      "the social stage no longer hands gate 2 to social-edit, "
-                      "so a picked post reaches the schedule unedited.")
-        for name in ("social-rules.md", "style-rules.md"):
-            self.assertIn(f"knowledge/{name}",
-                          (PROMPTS / "social-edit.md").read_text(),
-                          f"social-edit no longer reads {name}")
+        # Gate 2 must contain the quality pass logic (was in social-edit)
+        self.assertIn("social-rules.md", social,
+                       "social stage no longer reads social-rules.md at gate 2")
+        self.assertIn("style-rules.md", social,
+                       "social stage no longer reads style-rules.md at gate 2")
+        self.assertIn("viewpoint", social.lower(),
+                       "social stage no longer offers viewpoints for failed posts")
+        self.assertIn("two questions", social.lower(),
+                       "social stage no longer asks the two questions after the pick")
 
     def test_no_em_dashes_in_shipped_prose(self):
         """Familiar's own first style rule bans them, so its prose must obey.

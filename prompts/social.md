@@ -19,12 +19,12 @@ a gate.
 This stage only produces the **scheduled posts**. Replies, quote-posts and
 conversation are the writer's live work, not this stage's.
 
-**A post that changes after gate 2 comes back through `social-edit`**, including
+**A post that changes after gate 2 comes back through this stage**, including
 one already sitting in a scheduler. Facts move, dates slip, a link starts
 resolving, and the post gets reworked out of parts to match. That is the moment a
 post becomes two posts welded together, and it is the moment the pass is easiest
 to skip because the copy was approved once already. Reworking a scheduled post is
-writing a new one; run `social-edit` on it, then `publish` to put it back.
+writing a new one; run the quality pass on it again, then `publish` to put it back.
 
 **Precondition: the title is settled.** These posts point at the piece by name,
 and a title that changes afterwards leaves scheduled copy pointing at something
@@ -94,7 +94,7 @@ Rules for every candidate:
 - Run each through style-rules.md and tests 1 to 3 of social-rules.md before
   listing it. Note what a candidate fails as `review: <reason>`. Do not fix it
   here: a candidate is raw material and the writer may not pick it. The real
-  pass is `social-edit` at gate 2, on the posts they did pick.
+  pass is the quality check at gate 2, on the posts they did pick.
 - If the schedule file says an account is shared with the writer's personal
   posts, write work-topic posts only.
 
@@ -137,10 +137,62 @@ any assumption ("piece ships Wednesday 3 September").
 
 ### Gate 2
 
-**Run `social-edit` on the picked posts before showing anything.** Read
-`prompts/social-edit.md` and follow it: the week as a set first, then each post
-against social-rules.md and style-rules.md. A post that has no single viewpoint
-gets a pick and two questions there, not a list of fixes here.
+Before showing anything, run the quality pass on the picked posts. Two passes,
+in order.
+
+#### First, the week
+
+Test 4 from social-rules.md, before any single post. It is the only test that
+cannot be run on a post alone, and it is the one most likely to change what you
+do with the individual posts, because a repetition found here is usually fixed
+by rewriting one post rather than trimming both.
+
+Report it in a line or two: what repeats, in which posts, and which one you
+would change. If nothing repeats, one line saying so.
+
+#### Then each post, in order
+
+For each, run tests 1 to 3 from social-rules.md, then the mechanical sweep from
+style-rules.md and the channel's limit from social-schedule.md.
+
+**If it passes test 1**, show the findings inline, in style-rules.md's format:
+
+```
+"<quoted text>"
+Issue: <rule or test>
+Why it matters: <one sentence>
+Fix: <the exact rewritten line, in the writer's voice>
+```
+
+Then stop and let the writer take each one. Apply what they accept, verbatim.
+Nothing is applied before they answer, including mechanical findings: a quiet
+fix is a decision made on the writer's behalf about their own voice.
+
+If a post genuinely has nothing wrong with it, say which tests it passed and
+that it is ready. Never say only "clean". A pass has to show what it checked or
+it is indistinguishable from not having run.
+
+**If it fails test 1**, do not list findings. Go to the pick: two to four
+viewpoints the material already supports, each written out: the opening line as
+it would stand, plus one line on where the post goes. `Buys:` and `Costs:` on
+each. An escape at the end. One letter is a complete answer.
+
+Say in one line why the post as it stands has no single viewpoint, and name the
+ideas you found in it. That is what makes the options readable.
+
+After the writer picks, ask at most two questions, one at a time. They ask for
+judgement, never for recall. What happened is in the piece, the notes, the
+context log or the record, and finding it is your job, not a question. Ask what
+they think, what they would say to one person about this, what they want the
+reader left holding, which of two readings they meant. If the answer to the
+first question is enough, do not ask the second.
+
+Then write the post from their answers, in their words wherever their words will
+carry it. Voice guide exactly. Run the mechanical sweep and the character count
+on what you wrote before showing it. Show the post and say what you took from
+which answer, in a line. The writer approves, edits or sends you back. An edit
+they make is applied verbatim, and anything they changed goes through the
+mechanical sweep again.
 
 This is the gate. It is not passed by a self-check: a post reaches the schedule
 tables once the writer has answered every finding on it, and "clean" is not

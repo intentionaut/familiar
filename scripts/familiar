@@ -8,11 +8,19 @@ scaffolds the right folders and points you at the right files.
 Usage:
     familiar init                  set up Familiar in the current directory
     familiar new-piece <slug>      scaffold a new piece folder
+    familiar inspire "text" --url X clip a snippet for later
+    familiar harvest               scaffold patterns.md, list build logs found
+    familiar log list              show watched projects
+    familiar log add <project>     register a project and wire its log
+    familiar log entry <project>   scaffold a dated log entry
+    familiar reflect               show reflection status
+    familiar learn                 show knowledge file status
     familiar status                what Familiar can see and what it still needs
     familiar skill install [agent] install commands for a specific agent
 """
 import argparse
 import os
+import re
 import shutil
 import sys
 from datetime import date
@@ -161,6 +169,413 @@ def cmd_new_piece(args):
     return 0
 
 
+def cmd_inspire(args):
+    """Clip a snippet into the inspirations folder."""
+    import re
+    from datetime import date
+
+    # Find where knowledge lives (inspirations goes next to it)
+    kdir = knowledge_dir()
+    if not kdir:
+        print("No knowledge folder configured. Run 'familiar init' first.")
+        return 1
+
+    insp_dir = kdir.parent / "inspirations"
+    insp_dir.mkdir(parents=True, exist_ok=True)
+
+    text = args.text
+    url = args.url
+
+    # Interactive mode: no text provided
+    if not text:
+        print("Paste the snippet (end with an empty line):")
+        lines = []
+        while True:
+            try:
+                line = input()
+            except EOFError:
+                break
+            if line == "" and lines:
+                break
+            lines.append(line)
+        text = "\n".join(lines)
+        if not text.strip():
+            print("Nothing to clip.")
+            return 1
+        if not url:
+            url = input("URL: ").strip()
+            if not url:
+                print("No URL provided. Clip saved without a source.")
+                url = ""
+
+    # Generate slug from first ~5 words
+    words = re.sub(r"[^a-z0-9 ]", "", text.lower()).split()[:5]
+    slug = "-".join(words) if words else "clip"
+    slug = re.sub(r"-{2,}", "-", slug).strip("-")
+
+    today = date.today().isoformat()
+    filename = f"{today}-{slug}.md"
+    filepath = insp_dir / filename
+
+    # Deduplicate: append -2, -3, etc. if exists
+    counter = 2
+    while filepath.is_file():
+        filepath = insp_dir / f"{today}-{slug}-{counter}.md"
+        counter += 1
+
+    # Build the file
+    title_text = " ".join(words).title() if words else "Clipped snippet"
+    parts = [f"# {title_text}", ""]
+    if url:
+        parts.append(f"Source: {url}")
+    parts.append(f"Clipped: {today}")
+    parts.append("")
+    # Wrap snippet in blockquote
+    for line in text.strip().splitlines():
+        parts.append(f"> {line}" if line.strip() else ">")
+    parts.append("")
+
+    filepath.write_text("\n".join(parts))
+    print(f"Clipped to {filepath}")
+    print(f"Title: {title_text}")
+    if not url:
+        print("(no URL provided — add one later by editing the file)")
+    return 0
+
+
+def cmd_harvest(args):
+    """Scaffold patterns.md and list build logs found."""
+    kdir, whose = knowledge_dir()
+    if not kdir:
+        print("No knowledge folder configured. Run 'familiar init' first.")
+        return 1
+
+    # Check for patterns.md, scaffold if missing
+    patterns = kdir / "patterns.md"
+    if not patterns.is_file():
+        template = HOME / "knowledge" / "patterns.md"
+        if template.is_file():
+            import shutil
+            shutil.copy2(template, patterns)
+            print(f"Created {patterns}")
+        else:
+            patterns.write_text(
+                "# Cross-project patterns\n\n"
+                "## Recurring themes\n\n[run `familiar harvest` to populate]\n\n"
+                "## Growth signals\n\n[run `familiar harvest` to populate]\n\n"
+                "## Inspiration connections\n\n[run `familiar harvest` to populate]\n\n"
+                "## Ready topics\n\n[run `familiar harvest` to populate]\n"
+            )
+            print(f"Created {patterns}")
+    else:
+        print(f"patterns.md exists: {patterns}")
+
+    # List build logs found
+    build_logs = kdir / "build-logs.md"
+    if build_logs.is_file():
+        text = build_logs.read_text()
+        import re
+        logs = re.findall(r"`([^`]+-LOG\.md)`", text)
+        if logs:
+            print(f"\nBuild logs registered ({len(logs)}):")
+            for log in logs:
+                print(f"  {log}")
+        else:
+            print("\nNo build logs registered yet.")
+        # Check for watched project lines
+        watched = re.findall(r"`([^`]+)`\s+`([^`]+-LOG\.md)`", text)
+        if watched:
+            print(f"\nWatched projects ({len(watched)}):")
+            for proj, logfile in watched:
+                print(f"  {proj} -> {logfile}")
+    else:
+        print(f"\nNo build-logs.md found at {build_logs}")
+
+    # Check for inspirations
+    insp_dir = HOME / "inspirations"
+    if insp_dir.is_dir():
+        clips = list(insp_dir.glob("*.md"))
+        clips = [c for c in clips if c.name != "README.md"]
+        if clips:
+            print(f"\nInspirations clipped: {len(clips)}")
+        else:
+            print("\nNo inspirations clipped yet.")
+    else:
+        print("\nNo inspirations/ folder yet.")
+
+    print("\nThe harvest stage reads all of the above and synthesizes patterns.")
+    print("Run it through your agent: /familiar-harvest or via the skill.")
+    return 0
+
+
+def cmd_log(args):
+    """Handle log subcommands."""
+    if args.log_command == "list":
+        return cmd_log_list(args)
+    elif args.log_command == "add":
+        return cmd_log_add(args)
+    elif args.log_command == "entry":
+        return cmd_log_entry(args)
+    else:
+        print("Usage: familiar log <list|add|entry>")
+        print("  list                    show watched projects")
+        print("  add <project-folder>    register a project and wire its log")
+        print("  entry <project-name>    scaffold a dated log entry")
+        return 1
+
+
+def cmd_log_list(args):
+    """Show watched projects from build-logs.md."""
+    kdir, whose = knowledge_dir()
+    if not kdir:
+        print("No knowledge folder configured. Run 'familiar init' first.")
+        return 1
+
+    build_logs = kdir / "build-logs.md"
+    if not build_logs.is_file():
+        print(f"No build-logs.md at {build_logs}")
+        return 0
+
+    import re
+    text = build_logs.read_text()
+    watched = re.findall(r"`([^`]+)`\s+`([^`]+-LOG\.md)`", text)
+    if watched:
+        print(f"Watched projects ({len(watched)}):")
+        for proj, logfile in watched:
+            print(f"  {proj} -> {logfile}")
+    else:
+        print("No projects registered yet.")
+        print(f"\nRegister one with:  familiar log add <project-folder>")
+    return 0
+
+
+def cmd_log_add(args):
+    """Register a project and wire its build log."""
+    if not args.project:
+        print("Usage: familiar log add <project-folder>")
+        print("  e.g. familiar log add ~/Projects/my-app")
+        return 1
+
+    project_path = Path(args.project).expanduser().resolve()
+    if not project_path.is_dir():
+        print(f"Not a directory: {project_path}")
+        return 1
+
+    project_name = project_path.name
+    log_filename = f"{project_name}-LOG.md"
+
+    kdir, whose = knowledge_dir()
+    if not kdir:
+        print("No knowledge folder configured. Run 'familiar init' first.")
+        return 1
+
+    build_logs = kdir / "build-logs.md"
+    if not build_logs.is_file():
+        print(f"No build-logs.md at {build_logs}. Run 'familiar init' first.")
+        return 1
+
+    # Check if already registered
+    import re
+    text = build_logs.read_text()
+    if f"`{project_name}`" in text:
+        print(f"{project_name} is already registered.")
+        return 0
+
+    # Append to build-logs.md under <!-- familiar log add -->
+    marker = "<!-- familiar log add appends below this line -->"
+    entry = f"`{project_path}` `{log_filename}`"
+    if marker in text:
+        text = text.replace(marker, f"{marker}\n{entry}")
+    else:
+        text += f"\n{entry}\n"
+    build_logs.write_text(text)
+    print(f"Registered {project_name} in build-logs.md")
+
+    # Create the log file in the project if it doesn't exist
+    log_file = project_path / log_filename
+    if not log_file.is_file():
+        log_file.write_text(
+            f"# {project_name} build log\n"
+            f"\n"
+            f"What shipped, decisions, what went wrong and what it cost.\n"
+            f"Append-only. Record, don't dramatise.\n"
+            f"\n"
+            f"## {date.today().isoformat()}\n"
+            f"\n"
+            f"**Shipped**\n"
+            f"- \n"
+            f"\n"
+            f"**Decisions**\n"
+            f"- \n"
+            f"\n"
+            f"**Went wrong**\n"
+            f"- \n"
+            f"\n"
+            f"**Numbers**\n"
+            f"- \n"
+            f"\n"
+            f"**Open**\n"
+            f"- \n"
+        )
+        print(f"Created {log_file}")
+    else:
+        print(f"Log already exists: {log_file}")
+
+    print(f"\nNext: add a hook to your project's CLAUDE.md or AGENTS.md, or run")
+    print(f"the session-end hook automatically with the familiar setup.")
+    return 0
+
+
+def cmd_log_entry(args):
+    """Scaffold a dated log entry in a project's build log."""
+    if not args.project:
+        print("Usage: familiar log entry <project-name>")
+        print("  e.g. familiar log entry my-app")
+        return 1
+
+    kdir, whose = knowledge_dir()
+    if not kdir:
+        print("No knowledge folder configured. Run 'familiar init' first.")
+        return 1
+
+    build_logs = kdir / "build-logs.md"
+    if not build_logs.is_file():
+        print(f"No build-logs.md at {build_logs}")
+        return 1
+
+    import re
+    text = build_logs.read_text()
+    watched = re.findall(r"`([^`]+)`\s+`([^`]+-LOG\.md)`", text)
+
+    # Find the project
+    log_file = None
+    for proj, logfile in watched:
+        if proj == args.project or Path(proj).name == args.project:
+            proj_path = Path(proj).expanduser()
+            log_file = proj_path / logfile
+            break
+
+    if not log_file or not log_file.is_file():
+        # Try finding by name pattern
+        for proj, logfile in watched:
+            if args.project in proj or args.project in logfile:
+                proj_path = Path(proj).expanduser()
+                log_file = proj_path / logfile
+                break
+
+    if not log_file or not log_file.is_file():
+        print(f"Project '{args.project}' not found or log file missing.")
+        print("Register it first with: familiar log add <project-folder>")
+        return 1
+
+    # Scaffold a new entry
+    today = date.today().isoformat()
+    entry = (
+        f"\n## {today}\n"
+        f"\n"
+        f"**Shipped**\n"
+        f"- \n"
+        f"\n"
+        f"**Decisions**\n"
+        f"- \n"
+        f"\n"
+        f"**Went wrong**\n"
+        f"- \n"
+        f"\n"
+        f"**Numbers**\n"
+        f"- \n"
+        f"\n"
+        f"**Open**\n"
+        f"- \n"
+    )
+
+    with open(log_file, "a") as f:
+        f.write(entry)
+
+    print(f"Appended entry for {today} to {log_file}")
+    print("Fill in what shipped, what was decided, what went wrong.")
+    return 0
+
+
+def cmd_reflect(args):
+    """Show reflection status."""
+    kdir, whose = knowledge_dir()
+    if not kdir:
+        print("No knowledge folder configured. Run 'familiar init' first.")
+        return 1
+
+    reflection = kdir / "reflection.md"
+    if not reflection.is_file():
+        print(f"No reflection.md at {reflection}")
+        return 0
+
+    text = reflection.read_text()
+
+    # Parse settings
+    import re
+    on_off = re.search(r"Reflection:\s*\[?(on|off)", text, re.IGNORECASE)
+    cadence = re.search(r"Cadence:\s*\[?(weekly|fortnightly|monthly)", text, re.IGNORECASE)
+    folder = re.search(r"Reflections live in:\s*(.+)", text)
+
+    status = on_off.group(1).lower() if on_off else "unknown"
+    cadence_val = cadence.group(1).lower() if cadence else "not set"
+    folder_val = folder.group(1).strip() if folder else "not set"
+
+    print(f"Reflection: {status}")
+    print(f"Cadence: {cadence_val}")
+    print(f"Folder: {folder_val}")
+
+    if status == "off" or status == "[on / off]":
+        print("\nReflection is off. Edit knowledge/reflection.md to turn it on.")
+    elif cadence_val == "[weekly / fortnightly / monthly]":
+        print("\nCadence is not set yet. Edit knowledge/reflection.md.")
+    else:
+        print(f"\nRun /familiar-reflect via your agent, or say 'reflect' in a session.")
+    return 0
+
+
+def cmd_learn(args):
+    """Show knowledge file status."""
+    kdir, whose = knowledge_dir()
+    if not kdir:
+        print("No knowledge folder configured. Run 'familiar init' first.")
+        return 1
+
+    files = {
+        "positioning.md": "what the publication is, house rules",
+        "voice-guide.md": "how the writer writes",
+        "style-rules.md": "mechanical checklist for line edits",
+        "social-rules.md": "the four tests a short post passes",
+        "examples/canonical.md": "annotated excerpts of published work",
+        "social-schedule.md": "channels, cadence, send times",
+    }
+
+    templates = HOME / "knowledge"
+    print("Knowledge file status:")
+    for name, desc in files.items():
+        fpath = kdir / name
+        tmpl = templates / name
+        if fpath.is_file():
+            content = fpath.read_text()
+            # Check if it looks like an unfilled template
+            if "[" in content and "]" in content and "##" in content:
+                has_brackets = bool(re.search(r"\[.*\]", content))
+                if has_brackets:
+                    print(f"  {name}: template (needs filling in)")
+                else:
+                    print(f"  {name}: filled")
+            else:
+                print(f"  {name}: filled")
+        else:
+            print(f"  {name}: missing")
+
+    print(f"\nKnowledge folder: {kdir}")
+    if whose == "the shipped templates":
+        print("(using shipped templates - run 'familiar init' to set up your own)")
+    print("\nRun /familiar-learn via your agent to propose rules from past writing.")
+    return 0
+
+
 def cmd_status(args):
     """Show what Familiar can see and what it still needs."""
     os.system(f"python3 {HOME}/scripts/doctor.py")
@@ -210,6 +625,29 @@ def main():
     p_piece.add_argument("slug", nargs="?", help="a short slug for the piece")
     p_piece.add_argument("--force", action="store_true", help="overwrite if exists")
 
+    # inspire
+    p_inspire = sub.add_parser("inspire", help="clip a snippet for later")
+    p_inspire.add_argument("text", nargs="?", help="the snippet text")
+    p_inspire.add_argument("--url", help="source URL")
+
+    # harvest
+    sub.add_parser("harvest", help="scaffold patterns.md, list build logs found")
+
+    # log
+    p_log = sub.add_parser("log", help="manage build logs")
+    p_log_sub = p_log.add_subparsers(dest="log_command")
+    p_log_sub.add_parser("list", help="show watched projects")
+    p_log_add = p_log_sub.add_parser("add", help="register a project and wire its log")
+    p_log_add.add_argument("project", nargs="?", help="project folder path")
+    p_log_entry = p_log_sub.add_parser("entry", help="scaffold a dated log entry")
+    p_log_entry.add_argument("project", nargs="?", help="project name")
+
+    # reflect
+    sub.add_parser("reflect", help="show reflection status")
+
+    # learn
+    sub.add_parser("learn", help="show knowledge file status")
+
     # status
     sub.add_parser("status", help="what Familiar can see and what it still needs")
 
@@ -226,6 +664,16 @@ def main():
         sys.exit(cmd_init(args))
     elif args.command == "new-piece":
         sys.exit(cmd_new_piece(args))
+    elif args.command == "inspire":
+        sys.exit(cmd_inspire(args))
+    elif args.command == "harvest":
+        sys.exit(cmd_harvest(args))
+    elif args.command == "log":
+        sys.exit(cmd_log(args))
+    elif args.command == "reflect":
+        sys.exit(cmd_reflect(args))
+    elif args.command == "learn":
+        sys.exit(cmd_learn(args))
     elif args.command == "status":
         sys.exit(cmd_status(args))
     elif args.command == "skill" and args.skill_command == "install":

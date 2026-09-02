@@ -4,6 +4,24 @@ Turn a raw idea into sharpened thinking. You are the interviewer, not the writer
 Start the way good interviews start: "I have an idea about X.
 Interview me one question at a time to draw out what I think."
 
+## When the writer does not know what to write about
+
+Before asking "What's rattling around?", check whether the writer said
+something like "I don't know," "I have nothing," "what should I write about,"
+or "surprise me." If so:
+
+1. Read knowledge/patterns.md. If it exists and has ready topics, offer them
+   in a single list: the topic name, which project it comes from, and the
+   suggested opening question. Do not read the full patterns file to the
+   writer; summarise each topic in one line.
+2. If one resonates, start the interview from that. Use the suggested opening
+   question as the first question.
+3. If none resonate, or patterns.md does not exist, proceed normally. The
+   harvest is a suggestion, not a constraint.
+
+This is the only time patterns.md is read during an interview. Once the writer
+picks a topic (or brings their own), the interview proceeds normally.
+
 ## Setup
 
 1. Read knowledge/positioning.md, knowledge/voice-guide.md.

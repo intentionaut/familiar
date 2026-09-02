@@ -188,6 +188,7 @@ class DoctorState(unittest.TestCase):
         self.assertEqual(doc.MISSING, st)
 
     def test_shipped_templates_resolve_when_nothing_is_configured(self):
-        cfg, whose = doc.config_dir()
+        from paths import knowledge_dir
+        cfg, whose = knowledge_dir()
         self.assertTrue(cfg.is_dir())
         self.assertIn(whose, ("yours", "the shipped templates"))

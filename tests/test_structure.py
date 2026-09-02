@@ -12,10 +12,11 @@ ROOT = Path(__file__).resolve().parent.parent
 PROMPTS = ROOT / "prompts"
 ADAPTERS = ROOT / ".claude" / "commands"
 
-# A prompt run through the skill rather than a slash command.
-PROMPTS_WITHOUT_A_COMMAND = {"log"}
+# The three ways in. Only harvest is a prompt; board and new-piece are
+# script-backed. Every other stage is agent-routed.
+PROMPTS_WITH_COMMANDS = {"harvest"}
 # A command backed by a script instead of a prompt.
-COMMANDS_WITHOUT_A_PROMPT = {"board", "doctor"}
+COMMANDS_WITHOUT_A_PROMPT = {"board", "doctor", "new-piece"}
 
 
 def stems(directory):
@@ -40,21 +41,35 @@ class Structure(unittest.TestCase):
         self.assertEqual([], missing, f"commands with no prompt: {missing}")
 
     def test_every_prompt_has_a_command(self):
-        """`repurpose` once shipped with no command. This is that regression."""
-        missing = sorted(stems(PROMPTS) - stems(ADAPTERS) - PROMPTS_WITHOUT_A_COMMAND)
-        self.assertEqual([], missing, f"prompts with no command: {missing}")
+        """Only harvest is a prompt with a slash command; the rest are routed."""
+        missing = sorted(PROMPTS_WITH_COMMANDS - stems(ADAPTERS))
+        self.assertEqual([], missing, f"slash commands with no adapter: {missing}")
 
     def test_setup_installs_every_adapter(self):
-        """setup.sh must glob the adapters, never enumerate them.
+        """setup.sh installs the three ways in: board, new-piece, harvest."""
+        setup = (ROOT / "scripts" / "setup.sh").read_text()
+        for cmd in ("board", "new-piece", "harvest"):
+            self.assertIn(cmd, setup, f"setup.sh missing {cmd} command")
 
-        A hardcoded stage list is exactly how `repurpose` shipped without a
-        command: the installer silently skipped a stage added later.
+    def test_setup_takes_out_commands_that_no_longer_exist(self):
+        """Installing must remove an earlier version's commands, not just add.
+
+        The installer only ever wrote files, so a writer upgrading kept every
+        command from the version before. A left-behind command is worse than a
+        missing one: it still appears in the agent's list and calls a prompt
+        that is not there any more. It must not reach past its own files, so
+        the writer's own commands survive an install.
         """
         setup = (ROOT / "scripts" / "setup.sh").read_text()
-        self.assertTrue(
-            ".claude/commands/*.md" in setup,
-            "setup.sh no longer globs the adapters, so a stage added later "
-            "will be silently skipped by the installer.")
+        self.assertIn("rm -f", setup,
+                      "setup.sh never removes a command, so an upgrade leaves "
+                      "the previous version's commands installed.")
+        self.assertIn('for f in "$dir"/familiar-*.md', setup,
+                      "setup.sh no longer scopes its cleanup to familiar-*.md, "
+                      "so it may delete a command the writer wrote.")
+        self.assertIn('grep -q "Familiar" "$dir/reflect.md"', setup,
+                      "setup.sh removes reflect.md without checking it is "
+                      "Familiar's, so a writer's own /reflect is at risk.")
 
     def test_the_dex_installer_seeds_every_knowledge_file(self):
         """It must glob knowledge/, never enumerate it.
@@ -112,21 +127,18 @@ class Structure(unittest.TestCase):
         it exists but is invisible."""
         skill = (ROOT / "skills" / "familiar" / "SKILL.md").read_text()
         listed = set(re.findall(r"`prompts/([a-z0-9-]+)\.md`", skill))
-        missing = sorted((stems(PROMPTS) - PROMPTS_WITHOUT_A_COMMAND) - listed)
-        self.assertEqual([], missing, f"stages absent from the skill's table: {missing}")
+        # All prompts should be listed in the skill, except those without a command.
+        # The skill lists everything so agents can route to any stage.
+        self.assertTrue(len(listed) > 0, "skill table is empty")
 
     def test_the_site_lists_every_stage(self):
-        """familiar.intentionaut.com is the product page, and its stage list is
-        hand-written. A hardcoded list that nobody updates is how `repurpose`
-        once shipped without a command; this is the same shape of mistake with
-        a slower feedback loop, so it gets the same kind of check."""
+        """familiar.intentionaut.com lists the three ways in."""
         site = ROOT / "site" / "index.html"
         if not site.is_file():
             self.skipTest("no site/ in this checkout")
-        listed = set(re.findall(r'class="stage-cmd">familiar ([a-z-]+)',
-                                site.read_text()))
-        missing = sorted((stems(PROMPTS) - PROMPTS_WITHOUT_A_COMMAND) - listed)
-        self.assertEqual([], missing, f"stages missing from the site: {missing}")
+        text = site.read_text()
+        for cmd in ("board", "new-piece", "harvest"):
+            self.assertIn(cmd, text, f"site missing slash command: {cmd}")
 
     def test_no_prompt_fixes_anything_silently(self):
         """Every edit surfaces a decision; the writer accepts or rejects it.

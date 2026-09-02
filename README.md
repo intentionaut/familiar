@@ -76,12 +76,19 @@ run, and only ever touches pieces it just listed.
 Every stage stops and waits for you. Nothing advances, nothing is applied,
 nothing ships until you say so. The gates stop drift, and they let you move
 in both directions: run an earlier stage again and it adds to what is there,
-or scope any stage to one section (`/familiar-dev-edit the opening`) and the
-rest of the file is left alone. The work is always exactly where you left it.
+or scope any stage to one section ("dev-edit the opening") and the rest of the
+file is left alone. The work is always exactly where you left it.
 
-Command names here are the cloned form (`/familiar-interview`). Installed as
-the skill, the same stages are `familiar interview`, `familiar outline`, and so
-on, without the `/familiar-` prefix.
+Three commands, because there are three ways a writing session starts:
+
+- `/familiar-new-piece <slug>` when you are beginning something
+- `/familiar-board` when you are picking something back up
+- `/familiar-harvest` when you are looking for what to write about
+
+Everything after that is a conversation. Tell the agent what you have, a
+draft, notes, an idea, and it picks the right stage. Stage names in this
+README are what you say to the agent, so "interview" and "outline" are asks,
+not commands to type.
 
 ## Your voice
 
@@ -208,23 +215,26 @@ You can run it at any point:
 python3 scripts/familiar status
 ```
 
-It reports three states per file, and a missing optional file is fine.
+It leads with what is working: your voice files, the pieces in flight,
+your social schedule and whether reflection is on. It names what is still
+a template only when that is what stands between you and a draft.
 
 **Familiar needs to know your voice before it drafts anything**, or the draft is
 a guess in a stranger's register. Two ways in:
 
-- **You have published before.** `/familiar-learn ingest <folder of your past
-  writing>` reads it and drafts your voice files from evidence, with counts
-  rather than adjectives. You accept or reject each section. This is the fast
-  path and it is much better than writing the files cold.
+- **You have published before.** Ask your agent to `learn ingest <folder of
+  your past writing>`. It reads it and drafts your voice files from evidence,
+  with counts rather than adjectives. You accept or reject each section. This
+  is the fast path and it is much better than writing the files cold.
 - **You have not, or you would rather write them.** Open `positioning.md` and
   `voice-guide.md` and answer the bracketed prompts. Short answers are fine, and
   you can start with positioning alone.
 
-Then `/familiar-interview <an idea you have been chewing on>`. It asks one
-question at a time, and the first stage usually takes ten or fifteen minutes of
-honest answers. There is no way to skip that part, because your answers are the
-material: everything downstream is built from what you said.
+Then `/familiar-new-piece <slug>` on an idea you have been chewing on. It
+makes the folder and goes straight into the interview, which asks one question
+at a time and usually takes ten or fifteen minutes of honest answers. There is
+no way to skip that part, because your answers are the material: everything
+downstream is built from what you said.
 
 **What to expect while you work.** Every stage stops and waits. Nothing is
 applied to your draft for you, the edit stages hand back a report you work

@@ -9,19 +9,23 @@ A stage is a markdown prompt in `prompts/` that takes the writer through one
 gate of the editorial pipeline. If you have built a stage that works for your
 kind of publication, it likely works for others.
 
-To submit one:
+Most stages are agent-routed: the writer tells the agent what they have (a
+draft, notes, an idea) and the agent picks the right stage. Only three commands
+exist, one for each way a session starts: `/familiar-new-piece` to begin
+something, `/familiar-board` to pick something back up, `/familiar-harvest` to
+find something to write about. A new stage almost never needs a command, and a
+pull request that adds one should say why routing is not enough.
+
+To submit a stage:
 
 1. Write the prompt as `prompts/<name>.md`. Follow the existing prompts for
    structure: a setup section, a method, clear stopping points, and no
    silent rewrites.
-2. Add a command adapter at `.claude/commands/<name>.md` with the standard
-   `{{FAMILIAR_HOME}}` and `{{FAMILIAR_KNOWLEDGE}}` placeholders. Copy an
-   existing adapter and change the prompt name.
-3. If the stage reads knowledge files that are not yet in `knowledge/`, add
+2. If the stage reads knowledge files that are not yet in `knowledge/`, add
    them as templates with bracketed prompts.
-4. Add a test case in `tests/test_structure.py` if the stage introduces a
+3. Add a test case in `tests/test_structure.py` if the stage introduces a
    new invariant (for example, a new knowledge file that must exist).
-5. Open a pull request titled `stage: <name>` with:
+4. Open a pull request titled `stage: <name>` with:
    - what kind of publication it is for
    - the gate it sits behind (after which stage, before which)
    - one real example of its output

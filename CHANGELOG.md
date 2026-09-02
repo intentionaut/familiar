@@ -51,6 +51,27 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.17.0 (2026-09-02)
+
+Three ways in, and a new piece starts by asking rather than by waiting.
+
+**What this gives you:**
+
+- **Three commands, one per way a session starts.** `/familiar-new-piece` when
+  you are beginning something, `/familiar-board` when you are picking something
+  back up, `/familiar-harvest` when you are looking for what to write about.
+  Everything after that is a conversation: tell the agent what you have, a
+  draft, notes, an idea, and it picks the stage.
+- **`/familiar-new-piece <slug>` goes straight into the interview.** It makes
+  the folder, the notes file and the context log, then starts asking. The piece
+  begins where you are, rather than at a scaffold waiting to be picked up.
+- **`familiar status` leads with what is working.** Your voice files, the
+  pieces in flight, your social schedule and whether reflection is on. It names
+  a file that is still a template when that is what stands between you and a
+  draft.
+
+---
+
 ## 0.16.0 (2026-09-02)
 
 Writing you already have gets a way in, and every post gets a pass before it

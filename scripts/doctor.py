@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """What Familiar can see, and what it still needs.
 
-Honest about three states and never nags: ready, still a template, or absent.
-Absent optional things are fine and are reported calmly. Run it any time:
+Leads with what works. Mentions what needs filling in only when it matters.
+Run it any time:
 
     python3 scripts/doctor.py
 """
@@ -14,15 +14,11 @@ from pathlib import Path
 
 HOME = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from paths import knowledge_dir  # noqa: E402
+from paths import knowledge_dir, pieces_dirs  # noqa: E402
 
-# The two Familiar cannot do good work without.
 ESSENTIAL = ["positioning.md", "voice-guide.md"]
-# Useful, and fine to leave until you need them.
 OPTIONAL = ["social-schedule.md", "links.md", "reflection.md",
             "longform-channels.md", "examples/canonical.md"]
-# Ships usable. Its bracketed text is report format, not blanks to fill, so
-# checking it for placeholders reports a false alarm on a complete file.
 SHIPS_COMPLETE = ["style-rules.md"]
 
 PLACEHOLDER = re.compile(r"\[[^\]\n]{3,}\](?!\()")
@@ -30,19 +26,7 @@ PLACEHOLDER = re.compile(r"\[[^\]\n]{3,}\](?!\()")
 OK, TEMPLATE, MISSING = "ready", "still a template", "not there yet"
 
 
-def config_dir(explicit=None):
-    """Familiar's config resolution order, shared with every other script."""
-    return knowledge_dir(explicit)
-
-
 def state(path, shipped=None):
-    """Filled, still a template, or absent.
-
-    A bracket is only a blank if the shipped template has the same one. The
-    writer's own prose contains brackets too: a voice guide that bans "as a
-    [senior title]" framing is finished, not unfilled, and counting that as a
-    blank tells a writer their voice guide is empty when it is not.
-    """
     if not path.is_file():
         return MISSING, 0
     text = path.read_text()
@@ -52,12 +36,23 @@ def state(path, shipped=None):
     return (TEMPLATE if found else OK), len(found)
 
 
-def commands_installed():
-    found = {}
-    for label, d in (("Claude Code", Path.home() / ".claude/commands"),
-                     ("opencode", Path.home() / ".config/opencode/command")):
-        found[label] = len(list(d.glob("familiar-*.md"))) if d.is_dir() else 0
-    return found
+def count_pieces():
+    """Count piece folders and surface what's in flight."""
+    total = 0
+    with_notes = 0
+    with_draft = 0
+    for d in pieces_dirs():
+        if not d.is_dir():
+            continue
+        for piece in d.iterdir():
+            if not piece.is_dir() or piece.name.startswith(".") or piece.name.startswith("_"):
+                continue
+            if (piece / "notes.md").is_file():
+                total += 1
+                with_notes += 1
+                if (piece / "draft.md").is_file() or (piece / "final.md").is_file():
+                    with_draft += 1
+    return total, with_notes, with_draft
 
 
 def main():
@@ -65,62 +60,108 @@ def main():
     ap.add_argument("--config", help="a knowledge folder to check instead")
     args = ap.parse_args()
 
-    cfg, whose = config_dir(args.config)
-    print(f"Familiar   {HOME}")
-    print(f"Config     {cfg}  ({whose})")
+    cfg, whose = knowledge_dir(args.config)
 
-    adapters = len(list((HOME / ".claude" / "commands").glob("*.md")))
-    inst = commands_installed()
-    where = ", ".join(f"{k} {v}" for k, v in inst.items())
-    print(f"Stages     {adapters} available   Installed: {where}")
-    stale = [k for k, v in inst.items() if 0 < v < adapters]
-    if stale:
-        who = " and ".join(stale)
-        verb = "is" if len(stale) == 1 else "are"
-        print(f"           {who} {verb} behind. Run scripts/setup.sh to pick up "
-              f"the newer stages.")
-    print()
-
+    # Check knowledge files
     unfilled = []
+    filled = []
     for name in ESSENTIAL:
         st, n = state(cfg / name, HOME / "knowledge" / name)
-        mark = "ok " if st == OK else "-> "
-        extra = f" ({n} blank{'s' if n != 1 else ''} left)" if st == TEMPLATE else ""
-        print(f"  {mark}{name:<24}{st}{extra}")
-        if st != OK:
-            unfilled.append(name)
+        if st == OK:
+            filled.append(name)
+        else:
+            unfilled.append((name, n))
+
+    # Check pieces
+    total, with_notes, with_draft = count_pieces()
+
+    # --- Output ---
+    print()
+
+    if filled and not unfilled:
+        print("  Voice: ready")
+        for name in filled:
+            print(f"    {name}")
+    elif filled:
+        print("  Voice: partially ready")
+        for name in filled:
+            print(f"    {name}  ok")
+        for name, n in unfilled:
+            blanks = f" ({n} blank{'s' if n != 1 else ''} left)" if n else ""
+            print(f"    {name}  still a template{blanks}")
+    else:
+        print("  Voice: not configured yet")
+        for name, n in unfilled:
+            blanks = f" ({n} blank{'s' if n != 1 else ''} left)" if n else ""
+            print(f"    {name}  still a template{blanks}")
 
     print()
-    for name in SHIPS_COMPLETE:
-        st = "ready" if (cfg / name).is_file() else MISSING
-        print(f"     {name:<24}{st} (ships usable, edit when you disagree)")
-    for name in OPTIONAL:
-        st, n = state(cfg / name, HOME / "knowledge" / name)
-        extra = f" ({n} blank{'s' if n != 1 else ''} left)" if st == TEMPLATE else ""
-        print(f"     {name:<24}{st}{extra}")
+
+    if total == 0:
+        print("  Pieces: none in flight")
+    elif total == 1:
+        piece_word = "piece"
+        print(f"  Pieces: 1 in flight")
+    else:
+        print(f"  Pieces: {total} in flight")
+
+    if with_notes and with_draft:
+        ready = with_notes - with_draft
+        if ready > 0:
+            print(f"    {ready} waiting for a draft")
+        if with_draft > 0:
+            print(f"    {with_draft} drafted")
 
     print()
-    if not sum(inst.values()):
-        print("The commands are not installed. Run scripts/setup.sh.")
-        return 1
 
-    if unfilled:
-        print("Familiar does not know your voice yet, so a draft would be a guess.")
-        print()
-        print("  Fastest, if you have published before:")
-        print("    /familiar-learn ingest <folder of your past writing>")
-        print("    It reads them and drafts your voice files from evidence. You")
-        print("    accept or reject each section; nothing is written without you.")
-        print()
-        print("  If you have not published, or would rather write it yourself:")
-        print(f"    in {cfg}")
-        print("      positioning.md   what the publication is")
-        print("      voice-guide.md   how you write")
-        print("    Short answers are fine. You can start with only positioning.")
-        return 0
+    # Social schedule
+    sched = cfg / "social-schedule.md"
+    if sched.is_file():
+        st, _ = state(sched, HOME / "knowledge" / "social-schedule.md")
+        if st == OK:
+            print("  Social schedule: configured")
+        else:
+            print("  Social schedule: template (fill in when you want posts)")
 
-    print("Ready. Start with:  /familiar-interview <an idea you have been chewing on>")
-    print("It asks one question at a time and stops when it has enough.")
+    # Reflection
+    refl = cfg / "reflection.md"
+    if refl.is_file():
+        text = refl.read_text()
+        on_off = re.search(r"Reflection:\s*\[?(on|off)", text, re.IGNORECASE)
+        if on_off and on_off.group(1).lower() == "on":
+            print("  Reflection: on")
+        else:
+            print("  Reflection: off (edit knowledge/reflection.md to turn on)")
+
+    print()
+
+    # What to do next
+    if unfilled and not filled:
+        print("  Start here:")
+        print()
+        print("    If you have published before:")
+        print("      Ask your agent:  learn ingest <folder of your past writing>")
+        print("      It reads your work and drafts voice files from evidence.")
+        print()
+        print("    If you have not published:")
+        print(f"      Edit these in {cfg}:")
+        for name, _ in unfilled:
+            print(f"        {name}")
+        print("      Short answers are fine. A sentence each is enough to start.")
+    elif unfilled:
+        print("  To fill in the remaining templates:")
+        for name, _ in unfilled:
+            print(f"    {cfg / name}")
+    else:
+        if total == 0:
+            print("  Ready. Start with:")
+            print("    /familiar-new-piece <slug>")
+            print("    or point your agent at a build log:  case-study LOG.md")
+        else:
+            print("  Ready. Pick up where you left off:")
+            print("    /familiar-board")
+
+    print()
     return 0
 
 

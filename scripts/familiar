@@ -530,7 +530,7 @@ def cmd_reflect(args):
     elif cadence_val == "[weekly / fortnightly / monthly]":
         print("\nCadence is not set yet. Edit knowledge/reflection.md.")
     else:
-        print(f"\nRun /familiar-reflect via your agent, or say 'reflect' in a session.")
+        print("\nSay 'reflect' to your agent when you want one.")
     return 0
 
 
@@ -572,7 +572,7 @@ def cmd_learn(args):
     print(f"\nKnowledge folder: {kdir}")
     if whose == "the shipped templates":
         print("(using shipped templates - run 'familiar init' to set up your own)")
-    print("\nRun /familiar-learn via your agent to propose rules from past writing.")
+    print("\nAsk your agent to 'learn' to propose rules from past writing.")
     return 0
 
 

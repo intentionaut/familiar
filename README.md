@@ -97,6 +97,7 @@ repurpose           short: a week of posts. long: seed a companion piece
 social              the posts, ending at copy you approved
 publish             approved posts into your scheduler
 learn ingest <path> teach it your voice from what you have published
+                    (a folder, a platform export, or a URL)
 reflect             two questions about how the work is going
 board               what you have in flight, and what each piece needs
 ```
@@ -129,10 +130,16 @@ files, each a template with questions to answer:
 
 Two ways to fill them:
 
-- **You have published before.** Ask your agent to `learn ingest <folder of your
-  past writing>`. It reads it and drafts your voice files from evidence, with
-  counts rather than adjectives. You accept or reject each section. This is the
-  fast path and it is much better than writing the files cold.
+- **You have published before.** Ask your agent to `learn ingest <your past
+  writing>`. It reads it and drafts your voice files from evidence, with counts
+  rather than adjectives. You accept or reject each section. This is the fast
+  path and it is much better than writing the files cold.
+
+  A folder of files works, and so does a platform export: **if your archive
+  lives in Substack, beehiiv or Ghost, export it, unzip it, and point at the
+  folder.** Markdown, plain text and HTML are all readable, so an export needs
+  no conversion. A single piece can be a URL instead. There is no way to walk a
+  whole publication from its address, which is why the export is the way in.
 - **You have not, or you would rather write them.** Answer the bracketed prompts.
   Short answers are fine.
 

@@ -179,9 +179,11 @@ def main():
         print("    Then start a piece:  /familiar-new-piece <slug>")
         print()
         print("    If you have published before, this is the faster way in:")
-        print("      Ask your agent:  learn ingest <folder of your past writing>")
+        print("      Ask your agent:  learn ingest <your past writing>")
         print("      It drafts both voice files from evidence, and you accept")
         print("      or reject each section.")
+        print("      A folder of files works. So does a Substack, beehiiv or")
+        print("      Ghost export: download it, unzip it, and point at that.")
     elif unfilled:
         print("  To fill in the remaining templates:")
         for name, _ in unfilled:

@@ -19,6 +19,15 @@ propose; none edits a knowledge file without the writer saying yes.
    - `ingest <path or paths>`: a folder, files, or a text export. Markdown,
      plain text, HTML and common newsletter exports are all fine. If a URL is
      given and you can fetch it, fetch it; if not, ask for a file.
+
+     If the writer says their archive is on a platform rather than on disk,
+     the answer is an export, not an apology. Substack, beehiiv and Ghost all
+     have one in their settings; it downloads as a zip of posts. Tell them to
+     unzip it and give you the folder. The files inside are usually HTML,
+     which you read as well as markdown, so nothing needs converting first.
+     There is no way to walk a whole publication from its address, so do not
+     offer to: one URL is one piece, and a voice drawn from one piece is a
+     guess wearing evidence's clothes.
    - `diff <piece folder>`: a piece folder containing `draft.md` and a
      `final.md` (the writer's published version). If `final.md` is missing,
      ask for it; a URL or pasted text is fine, save it as `final.md`.

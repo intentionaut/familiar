@@ -17,6 +17,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from paths import knowledge_dir, pieces_dirs  # noqa: E402
 
 ESSENTIAL = ["positioning.md", "voice-guide.md"]
+# The two are not needed at the same moment, and saying so is the difference
+# between one question and thirty-nine. positioning.md is what the interview
+# needs to start; voice-guide.md is what the draft needs to sound like you.
+# A writer can begin a piece today with the first alone.
+NEEDED_TO_START = "positioning.md"
+NEEDED_TO_DRAFT = "voice-guide.md"
 OPTIONAL = ["social-schedule.md", "links.md", "reflection.md",
             "longform-channels.md", "examples/canonical.md"]
 SHIPS_COMPLETE = ["style-rules.md"]
@@ -24,6 +30,20 @@ SHIPS_COMPLETE = ["style-rules.md"]
 PLACEHOLDER = re.compile(r"\[[^\]\n]{3,}\](?!\()")
 
 OK, TEMPLATE, MISSING = "ready", "still a template", "not there yet"
+
+
+def short_path(path):
+    """A path a person can read. Home becomes ~, and a path under the folder
+    they are standing in is shown from there."""
+    path = Path(path)
+    try:
+        return str(path.relative_to(Path.cwd()))
+    except ValueError:
+        pass
+    try:
+        return "~/" + str(path.relative_to(Path.home()))
+    except ValueError:
+        return str(path)
 
 
 def state(path, shipped=None):
@@ -78,22 +98,31 @@ def main():
     # --- Output ---
     print()
 
+    blanks_for = dict(unfilled)
+
+    def line(name, when):
+        """One file, its state, and the stage it is needed by."""
+        if name in filled:
+            print(f"    {name}  ready")
+            return
+        n = blanks_for.get(name)
+        count = f", {n} blank{'s' if n != 1 else ''}" if n else ""
+        print(f"    {name}  {when}{count}")
+
     if filled and not unfilled:
         print("  Voice: ready")
         for name in filled:
             print(f"    {name}")
-    elif filled:
-        print("  Voice: partially ready")
-        for name in filled:
-            print(f"    {name}  ok")
-        for name, n in unfilled:
-            blanks = f" ({n} blank{'s' if n != 1 else ''} left)" if n else ""
-            print(f"    {name}  still a template{blanks}")
+    elif NEEDED_TO_START in filled:
+        # The gate that matters is open. Whatever else is still a template can
+        # be filled in later, so it is reported as pending rather than missing.
+        print("  Voice: ready to interview")
+        line(NEEDED_TO_START, "needed to start")
+        line(NEEDED_TO_DRAFT, "fill in before the draft sounds like you")
     else:
-        print("  Voice: not configured yet")
-        for name, n in unfilled:
-            blanks = f" ({n} blank{'s' if n != 1 else ''} left)" if n else ""
-            print(f"    {name}  still a template{blanks}")
+        print("  Voice: one file to go before you can start")
+        line(NEEDED_TO_START, "needed to start")
+        line(NEEDED_TO_DRAFT, "not needed yet")
 
     print()
 
@@ -136,18 +165,23 @@ def main():
     print()
 
     # What to do next
-    if unfilled and not filled:
+    if unfilled and NEEDED_TO_START not in filled:
+        # One next action, not a reading list. The other template is real work
+        # but it is not this moment's work, and putting it here is what makes
+        # a first run feel like a form to complete before anything can happen.
         print("  Start here:")
         print()
-        print("    If you have published before:")
-        print("      Ask your agent:  learn ingest <folder of your past writing>")
-        print("      It reads your work and drafts voice files from evidence.")
+        print("    Open this and answer what you can:")
+        print(f"      {short_path(cfg / NEEDED_TO_START)}")
+        print("    Short answers are fine. The name, who reads it, and what it")
+        print("    covers is enough to begin; the rest can wait.")
         print()
-        print("    If you have not published:")
-        print(f"      Edit these in {cfg}:")
-        for name, _ in unfilled:
-            print(f"        {name}")
-        print("      Short answers are fine. A sentence each is enough to start.")
+        print("    Then start a piece:  /familiar-new-piece <slug>")
+        print()
+        print("    If you have published before, this is the faster way in:")
+        print("      Ask your agent:  learn ingest <folder of your past writing>")
+        print("      It drafts both voice files from evidence, and you accept")
+        print("      or reject each section.")
     elif unfilled:
         print("  To fill in the remaining templates:")
         for name, _ in unfilled:

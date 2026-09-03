@@ -4,6 +4,7 @@ Cheap checks for the class of mistake that has actually shipped: a stage added
 without a command, a prompt referenced but never written, a knowledge file named
 in a prompt that does not exist. No model, no network, no key. Under a second.
 """
+import json
 import re
 import subprocess
 import sys
@@ -29,12 +30,20 @@ def shipped_prose():
     """Prose that ships as the product.
 
     docs/ is excluded on purpose: those are working design notes, not the
-    tool's own voice.
+    tool's own voice. knowledge/private/ and knowledge/proposals/ are excluded
+    because neither ships: the first is the writer's own material, kept out of
+    git, and the second is what learn proposes before anyone has accepted it.
+    Holding either to the house style would mean a writer's private notes
+    could fail this repo's tests.
     """
     files = [ROOT / n for n in ("README.md", "CONTRIBUTING.md", "AGENTS.md")]
     for d in ("prompts", "knowledge", "skills", "dex"):
         files += sorted((ROOT / d).rglob("*.md"))
-    return [f for f in files if f.exists()]
+    unshipped = (ROOT / "knowledge" / "private", ROOT / "knowledge" / "proposals")
+    return [
+        f for f in files
+        if f.exists() and not any(f.is_relative_to(u) for u in unshipped)
+    ]
 
 
 class Structure(unittest.TestCase):
@@ -239,6 +248,49 @@ class Structure(unittest.TestCase):
                        "social stage no longer offers viewpoints for failed posts")
         self.assertIn("two questions", social.lower(),
                        "social stage no longer asks the two questions after the pick")
+
+    def test_plugin_commands_up_to_date(self):
+        """commands/ is generated from .claude/commands/ by build-plugin.py.
+
+        It is committed so the plugin needs no build step, which means it can
+        be committed stale. Two sets of the same commands drifting apart is
+        the failure this catches: the adapter gets a fix and the plugin keeps
+        shipping the old wording.
+        """
+        out = ROOT / "commands"
+        self.assertTrue(out.is_dir(),
+                        "commands/ is missing. Run scripts/build-plugin.py")
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "build-plugin.py"), "--check"],
+            capture_output=True, text=True)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_plugin_commands_carry_no_unresolved_placeholders(self):
+        """A shipped command must not still say {{FAMILIAR_HOME}}.
+
+        setup.sh substitutes those at install time. A plugin has no install
+        step, so anything left behind reaches the writer as literal braces.
+        """
+        offenders = []
+        for path in (ROOT / "commands").glob("*.md"):
+            if "{{" in path.read_text():
+                offenders.append(path.name)
+        self.assertEqual([], offenders,
+                         f"unsubstituted placeholders in commands/: {offenders}")
+
+    def test_plugin_manifests_name_the_same_plugin(self):
+        """The marketplace entry and the plugin manifest have to agree.
+
+        They are two files a person edits by hand, and a mismatch fails at
+        install time with a message about a plugin nobody has heard of.
+        """
+        manifest = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())
+        market = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
+        names = [p["name"] for p in market["plugins"]]
+        self.assertIn(manifest["name"], names,
+                      f"plugin.json is '{manifest['name']}', marketplace lists {names}")
+        for plugin in market["plugins"]:
+            self.assertIn("source", plugin, f"{plugin['name']} has no source")
 
     def test_no_em_dashes_in_shipped_prose(self):
         """Familiar's own first style rule bans them, so its prose must obey.

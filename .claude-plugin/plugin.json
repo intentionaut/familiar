@@ -1,0 +1,19 @@
+{
+  "name": "familiar",
+  "description": "Turns the coding session you just finished into a newsletter issue you actually wrote. Interviews you one question at a time, drafts in your voice from your own published pieces, and hands back an editor's report instead of a rewrite. Every stage stops and waits for you.",
+  "version": "0.17.0",
+  "author": {
+    "name": "Intentionaut",
+    "url": "https://intentionaut.com"
+  },
+  "homepage": "https://familiar.intentionaut.com",
+  "repository": "https://github.com/intentionaut/familiar",
+  "license": "MIT",
+  "keywords": [
+    "writing",
+    "newsletter",
+    "editorial",
+    "voice",
+    "build-in-public"
+  ]
+}

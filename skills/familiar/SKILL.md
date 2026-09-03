@@ -1,6 +1,6 @@
 ---
 name: familiar
-description: A companion for your newsletter. Interview, outline, draft, dev-edit, line-edit, finalise, social and learn stages for writing about your own work in your own voice; every stage stops for the writer's decision. Use when the user says "familiar", wants to interview themselves about an idea, draft or edit a newsletter issue, turn a piece into social posts, schedule approved posts, or teach Familiar their voice from past writing.
+description: Turns the coding session you just finished into a newsletter issue you actually wrote. Interview, outline, draft, dev-edit, line-edit, finalise, social and learn stages for writing about your own work in your own voice; it reports rather than rewrites, brackets rather than invents, and every stage stops for the writer's decision. Use when the user says "familiar", wants to write about a project they have built, interview themselves about an idea, draft or edit a newsletter issue, turn a piece into social posts, schedule approved posts, or teach Familiar their voice from past writing.
 ---
 
 # Familiar

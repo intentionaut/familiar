@@ -13,9 +13,11 @@ advances, nothing is applied, nothing ships without the writer saying so.
 The prompts and the writer's voice files live in a Familiar folder. Look in
 this order and use the first that exists:
 
-1. `$FAMILIAR_HOME`
-2. `./familiar/` in the current project
-3. `~/Projects/familiar/`
+1. `$CLAUDE_PLUGIN_ROOT`, set when Familiar was installed as a plugin. It is
+   the Familiar folder itself, so nothing else needs looking up.
+2. `$FAMILIAR_HOME`
+3. `./familiar/` in the current project
+4. `~/Projects/familiar/`
 
 If none exists, tell the writer:
 

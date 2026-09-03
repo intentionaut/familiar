@@ -1,0 +1,14 @@
+{
+  "name": "familiar",
+  "owner": {
+    "name": "Intentionaut",
+    "url": "https://intentionaut.com"
+  },
+  "plugins": [
+    {
+      "name": "familiar",
+      "source": "./",
+      "description": "A gated editorial pipeline for writing about your own work. It interviews you, proposes three structures, drafts in your voice, and reports rather than rewrites. Nothing is applied without your say-so."
+    }
+  ]
+}

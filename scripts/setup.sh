@@ -8,19 +8,56 @@
 #   Codex (OpenAI)   ~/.codex/commands/
 #   Gemini CLI       ~/.gemini/commands/
 #
-# Pass --only <agent> to install for just one:
+# Only agents you already have are installed for. An agent is taken to be
+# present when its own config folder exists; a folder Familiar has never seen
+# belongs to a tool you do not run, and creating one there would be putting
+# files in a place you did not ask for.
+#
+# Pass --only <agent> to install for just one, or --all to install everywhere
+# whether or not the folder is there yet:
 #   scripts/setup.sh --only claude
-#   scripts/setup.sh --only codex
+#   scripts/setup.sh --all
 set -e
 
 DIR="$(cd "$(dirname "$0")/.." && pwd)"
 ONLY=""
+ALL=""
 for arg in "$@"; do
   case "$arg" in
     --only) shift ;;
+    --all) ALL="yes" ;;
     claude|opencode|codex|gemini) ONLY="$arg" ;;
   esac
 done
+
+# The folder that says the agent is installed. Not the command folder itself:
+# that one is missing for people who do run the agent and have never added a
+# command, so testing it would skip exactly the writers this is meant to serve.
+home_for() {
+  case "$1" in
+    claude)   echo "$HOME/.claude" ;;
+    opencode) echo "$HOME/.config/opencode" ;;
+    codex)    echo "$HOME/.codex" ;;
+    gemini)   echo "$HOME/.gemini" ;;
+  esac
+}
+
+skipped=""
+
+# Install unless this agent is absent from the machine. Naming it explicitly
+# (--only codex) is taken as "install it anyway": the writer knows something
+# the filesystem does not.
+wanted() {
+  agent="$1"
+  [ "$ONLY" = "$agent" ] && return 0
+  [ -n "$ONLY" ] && return 1
+  [ -n "$ALL" ] && return 0
+  if [ -d "$(home_for "$agent")" ]; then
+    return 0
+  fi
+  skipped="$skipped $agent"
+  return 1
+}
 
 # Resolve where the writer's knowledge actually lives and bake it into the
 # installed commands, so a stage is told rather than left to guess. The
@@ -80,28 +117,39 @@ install_for() {
 
 installed=""
 
-if [ -z "$ONLY" ] || [ "$ONLY" = "claude" ]; then
+if wanted claude; then
   install_for "Claude Code" "$HOME/.claude/commands"
   installed="$installed claude"
 fi
 
-if [ -z "$ONLY" ] || [ "$ONLY" = "opencode" ]; then
+if wanted opencode; then
   install_for "opencode" "$HOME/.config/opencode/command"
   installed="$installed opencode"
 fi
 
-if [ -z "$ONLY" ] || [ "$ONLY" = "codex" ]; then
+if wanted codex; then
   install_for "Codex" "$HOME/.codex/commands"
   installed="$installed codex"
 fi
 
-if [ -z "$ONLY" ] || [ "$ONLY" = "gemini" ]; then
+if wanted gemini; then
   install_for "Gemini CLI" "$HOME/.gemini/commands"
   installed="$installed gemini"
 fi
 
 echo
-echo "Installed /familiar-board, /familiar-new-piece, /familiar-harvest and /reflect for:$installed"
+if [ -z "$installed" ]; then
+  echo "No agent found to install for."
+  echo "Looked for Claude Code, opencode, Codex and Gemini CLI and found none of"
+  echo "their folders. If you have one anyway, name it:"
+  echo "  scripts/setup.sh --only claude"
+else
+  echo "Installed /familiar-board, /familiar-new-piece, /familiar-harvest and /reflect for:$installed"
+fi
+if [ -n "$skipped" ]; then
+  echo "Left alone, not installed on this machine:$skipped"
+  echo "  Add one later with:  scripts/setup.sh --only <agent>"
+fi
 echo
 echo "Three ways in: start a piece, pick one back up, or find something to"
 echo "write about. Everything after that is a conversation. Tell the agent"

@@ -1,8 +1,14 @@
 # Familiar
 
-A companion for writing about your own work. Tool-agnostic: runs from Claude
-Code or opencode; the `knowledge/` and `prompts/` markdown can also be pasted
-into a claude.ai Project.
+Turns the coding session the writer just finished into a newsletter issue they
+actually wrote. It interviews them one question at a time, drafts in their
+voice from what they have already published, and hands back an editor's report
+instead of a rewrite. Nothing is invented: what cannot be sourced becomes a
+visible bracket.
+
+Tool-agnostic. Runs from Claude Code, opencode, Codex or Gemini CLI, installs
+as a plugin or a skill, and the `knowledge/` and `prompts/` markdown can be
+pasted into a claude.ai Project.
 
 ## Pipeline
 

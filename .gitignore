@@ -4,6 +4,8 @@
 SESSION-CONTEXT.md
 pieces/*/
 .board/
+*-LOG.md
+.claude/settings.json
 
 # Candid material never belongs in a public repo. If you keep a reflections
 # file or a private voice notes file next to the tool, it is ignored here.

@@ -324,106 +324,30 @@ def cmd_log(args):
         return 1
 
 
+def _run_log_py(*argv):
+    """Run scripts/log.py, the one implementation of the build-log registry.
+
+    `familiar log list|add` is the documented name; log.py is what it does.
+    Two implementations of `add` used to exist and they wrote the registry line
+    in different formats, so a project registered by one was invisible to the
+    other. There is now one.
+    """
+    import subprocess
+    return subprocess.call([sys.executable, str(HOME / "scripts" / "log.py"), *argv])
+
+
 def cmd_log_list(args):
-    """Show watched projects from build-logs.md."""
-    kdir, whose = knowledge_dir()
-    if not kdir:
-        print("No knowledge folder configured. Run 'familiar init' first.")
-        return 1
-
-    build_logs = kdir / "build-logs.md"
-    if not build_logs.is_file():
-        print(f"No build-logs.md at {build_logs}")
-        return 0
-
-    import re
-    text = build_logs.read_text()
-    watched = re.findall(r"`([^`]+)`\s+`([^`]+-LOG\.md)`", text)
-    if watched:
-        print(f"Watched projects ({len(watched)}):")
-        for proj, logfile in watched:
-            print(f"  {proj} -> {logfile}")
-    else:
-        print("No projects registered yet.")
-        print(f"\nRegister one with:  familiar log add <project-folder>")
-    return 0
+    """Show every project and which ones keep a build log."""
+    return _run_log_py("list")
 
 
 def cmd_log_add(args):
-    """Register a project and wire its build log."""
+    """Register a project, create its log and wire the hooks."""
     if not args.project:
         print("Usage: familiar log add <project-folder>")
         print("  e.g. familiar log add ~/Projects/my-app")
         return 1
-
-    project_path = Path(args.project).expanduser().resolve()
-    if not project_path.is_dir():
-        print(f"Not a directory: {project_path}")
-        return 1
-
-    project_name = project_path.name
-    log_filename = f"{project_name}-LOG.md"
-
-    kdir, whose = knowledge_dir()
-    if not kdir:
-        print("No knowledge folder configured. Run 'familiar init' first.")
-        return 1
-
-    build_logs = kdir / "build-logs.md"
-    if not build_logs.is_file():
-        print(f"No build-logs.md at {build_logs}. Run 'familiar init' first.")
-        return 1
-
-    # Check if already registered
-    import re
-    text = build_logs.read_text()
-    if f"`{project_name}`" in text:
-        print(f"{project_name} is already registered.")
-        return 0
-
-    # Append to build-logs.md under <!-- familiar log add -->
-    marker = "<!-- familiar log add appends below this line -->"
-    entry = f"`{project_path}` `{log_filename}`"
-    if marker in text:
-        text = text.replace(marker, f"{marker}\n{entry}")
-    else:
-        text += f"\n{entry}\n"
-    build_logs.write_text(text)
-    print(f"Registered {project_name} in build-logs.md")
-
-    # Create the log file in the project if it doesn't exist
-    log_file = project_path / log_filename
-    if not log_file.is_file():
-        log_file.write_text(
-            f"# {project_name} build log\n"
-            f"\n"
-            f"What shipped, decisions, what went wrong and what it cost.\n"
-            f"Append-only. Record, don't dramatise.\n"
-            f"\n"
-            f"## {date.today().isoformat()}\n"
-            f"\n"
-            f"**Shipped**\n"
-            f"- \n"
-            f"\n"
-            f"**Decisions**\n"
-            f"- \n"
-            f"\n"
-            f"**Went wrong**\n"
-            f"- \n"
-            f"\n"
-            f"**Numbers**\n"
-            f"- \n"
-            f"\n"
-            f"**Open**\n"
-            f"- \n"
-        )
-        print(f"Created {log_file}")
-    else:
-        print(f"Log already exists: {log_file}")
-
-    print(f"\nNext: add a hook to your project's CLAUDE.md or AGENTS.md, or run")
-    print(f"the session-end hook automatically with the familiar setup.")
-    return 0
+    return _run_log_py("add", args.project)
 
 
 def cmd_log_entry(args):
@@ -433,35 +357,23 @@ def cmd_log_entry(args):
         print("  e.g. familiar log entry my-app")
         return 1
 
-    kdir, whose = knowledge_dir()
-    if not kdir:
-        print("No knowledge folder configured. Run 'familiar init' first.")
-        return 1
+    from log import read_settings
 
-    build_logs = kdir / "build-logs.md"
+    _root, watched, build_logs = read_settings()
     if not build_logs.is_file():
         print(f"No build-logs.md at {build_logs}")
         return 1
 
-    import re
-    text = build_logs.read_text()
-    watched = re.findall(r"`([^`]+)`\s+`([^`]+-LOG\.md)`", text)
-
-    # Find the project
+    # Match the folder, its name, then anything containing what was asked for.
     log_file = None
-    for proj, logfile in watched:
-        if proj == args.project or Path(proj).name == args.project:
-            proj_path = Path(proj).expanduser()
-            log_file = proj_path / logfile
-            break
-
-    if not log_file or not log_file.is_file():
-        # Try finding by name pattern
-        for proj, logfile in watched:
-            if args.project in proj or args.project in logfile:
-                proj_path = Path(proj).expanduser()
-                log_file = proj_path / logfile
+    for match in (lambda proj, name: proj == args.project or Path(proj).name == args.project,
+                  lambda proj, name: args.project in proj or args.project in name):
+        for proj, name in watched.items():
+            if match(proj, name) and (Path(proj) / name).is_file():
+                log_file = Path(proj) / name
                 break
+        if log_file:
+            break
 
     if not log_file or not log_file.is_file():
         print(f"Project '{args.project}' not found or log file missing.")

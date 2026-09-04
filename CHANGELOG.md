@@ -51,6 +51,28 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.18.0 (2026-09-04)
+
+Harvest reads what you said about the work, not only what you did.
+
+**What this gives you:**
+
+- **Your reflections are part of the harvest.** It reads them alongside the
+  build logs, so the topics it offers come back in your own words, and it
+  names the places where an answer you gave contradicts an earlier one.
+- **Every topic arrives ready to talk from.** The position, the two projects
+  that answer it differently, one sentence you already wrote that could survive
+  into the draft, and the one thing still missing. It picks one and says why,
+  because on a low day the choosing is the cost.
+- **Harvest shows you what it found.** It offers the themes and the topics at
+  the end of the run, so the findings reach you without opening a file.
+- **`patterns.md` keeps a ledger.** One dated line per harvest, naming what was
+  added and what was demoted, so a theme can be watched strengthening or fading
+  across runs.
+- **`familiar log add` does the whole job.** It registers the project, creates
+  the log and wires the hooks that write an entry when a session ends or
+  compacts, whichever command you reach for.
+
 ## 0.17.0 (2026-09-02)
 
 Three ways in, and a new piece starts by asking rather than by waiting.

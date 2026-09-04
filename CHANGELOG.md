@@ -53,7 +53,7 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ## 0.19.0 (2026-09-04)
 
-Content Safeguards in Familiar
+Content safeguards in Familiar
 
 **What this gives you:**
 

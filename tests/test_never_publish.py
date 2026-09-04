@@ -26,8 +26,8 @@ LIST = """# Never publish
 
 ```
 Acme Holdings  # a note about where this came from
-TUI
-£90,000
+CAT
+£50,000
 ```
 
 ## Warn
@@ -40,18 +40,18 @@ TUI
 
 class Matching(unittest.TestCase):
     def test_a_name_matches_whole_words_only(self):
-        self.assertTrue(np.present("TUI", "a role at TUI next year"))
-        self.assertFalse(np.present("TUI", "the interface was intuitive"))
-        self.assertFalse(np.present("TUI", "tuition fees"))
+        self.assertTrue(np.present("CAT", "a role at CAT next year"))
+        self.assertFalse(np.present("CAT", "the catalogue was updated"))
+        self.assertFalse(np.present("CAT", "vacation dates"))
 
     def test_case_does_not_matter(self):
         self.assertTrue(np.present("Acme Holdings", "we met ACME HOLDINGS today"))
 
     def test_money_matches_anywhere(self):
-        self.assertTrue(np.present("£90,000", "(£90,000-£110,000)"))
+        self.assertTrue(np.present("£50,000", "(£50,000-£60,000)"))
 
     def test_a_name_with_punctuation_still_matches(self):
-        self.assertTrue(np.present("Kite Human Capital", "via Kite Human Capital."))
+        self.assertTrue(np.present("Beacon Talent Partners", "via Beacon Talent Partners."))
 
     def test_a_name_that_ends_in_a_full_stop_matches(self):
         """Ltd. and Inc. are how half a client list is written."""
@@ -90,7 +90,7 @@ class Loading(unittest.TestCase):
         (self.house / "never-publish.md").write_text(LIST)
         on, block, warn = np.load()
         self.assertTrue(on)
-        self.assertEqual(block, ["Acme Holdings", "TUI", "£90,000"])
+        self.assertEqual(block, ["Acme Holdings", "CAT", "£50,000"])
         self.assertEqual(warn, ["42%"])
 
     def test_trailing_notes_are_not_part_of_the_string(self):

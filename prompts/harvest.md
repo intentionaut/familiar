@@ -29,12 +29,18 @@ the person asking what to write about has failed at the one thing it is for.
    `Quote reflections in patterns`. If reflection is on and the folder exists,
    read every file in it, including `threads.md` if there is one.
 5. Resolve the piece folders the way `scripts/paths.py` does, and read what has
-   already been written: every `final.md` (a piece that was sent) and the
-   thesis line of every `notes.md`. A topic the writer has already published is
-   not a ready topic.
+   already been written: every `final.md` (a piece that was sent), the thesis
+   line of every `notes.md`, and every `cuts.md`. A topic the writer has
+   already published is not a ready topic, and a cut flagged `reusable` is a
+   piece they have already decided is worth writing.
 6. Check for an `inspirations/` folder next to the knowledge folder. If it
    exists and contains `.md` files, read them all. These are clipped snippets
    from articles, posts, and quotes the writer saved for later.
+7. Read whichever of `knowledge/longform-channels.md`,
+   `knowledge/social-schedule.md` and `knowledge/voice-guide.md` exist. These
+   say where a piece can go and how this writer writes. Any of them may be
+   absent or still a template, and a topic is proposed without that line rather
+   than against an invented one.
 
 ### When a source is missing
 
@@ -49,6 +55,8 @@ gets a warning tone, and the stage runs on what is there.
 | No `inspirations/` | Skip the section, one line, per its own rules | Nothing in the exit report |
 | No pieces yet | Nothing to exclude. Every topic is new | Nothing |
 | No previous patterns.md | First harvest. Nothing to demote, nothing to keep continuous | "First harvest" in the Ledger |
+| No sent pieces | The shape below is what the house says it will be, not what it has been | Say which, once |
+| No channel files | Propose a topic without a destination | Nothing |
 
 Never report a missing source as an empty finding, and never make a writer feel
 behind for not having one.
@@ -76,6 +84,45 @@ run out:
 read in full and how many by their recent entries. A finding drawn from a
 partial read is still a finding; a partial read presented as a complete one is
 how a shallow harvest passes for a thorough one.
+
+### The writer's shape, which is derived and never assumed
+
+Two writers with identical archives should not get identically shaped
+suggestions. One publishes a fortnightly essay, one posts three times a week,
+one is writing a book and has sent nothing yet. A stage that proposes "a
+letter" to all three is describing its own habits.
+
+So before any topic is written, work out this writer's shape **from evidence,
+naming the source for each line**. Where there is no evidence, the line says
+unknown. An unknown here is not a gap to fill with a sensible default: a
+default is how one writer's shape becomes everyone's.
+
+| What | Where it comes from | If absent |
+|---|---|---|
+| What they publish, and how long it runs | Word counts and frontmatter of each `final.md` | Say no piece has been sent yet |
+| How often | `positioning.md` cadence, checked against the dates on the sent pieces | Take the house's word for it and say so |
+| Where a piece can go, and what each place is for | `longform-channels.md` and `social-schedule.md`, including any test the house states for choosing between them | Propose no destination |
+| The moves that make it theirs | `voice-guide.md`, its "moves" and its hard noes | No guidance line |
+| What may not be written about | `positioning.md` personal context, and `never-publish.md` if there is one | Nothing barred |
+| What they turn down and why | `cuts.md` across the pieces, the `Because:` line of any options block, and the Turned down list | Nothing to learn from yet |
+
+Two rules about using it. **Route, do not rank**: the shape decides what form a
+topic is proposed in, never whether an idea is good. And **quote the house's
+own test** where it states one, rather than paraphrasing it into a preference.
+
+### The cutting room is a source
+
+A cut flagged `reusable` is material the writer already judged good and already
+decided belongs somewhere else. It comes with their reason attached, in their
+words, written at the moment they made the call. That is a stronger starting
+point than anything this stage can synthesise, and the board already surfaces
+these while the stage that answers "what do I write about" has been ignoring
+them.
+
+Read every `cuts.md`. For each `reusable` cut, carry the material, the piece it
+came out of, the date, and the writer's reason. Offer the strongest ones among
+the ready topics, marked as coming from the cutting room. A `dead` cut is never
+revived, and a `blocked` one is named with what it is waiting on.
 
 ### The instance, which is what a finding is counted in
 
@@ -229,7 +276,15 @@ instance has tested.** The incidents are what it stands on, never what it is
 about. Two projects is the usual shape and one project across a real change is
 the other, per "The instance" above.
 
-Open the section with a **one-line index**: the five names and nothing else, so
+Open the section with **How these should be written**: three or four lines,
+each one drawn from this writer's own files and cited, covering how a piece of
+theirs opens, what it does at the end, what it must not carry, and any test the
+house states for choosing between destinations. It is the frame a writer picks
+the topic up inside, and every line of it has to be traceable to a file rather
+than to a general idea of good writing. Where the files are still templates,
+say so and write no frame at all.
+
+Then a **one-line index**: the topic names and nothing else, so
 the writer can choose before reading. Then **pick one and say why**. On a low
 day the choosing is the cost, and a stage that returns five equal options has
 handed the work back.
@@ -237,8 +292,11 @@ handed the work back.
 Each topic carries these, in this order, one line each unless stated:
 
 - **The name**, a phrase
-- **A metadata line**: who it is for, the house intersection, and whether the
-  evidence supports a letter or a deep dive
+- **A metadata line**: who it is for, the house intersection, and where it
+  goes. The destination is chosen by applying the house's own test to this
+  topic and naming the channel whose stated job it fits, with a length taken
+  from what this writer has actually sent. Where no channel file exists, the
+  line carries the reader and the intersection and stops
 - **The position**, one sentence. Use the writer's own words wherever the
   reflections give them. A position stated in the stage's voice has to be
   agreed with before it can be written from, which is a step nobody needs
@@ -294,6 +352,11 @@ Do not repeat the raw log content. Every finding must cite its source (project
 name + date), but the finding itself is the synthesis, not a copy of the log
 entry.
 
+The Ready topics section opens with the frame described above, and every line
+of that frame cites the file it came from. A writer has to be able to see what
+the stage assumed about them and correct it in the file rather than in an
+argument with the next harvest.
+
 **Quoting a reflection moves private material into the knowledge folder.**
 Reflections are the one thing Familiar keeps outside the repo, and a quoted
 line lands in a file that may sit in a synced folder, a private repo, or a
@@ -342,6 +405,9 @@ Report what was found:
   and not only their logs
 - Whether anything was demoted or renamed since the last harvest, and whether
   any topic is marked as unpublishable on current evidence
+- What the shape was read from: how many sent pieces set the length, which
+  channel files were found, and any line of the frame that had to say unknown
+- How many reusable cuts are waiting, and how many were offered
 - Any source that is missing, once, in the words the table in Setup gives
 
 The counts say the harvest ran. They do not say what it found, and a writer

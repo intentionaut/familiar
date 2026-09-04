@@ -51,6 +51,30 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.21.0 (2026-09-04)
+
+Harvest works out how you write before it suggests what to write.
+
+**What this gives you:**
+
+- **Topics arrive in a shape you actually publish.** Harvest reads the pieces
+  you have sent for their length and form, and your channel files for what each
+  place is for, so a topic is proposed for a destination rather than as a
+  generic piece. Where your house states a test for choosing between channels,
+  that test decides, quoted rather than paraphrased.
+- **The frame comes from your own files.** Each topic list opens with a few
+  lines on how a piece of yours opens, what it does at the end, and what it may
+  not carry, each one citing the file it came from, so you can see what the
+  stage assumed and correct it in the file.
+- **Your cutting room is read.** A cut you flagged `reusable` is material you
+  already judged good and already said belongs elsewhere, with your reason
+  attached. Those are offered alongside the topics; a `blocked` cut is named
+  with what it is waiting for.
+- **Nothing is assumed about the shape of your writing.** A field with no
+  evidence behind it says so instead of taking a default, because a default is
+  how one writer's habits become everyone's. A writer who has sent nothing yet
+  is told the shape is what the house says it will be, not what it has been.
+
 ## 0.20.0 (2026-09-04)
 
 Harvest works on your first week, not just your fiftieth.

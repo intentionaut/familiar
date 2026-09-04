@@ -23,9 +23,18 @@ LOG_PATTERNS = ("*-LOG.md", "*-PROGRESS.md", "LOG.md")
 
 
 def settings_path():
-    """The registry, in the vault if Familiar is installed into one."""
-    vault = pathlib.Path.home() / "Documents/Dex/06-Resources/Familiar/knowledge/build-logs.md"
-    return vault if vault.exists() else ROOT / "knowledge" / "build-logs.md"
+    """The registry, wherever this install's knowledge resolves to.
+
+    This used to name one machine's vault path outright, which meant the
+    registry was read from that folder whatever a writer had configured, and on
+    any other machine the path did not exist and the shipped templates answered
+    instead: an empty list, reported as an empty list. `paths.py` is the one
+    place that knows where a house is, and every reader of it goes through here.
+    """
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from paths import knowledge_dir
+    kdir, _whose = knowledge_dir()
+    return (kdir / "build-logs.md") if kdir else ROOT / "knowledge" / "build-logs.md"
 
 
 def read_settings():

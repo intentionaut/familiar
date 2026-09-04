@@ -1,11 +1,17 @@
 # Cross-project patterns
 
-The `harvest` stage writes here. It reads every build log registered in
-`knowledge/build-logs.md` and the `inspirations/` folder, then extracts the
-shape of your work across projects: recurring themes, growth signals,
-inspiration connections, and ready-to-go topics for low-energy days.
+The `harvest` stage writes here. It reads your build logs, your reflections and
+the `inspirations/` folder, then extracts the shape of your work: recurring
+themes, growth signals, inspiration connections, and ready-to-go topics for
+low-energy days.
 
-This file is a snapshot, not an append. Each harvest replaces the previous one.
+The body is a snapshot and each harvest replaces it. The Ledger and the Turned
+down list at the foot are appended and never rewritten.
+
+**Keep this file where your other knowledge files live, not in a public repo.**
+Harvest quotes your reflections here, and those are the most candid thing you
+write. `knowledge/reflection.md` can be set to `citation only` if this file
+lives somewhere you would rather it did not.
 
 ## Recurring themes
 
@@ -30,3 +36,11 @@ This file is a snapshot, not an append. Each harvest replaces the previous one.
 <!-- 3-5 concrete interview angles, grounded in evidence, with a suggested opening question -->
 
 [run `familiar harvest` to populate]
+
+## Ledger
+
+<!-- One dated line per harvest: what was scanned, what changed. Appended, never rewritten -->
+
+## Turned down
+
+<!-- Topics you said no to, one line each with the date. Never offered again -->

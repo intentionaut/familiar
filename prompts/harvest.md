@@ -1,39 +1,98 @@
 # Stage: harvest
 
-Read every build log registered in knowledge/build-logs.md, and the writer's
-own reflections, and extract the shape of your work across projects. Output
-only the synthesis, not the raw content. Write the result to
-knowledge/patterns.md.
+Read what the writer has recorded about their work, across whatever sources
+they keep, and extract its shape. Output only the synthesis, not the raw
+content. Write the result to knowledge/patterns.md.
 
 This stage runs periodically (weekly, or when the writer feels scattered). It
 is not part of the piece pipeline. It feeds the interview stage: when the
 writer does not know what to write about, the interview reads patterns.md and
 offers ready topics.
 
+**It has to work on the first week as well as the fiftieth.** Build logs are
+the richest source and they are not the only one, and a writer with one project
+and no logs at all still has pieces they have sent, reflections they have
+recorded and clips they have saved. A harvest that answers "nothing here" to
+the person asking what to write about has failed at the one thing it is for.
+
 ## Setup
 
 1. Read knowledge/build-logs.md for the watched project list and the
    cross-project log path (if any).
 2. Read knowledge/patterns.md to see what was extracted last time, including
-   the ledger at its foot.
+   the Ledger and the Turned down list at its foot.
 3. Read knowledge/positioning.md for the house themes. These are the lens:
    patterns that connect to the house themes are stronger candidates. Read its
    "Personal context" rules too; they govern what may reach a piece and
    therefore what is worth offering as a topic.
-4. Read knowledge/reflection.md for the reflections folder. If reflection is
-   on and the folder exists, read every file in it, including `threads.md` if
-   there is one.
-5. Check for an `inspirations/` folder next to the knowledge folder. If it
+4. Read knowledge/reflection.md for the reflections folder and for
+   `Quote reflections in patterns`. If reflection is on and the folder exists,
+   read every file in it, including `threads.md` if there is one.
+5. Resolve the piece folders the way `scripts/paths.py` does, and read what has
+   already been written: every `final.md` (a piece that was sent) and the
+   thesis line of every `notes.md`. A topic the writer has already published is
+   not a ready topic.
+6. Check for an `inspirations/` folder next to the knowledge folder. If it
    exists and contains `.md` files, read them all. These are clipped snippets
    from articles, posts, and quotes the writer saved for later.
 
+### When a source is missing
+
+Every one of these is a normal way to work. None of them is an error, none
+gets a warning tone, and the stage runs on what is there.
+
+| Missing | Do this | Say this |
+|---|---|---|
+| No build logs registered | Harvest the pieces, reflections and clips instead | Name it once in the exit report, with `familiar log add <project>` as the way to add one |
+| Reflection off, or no reflections folder | Work from the logs and pieces. Do not offer a topic that needed a reflection to stand up | "Reflection is off, so this harvest is what the work says rather than what you said about it" |
+| No `threads.md` | Look for contradictions across reflections yourself | Nothing |
+| No `inspirations/` | Skip the section, one line, per its own rules | Nothing in the exit report |
+| No pieces yet | Nothing to exclude. Every topic is new | Nothing |
+| No previous patterns.md | First harvest. Nothing to demote, nothing to keep continuous | "First harvest" in the Ledger |
+
+Never report a missing source as an empty finding, and never make a writer feel
+behind for not having one.
+
 ## Method
 
-Read each registered build log in full. Read the cross-project log if it
-exists. Read every reflections file. Read every file in `inspirations/` if the
-folder exists.
+### What to read, when there is more than fits
 
-Four rules govern everything below. They exist because the obvious version of
+Read every reflections file, every file in `inspirations/`, and the
+cross-project log in full: they are small and they are where the angles are.
+Build logs are the ones that grow without limit, and a single project's log
+reaches a size no context window holds while still being a normal, healthy
+log.
+
+So, in this order, and stop when the budget is spent rather than when the logs
+run out:
+
+1. Every log's most recent entries, always, however many logs there are.
+2. Any entry a log marks as reconstructed, because those mark the boundary
+   where the record changes character.
+3. Backwards through the rest, newest first, largest logs last, so one big
+   project cannot consume the whole read.
+
+**Coverage is reported, never assumed.** Say in the exit how many logs were
+read in full and how many by their recent entries. A finding drawn from a
+partial read is still a finding; a partial read presented as a complete one is
+how a shallow harvest passes for a thorough one.
+
+### The instance, which is what a finding is counted in
+
+A theme needs two or more **independent instances**. A project is the usual
+one, and it is not the only one. Two moments in a single project's log are
+independent when a real change sits between them: a position taken and then
+reversed, an approach tried and replaced, a question answered differently in
+March and in September. Two entries about the same week are one instance
+described twice.
+
+This is what lets the stage work for a writer with one project, which is every
+writer at the start. A fortnight of one log can hold a reversal, and a reversal
+is worth more than the same opinion held in four repos.
+
+### Rules
+
+Five rules govern everything below. They exist because the obvious version of
 this stage produces a page of true, useless statements.
 
 **Do not hand a log its own conclusion back.** A good build log already names
@@ -80,8 +139,8 @@ Then extract four things.
 
 ### Recurring themes
 
-Themes that appear across two or more projects, and that survive the
-propagation test above. A theme is a technical concern, a design problem, a
+Themes that appear across two or more independent instances, and that survive
+the propagation test above. A theme is a technical concern, a design problem, a
 recurring decision pattern, or a question the writer keeps returning to. For
 each:
 
@@ -91,15 +150,22 @@ each:
 - Name it for the judgement it shows, never for the problem that revealed it.
   No caveat clauses in the name: "and the one case it does not cover" is a
   verdict wearing a title
-- Cite the projects and dates where it appears (e.g. "deployment anxiety:
-  cv-coach (2025-06), familiar (2025-08)"), in two or three lines at most
+- Cite where it appears, with dates (e.g. "deployment anxiety: cv-coach
+  (2025-06), familiar (2025-08)"), in two or three lines at most
 - Say which citation is the substantial one
-- Note whether the angle changed between projects, and say plainly when it did
+- Note whether the angle changed between instances, and say plainly when it did
   not. An unchanged angle across three projects is a habit, and a habit is
   weaker material than a position that moved.
 - Say if a log named this itself, and whose framing it is
 
-Skip themes that appear in only one project. Skip themes that are about the
+**Keep a theme's name across harvests.** The previous patterns.md was read in
+setup. Where a theme's citations overlap what is already there, reuse the name
+it already has, even where a fresh phrasing would be marginally better. A
+writer coming back weekly has to be able to tell a theme strengthening from the
+same theme worded differently, and only one of those is information. Rename
+when the evidence itself has changed, and say so in the Ledger.
+
+Skip themes that rest on a single instance. Skip themes that are about the
 tooling (e.g. "uses Claude Code") rather than the work. Skip themes that would
 be true of any competent engineer's week: the test is whether the finding needs
 this writer, these projects and this fortnight to be worth stating.
@@ -159,8 +225,9 @@ fills three paragraphs and then asks the writer to find the point themselves,
 which is the work this stage exists to have already done.
 
 A topic sits in the middle: **a position the writer holds, which more than one
-project has tested.** The incidents are what it stands on, never what it is
-about.
+instance has tested.** The incidents are what it stands on, never what it is
+about. Two projects is the usual shape and one project across a real change is
+the other, per "The instance" above.
 
 Open the section with a **one-line index**: the five names and nothing else, so
 the writer can choose before reading. Then **pick one and say why**. On a low
@@ -187,8 +254,23 @@ Each topic carries these, in this order, one line each unless stated:
 - **What you would need**: the one thing that is not yet on file, or "nothing,
   it is all here". This is what decides whether a topic is possible today
 
-A position that only one project has tested is a good candidate, not a topic
-yet. Say so and leave it for the next harvest rather than promoting it.
+A position tested only once is a good candidate rather than a topic. Say so
+and leave it for the next harvest rather than promoting it.
+
+**Do not offer back what has already been written or turned down.** The pieces
+were read in setup and the Turned down list is at the foot of patterns.md.
+A position a sent piece already carries is finished: name it in one line under
+the index, as written, with the date it went out, so the writer can see the
+stage knows. A topic on the Turned down list does not appear at all. Neither is
+a finding, and neither gets a paragraph.
+
+**Say what a topic could not carry.** Run `scripts/never-publish.py` over each
+topic's evidence and quoted line. A block match means the topic as evidenced
+cannot go out, so mark it, name which piece of evidence is the problem, and
+leave the topic in place: the position is often still writable from other
+evidence, and that is the writer's call. This costs one command and turns a
+refusal at the publish gate, three stages later, into a note at the moment of
+choosing.
 
 The opening question **asks for judgement the writer holds today**, never for
 recall of what they thought weeks ago. Reconstructing a past mental state is
@@ -212,30 +294,55 @@ Do not repeat the raw log content. Every finding must cite its source (project
 name + date), but the finding itself is the synthesis, not a copy of the log
 entry.
 
-Reflections are private and stay private. They may be quoted inside
-patterns.md, which lives with the writer's own files, and a topic drawn from
-one still answers to positioning's personal-context rules before it can become
-a piece.
+**Quoting a reflection moves private material into the knowledge folder.**
+Reflections are the one thing Familiar keeps outside the repo, and a quoted
+line lands in a file that may sit in a synced folder, a private repo, or a
+vault that commits itself. So patterns.md carries the note at its head about
+where to keep it, the same note never-publish.md carries, and
+`knowledge/reflection.md` decides how much travels:
 
-End the file with a **Ledger**: one dated line per harvest, appended rather
-than replaced, naming what was scanned and what changed since the last run
-(themes added, themes demoted, position shifts found). The body is a snapshot
-and cannot show a theme strengthening or fading; this is the only part of the
-file that carries history, so it is never rewritten.
+- `Quote reflections in patterns: words` (the default when the line is absent)
+  quotes the sentence, which is what makes a topic writable from a cold start.
+- `citation only` cites the file and date and paraphrases nothing. Weaker
+  topics, and the right answer for a writer whose knowledge folder is shared.
+
+A topic drawn from a reflection still answers to positioning's personal-context
+rules before it can become a piece.
+
+End the file with two appended sections, both of which survive the snapshot.
+
+**Ledger**: one dated line per harvest, naming what was scanned, what coverage
+was reached, and what changed since the last run (themes added, themes demoted,
+themes renamed and why, position shifts found). The body cannot show a theme
+strengthening or fading, so this is the only part of the file that carries
+history, and it is never rewritten.
+
+**Turned down**: one line per topic the writer has said no to, with the date and
+their reason in their words if they gave one. Read in setup, and never offered
+again. This is `cuts.md`'s `dead` flag applied to the stage that proposes
+rather than the piece that cuts: a rejected idea recorded is a rejection that
+holds, and without it every harvest re-offers what was already refused. Never
+delete a line from it. If a turned-down topic later becomes a piece after all,
+say so on the line rather than removing it.
 
 ## Exit
 
 Report what was found:
 
-- How many projects were scanned, and which registered logs were thin or
-  missing, since that bounds what this harvest could see
+- How many projects were scanned, how many logs were read in full and how many
+  by their recent entries, and which registered logs were thin or missing. That
+  is what bounds the harvest, and it is never left to be assumed
 - How many reflections files were read, and whether any position shift was
   found
 - How many clips were read from inspirations/, if the folder exists
 - How many themes, signals, connections, and ready topics were extracted
 - How many clips are not yet annotated
-- Whether anything was demoted from a previous harvest (a theme that no
-  longer appears in recent logs)
+- What was already written, in one line: how many positions a sent piece
+  already carries, so a returning writer sees the stage is reading their work
+  and not only their logs
+- Whether anything was demoted or renamed since the last harvest, and whether
+  any topic is marked as unpublishable on current evidence
+- Any source that is missing, once, in the words the table in Setup gives
 
 The counts say the harvest ran. They do not say what it found, and a writer
 who has to open a file to learn that is being handed homework at the end of a

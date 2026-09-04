@@ -81,6 +81,27 @@ comments. Collect these into an explicit checklist with times. Do not drop them,
 and do not quietly move the link inline instead, which changes a post the writer
 approved.
 
+## Check the never-publish list
+
+Run it before the gate, so anything it finds is in front of the writer while
+they are deciding:
+
+```sh
+python3 scripts/never-publish.py <the file>
+```
+
+- **Exit 0, nothing printed but "clean" or a warning:** carry on. Warnings are
+  for the writer to read, not for you to act on.
+- **Exit 1, blocked:** stop. Say which strings matched and where they are. Do
+  not schedule, do not edit them out yourself, and do not offer to. A string on
+  that list is there because the writer decided it must never go out, and what
+  to do about it is theirs.
+- **The list is off or empty:** nothing happens and nothing is said. That is a
+  supported way to work.
+
+This is the only place Familiar refuses rather than reports. It refuses to send,
+never to write.
+
 ## Gate: confirm
 
 Stop. Show, grouped by channel:

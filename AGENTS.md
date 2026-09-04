@@ -299,6 +299,33 @@ of investigated.
 **Pieces resolve the same way**: `FAMILIAR_PIECES`, then `pieces = ` lines in
 `.familiar`, then this repo's `pieces/`. There can be more than one.
 
+## The one thing Familiar refuses
+
+Every other check reports. The writer accepts it, rejects it, or revises it, and
+nothing is applied without them. `knowledge/never-publish.md` is the exception.
+
+It holds strings that must never appear in anything sent out: a client under an
+agreement, a salary, an unannounced product, a metric nobody cleared. `publish`
+and `social` run `scripts/never-publish.py` before their gate. A match on the
+block list stops the run.
+
+The line, and it matters: **Familiar never refuses to write something. It can
+refuse to send it.** Drafting is private and reversible; publishing is not. No
+drafting or editing stage reads this list, and none of them should.
+
+When it blocks:
+
+- Say which strings matched. Do not edit them out and carry on.
+- Do not offer to remove them. The writer put them on that list; what to do
+  about a match is theirs.
+- Do not suggest turning the check off to get past it.
+
+The list is literal-string matching and nothing more. It cannot spot a
+paraphrase. Never describe it to a writer as making a draft safe to publish:
+it is the last catch for a mistake they already knew they could make.
+
+An empty or absent list is off. Say nothing about it.
+
 ## Stating a finding
 
 Every stage that reports back is describing the writer's own work to them, and
@@ -372,6 +399,8 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `knowledge/humanizer-check.md`: weekly diff against humanizer's tell list; candidates, never applied
 - `knowledge/models.md`: per-stage model recommendations and fallback rule
 - `knowledge/context-log.md`: the resume log format
+- `knowledge/never-publish.md`: strings that must never be sent; the block and warn lists publish and social check before their gate
+- `scripts/never-publish.py`: the check itself; exit 1 blocks, 0 is clean or warnings only
 - `prompts/*.md`: source of truth for each stage
 - `.claude/commands/`: thin adapters calling the prompts; `scripts/setup.sh`
   installs them globally as `familiar-*`

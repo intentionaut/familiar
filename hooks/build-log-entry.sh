@@ -22,6 +22,8 @@
 set -u
 INPUT="$(cat)"
 SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+FAMILIAR_ROOT="$(dirname "$(dirname "$SCRIPT")")"
+export FAMILIAR_ROOT
 STATE_DIR="${HOME}/.claude/familiar-log"
 mkdir -p "$STATE_DIR/state" "$STATE_DIR/logs"
 
@@ -48,25 +50,21 @@ def log(msg):
     print(f"[{now:%Y-%m-%d %H:%M:%S}] {session[:8]} {event}: {msg}", flush=True)
 
 # --- find the log file -------------------------------------------------------
+# log.py owns this. It reads the registry through the same path resolution as
+# every other command and honours a log recorded outside its project, which is
+# how a public repo keeps a candid log without committing it. Asking it here
+# means one resolver rather than a copy that drifts, and no machine's paths
+# written into a hook.
 log_file = os.environ.get("FAMILIAR_LOG_FILE")
 if not log_file:
-    # Prefer the filename recorded for this project, so a log called anything
-    # at all is found. Guessing is the fallback, not the rule.
-    for base in (os.path.expanduser("~/Projects/familiar/knowledge/build-logs.md"),
-                 os.path.expanduser("~/Documents/Dex/06-Resources/Familiar/knowledge/build-logs.md")):
-        try:
-            with open(base, encoding="utf-8") as fh:
-                for line in fh:
-                    m = re.match(r"\s*-\s+`([^`]+)`\s*:\s*`([^`]+)`", line)
-                    if m and os.path.realpath(os.path.expanduser(m.group(1))) == os.path.realpath(cwd):
-                        cand = os.path.join(cwd, m.group(2))
-                        if os.path.exists(cand):
-                            log_file = cand
-                        break
-        except OSError:
-            pass
-        if log_file:
-            break
+    root = os.environ.get("FAMILIAR_ROOT", "")
+    try:
+        r = subprocess.run(["python3", os.path.join(root, "scripts", "log.py"), "--path", cwd],
+                           capture_output=True, text=True, timeout=30)
+        if r.returncode == 0 and r.stdout.strip():
+            log_file = r.stdout.strip()
+    except Exception as e:
+        log(f"could not resolve the log path: {e}")
 if not log_file:
     for pat in ("*-LOG.md", "*-PROGRESS.md", "LOG.md"):
         hits = sorted(glob.glob(os.path.join(cwd, pat)))

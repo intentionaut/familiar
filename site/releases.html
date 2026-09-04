@@ -31,6 +31,15 @@
 
 <section class="wrap">
   <article class="release">
+    <h2 id="v0-23-0">0.23.0</h2>
+    <p class="release-date"><time datetime="2026-09-04">2026-09-04</time></p>
+    <div class="release-body">
+      <p>A build log can live somewhere other than the project it describes.</p>
+      <p><strong>What this gives you:</strong></p>
+      <ul><li><strong><code>familiar log move &lt;project&gt; &lt;folder&gt;</code> moves a log and records where it went.</strong> A log worth keeping holds what broke and what it cost, which is not something you want in a repository strangers read, and hiding it from git leaves exactly one copy on one disk. Now it can live with your own notes while the project keeps being logged.</li><li><strong>Everything that reads a log follows it.</strong> The registry takes a path as readily as a filename, and the hook that writes an entry when a session ends asks the same resolver as every other command, so nothing needs telling twice.</li><li><strong>A log named anything, anywhere, is still found.</strong> Where nothing is recorded, the old behaviour stands: the first <code>*-LOG.md</code>, <code>*-PROGRESS.md</code> or <code>LOG.md</code> in the project folder.</li></ul>
+    </div>
+  </article>
+  <article class="release">
     <h2 id="v0-22-0">0.22.0</h2>
     <p class="release-date"><time datetime="2026-09-04">2026-09-04</time></p>
     <div class="release-body">

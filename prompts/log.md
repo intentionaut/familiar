@@ -7,6 +7,12 @@ There is no install. If you want the entries written automatically when a
 session ends or the context is compacted, run `familiar log add <project>`
 instead, which wires a hook and records the project.
 
+**If the project is public, put the log somewhere else.** A log worth keeping
+records what broke and what it cost, and neither belongs in a repository
+strangers read. `familiar log move <project> <folder>` moves it and records
+where it went, so the hooks keep writing to it and there is still only one of
+it.
+
 A build log is where the material for writing about your work comes from. The
 `case-study` stage reads one and turns it into a brief and a set of interview
 questions.

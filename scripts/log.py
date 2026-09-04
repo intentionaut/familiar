@@ -52,9 +52,31 @@ def read_settings():
     return pathlib.Path(root).expanduser(), watched, p
 
 
+def resolve_log(folder, recorded):
+    """Where a project's log actually is.
+
+    A recorded value with no separator in it is a filename inside the project,
+    which is the normal case and the whole history of this file. A value with a
+    separator, or one starting with ~, is a path used as it stands, so a log can
+    live outside the project it describes.
+
+    That matters for a public repository. A build log holds candid defect notes,
+    hours budgets and plan-of-record, and keeping it beside the code means
+    either committing all of that or gitignoring a file whose only copy is then
+    on one disk. Neither is a good answer, so the third one is to let the log
+    live in the writer's own folder and record where it went.
+    """
+    if not recorded:
+        return None
+    if "/" in recorded or recorded.startswith("~"):
+        return pathlib.Path(recorded).expanduser()
+    return folder / recorded
+
+
 def find_log(folder, watched):
+    """The recorded value for this project, or a guess from the folder."""
     named = watched.get(str(folder.resolve()))
-    if named and (folder / named).exists():
+    if named and resolve_log(folder, named).exists():
         return named
     for pat in LOG_PATTERNS:
         hits = sorted(folder.glob(pat))
@@ -180,11 +202,13 @@ def cmd_add(args):
         print(f"  No build log found. Using {name}.")
         print(f"  Paste the block from {ROOT / 'prompts' / 'log.md'} into that")
         print(f"  project's CLAUDE.md so entries get written during the work too.")
-    if not (folder / name).exists():
-        (folder / name).write_text(
+    dest = resolve_log(folder, name)
+    if not dest.exists():
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(
             f"# {folder.name} build log\n\nKept per Familiar's prompts/log.md.\n"
             "Append-only, dated, newest at the bottom.\n\n---\n", encoding="utf-8")
-        print(f"  Created {folder / name}")
+        print(f"  Created {dest}")
 
     # Merge into the project's settings, never replace.
     sp = folder / ".claude" / "settings.json"
@@ -220,10 +244,82 @@ def cmd_add(args):
     print(f"  Recorded in {reg}")
 
 
+def cmd_move(args):
+    """Move a project's log out of the project, and record where it went."""
+    if len(args) < 2:
+        sys.exit("usage: log.py move <project> <destination folder or file>")
+    root, watched, reg = read_settings()
+    target, dest = args[0], pathlib.Path(args[1]).expanduser()
+
+    folder = pathlib.Path(target).expanduser()
+    if not folder.is_dir():
+        folder = root / target
+    if not folder.is_dir():
+        sys.exit(f"No such project: {target}")
+    folder = folder.resolve()
+
+    name = watched.get(str(folder)) or find_log(folder, watched)
+    if not name:
+        sys.exit(f"No log recorded or found for {folder.name}.")
+    src = resolve_log(folder, name)
+    if not src.exists():
+        sys.exit(f"{src} does not exist.")
+
+    if dest.is_dir() or not dest.suffix:
+        dest = dest / src.name
+    if dest.resolve() == src.resolve():
+        sys.exit("That is where it already lives.")
+    if dest.exists():
+        sys.exit(f"{dest} already exists. Move it out of the way first.")
+
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    src.replace(dest)
+
+    home = str(pathlib.Path.home())
+    recorded = str(dest)
+    if recorded.startswith(home + "/"):
+        recorded = "~" + recorded[len(home):]
+    text = reg.read_text(encoding="utf-8")
+    old_line = f"- `{folder}`: `{name}`"
+    new_line = f"- `{folder}`: `{recorded}`"
+    if old_line in text:
+        reg.write_text(text.replace(old_line, new_line, 1), encoding="utf-8")
+    else:
+        marker = "<!-- familiar log add appends below this line -->"
+        text = (text.replace(marker, marker + "\n\n" + new_line) if marker in text
+                else text.rstrip() + "\n\n" + new_line + "\n")
+        reg.write_text(text, encoding="utf-8")
+
+    print(f"  Moved to {dest}")
+    print(f"  Recorded in {reg}")
+    print("  The hooks are unchanged: they read the registry, so they follow it.")
+    if (folder / ".gitignore").exists():
+        print(f"  Worth checking {folder.name}/.gitignore: the entry that hid the")
+        print("  log is now hiding nothing.")
+
+
+def cmd_path(args):
+    """Print where a project's log is. One resolver, for the hook to call."""
+    root, watched, _reg = read_settings()
+    folder = pathlib.Path(args[0] if args else ".").expanduser().resolve()
+    name = watched.get(str(folder)) or find_log(folder, watched)
+    if not name:
+        return 1
+    path = resolve_log(folder, name)
+    if not path.exists():
+        return 1
+    print(path)
+    return 0
+
+
 def main():
     args = sys.argv[1:]
     if args and args[0] == "add":
         return cmd_add(args[1:])
+    if args and args[0] == "move":
+        return cmd_move(args[1:])
+    if args and args[0] == "--path":
+        return cmd_path(args[1:])
     if args and args[0] not in ("list", ""):
         sys.exit(__doc__)
     cmd_list()

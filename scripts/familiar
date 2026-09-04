@@ -14,6 +14,7 @@ Usage:
     familiar decisions answer <piece> "..."   record an answer against a piece
     familiar log list              show watched projects
     familiar log add <project>     register a project and wire its log
+    familiar log move <project> <to>  move the log out of the project
     familiar log entry <project>   scaffold a dated log entry
     familiar reflect               show reflection status
     familiar learn                 show knowledge file status
@@ -321,12 +322,15 @@ def cmd_log(args):
         return cmd_log_list(args)
     elif args.log_command == "add":
         return cmd_log_add(args)
+    elif args.log_command == "move":
+        return _run_log_py("move", args.project, args.dest)
     elif args.log_command == "entry":
         return cmd_log_entry(args)
     else:
         print("Usage: familiar log <list|add|entry>")
         print("  list                    show watched projects")
         print("  add <project-folder>    register a project and wire its log")
+        print("  move <project> <to>     move the log out of the project")
         print("  entry <project-name>    scaffold a dated log entry")
         return 1
 
@@ -563,6 +567,10 @@ def main():
     p_log_sub.add_parser("list", help="show watched projects")
     p_log_add = p_log_sub.add_parser("add", help="register a project and wire its log")
     p_log_add.add_argument("project", nargs="?", help="project folder path")
+    p_log_move = p_log_sub.add_parser("move", help="move the log out of the project")
+    p_log_move.add_argument("project", help="the project")
+    p_log_move.add_argument("dest", help="destination folder or file")
+
     p_log_entry = p_log_sub.add_parser("entry", help="scaffold a dated log entry")
     p_log_entry.add_argument("project", nargs="?", help="project name")
 

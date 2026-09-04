@@ -51,6 +51,34 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.20.0 (2026-09-04)
+
+Harvest works on your first week, not just your fiftieth.
+
+**What this gives you:**
+
+- **One project is enough.** A theme can rest on two moments in the same
+  project when something real changed between them, so a fortnight that
+  contains a decision you reversed gives you as much to write from as four
+  repos would. With no build logs at all it works from the pieces you have
+  sent, your reflections and your clips.
+- **It reads what you have already written.** Harvest now reads your piece
+  folders, so a position you have published is named as published rather than
+  offered back to you, and a topic you turn down is recorded and not raised
+  again. A topic whose evidence could not go out says so while you are
+  choosing, rather than at the gate three stages later.
+- **Clipping works end to end.** `familiar inspire "a line" --url X` saves the
+  clip beside your knowledge folder, and harvest reads it from there and
+  connects it to what your logs are already saying.
+- **Your build logs are found from wherever your knowledge lives.** The
+  registry is read through the same path resolution as everything else, so
+  `familiar log` and `familiar harvest` list every registered project on any
+  machine, including logs that are not named `*-LOG.md`.
+- **Your reflections travel only as far as you want.** Harvest quotes them to
+  make a topic writable, and `Quote reflections in patterns: citation only` in
+  `knowledge/reflection.md` cites the date instead. `patterns.md` says where to
+  keep it.
+
 ## 0.19.0 (2026-09-04)
 
 Content safeguards in Familiar

@@ -66,7 +66,11 @@ supplies the name of a theme.
 
 Do not editorialise the writer's decisions and do not praise them. No verdicts
 on whether something was wise, mature, expensive or overdue. The reader of this
-file is the person who made every call in it.
+file is the person who made every call in it. AGENTS.md, "Stating a finding",
+carries the rules and the test; this stage breaks them more easily than any
+other, because a cross-project read is where an unstated standard is easiest to
+invent. A system built for one kind of product not covering another is scope. A
+question a project left open is a question, not a debt.
 
 A theme that only exists because something broke is usually a theme that has
 not been found yet. Look again for the capability it produced, and if there is

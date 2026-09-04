@@ -24,7 +24,8 @@ has no gate: it scaffolds a folder and hands you to the interview.
 
 3. Report the path it printed, then **begin the interview**: read
    `${CLAUDE_PLUGIN_ROOT}/prompts/interview.md` and follow it exactly. Knowledge
-   lives at the folder that `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/paths.py --knowledge-only` prints; every `knowledge/<file>.md` a prompt names
+   lives at the folder that `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/paths.py
+   --knowledge-only` prints; every `knowledge/<file>.md` a prompt names
    is read from there, not from the Familiar folder. If that path ends in the
    repo's own `knowledge/`, those are the shipped templates: say so and do not
    draft against them.

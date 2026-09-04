@@ -101,9 +101,13 @@ A diff catches what the writer changed. It cannot catch what they chose, because
 choosing happens before there is any text to compare. This mode reads the other
 half.
 
-1. Collect every `Chosen` / `Because` pair from `SESSION-CONTEXT.md` and any
-   `options.md` across the pieces in scope. Say how many you found and over what
-   period.
+1. Collect every `Chosen` / `Because` pair across the pieces in scope, from
+   `SESSION-CONTEXT.md`, from any `options.md`, and from **inline option blocks
+   in whatever file the stage was producing at the time**: an edit report,
+   `social.md`, a draft. Inline is where most blocks actually live, so a search
+   that only reads `options.md` finds almost none of them. Add every `Answer:`
+   line recorded by `familiar decisions`, which is the writer settling a gate in
+   their own words. Say how many you found and over what period.
 2. Group by the reason, not by the stage. A title picked for being plainer and a
    passage picked for being more generous may be the same rule wearing two
    coats. Read the `Because` lines as a body of text and look for what recurs.

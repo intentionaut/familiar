@@ -56,11 +56,33 @@ def state(path, shipped=None):
     return (TEMPLATE if found else OK), len(found)
 
 
+def started(piece):
+    """Has anything been written into this piece, or is it still the scaffold?
+
+    `new-piece` writes notes.md with empty sections, so a folder made and never
+    worked counts as a piece in flight and inflates the one number a writer
+    uses to decide whether they have room to start something else. A scaffold
+    is headings and nothing under them.
+    """
+    for name in ("draft.md", "final.md", "brief.md", "source.md", "outline.md"):
+        if (piece / name).is_file():
+            return True
+    notes = piece / "notes.md"
+    if not notes.is_file():
+        return False
+    for line in notes.read_text(encoding="utf-8", errors="replace").splitlines():
+        line = line.strip()
+        if line and not line.startswith(("#", "<!--", "-->")):
+            return True
+    return False
+
+
 def count_pieces():
     """Count piece folders and surface what's in flight."""
     total = 0
     with_notes = 0
     with_draft = 0
+    scaffolds = 0
     for d in pieces_dirs():
         if not d.is_dir():
             continue
@@ -68,11 +90,14 @@ def count_pieces():
             if not piece.is_dir() or piece.name.startswith(".") or piece.name.startswith("_"):
                 continue
             if (piece / "notes.md").is_file():
+                if not started(piece):
+                    scaffolds += 1
+                    continue
                 total += 1
                 with_notes += 1
                 if (piece / "draft.md").is_file() or (piece / "final.md").is_file():
                     with_draft += 1
-    return total, with_notes, with_draft
+    return total, with_notes, with_draft, scaffolds
 
 
 def main():
@@ -93,7 +118,7 @@ def main():
             unfilled.append((name, n))
 
     # Check pieces
-    total, with_notes, with_draft = count_pieces()
+    total, with_notes, with_draft, scaffolds = count_pieces()
 
     # --- Output ---
     print()
@@ -140,6 +165,9 @@ def main():
             print(f"    {ready} waiting for a draft")
         if with_draft > 0:
             print(f"    {with_draft} drafted")
+    if scaffolds:
+        word = "folder" if scaffolds == 1 else "folders"
+        print(f"    {scaffolds} scaffolded and not started ({word} only)")
 
     print()
 

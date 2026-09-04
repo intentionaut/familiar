@@ -10,6 +10,8 @@ Usage:
     familiar new-piece <slug>      scaffold a new piece folder
     familiar inspire "text" --url X clip a snippet for later
     familiar harvest               scaffold patterns.md, list build logs found
+    familiar decisions             every question waiting on you, in one list
+    familiar decisions answer <piece> "..."   record an answer against a piece
     familiar log list              show watched projects
     familiar log add <project>     register a project and wire its log
     familiar log entry <project>   scaffold a dated log entry
@@ -306,6 +308,13 @@ def cmd_harvest(args):
     return 0
 
 
+def cmd_decisions(args):
+    """Every open decision gate, and a way to answer one."""
+    import subprocess
+    argv = ["answer", args.piece, args.answer] if args.piece else []
+    return subprocess.call([sys.executable, str(HOME / "scripts" / "decisions.py"), *argv])
+
+
 def cmd_log(args):
     """Handle log subcommands."""
     if args.log_command == "list":
@@ -544,6 +553,11 @@ def main():
     sub.add_parser("harvest", help="scaffold patterns.md, list build logs found")
 
     # log
+    p_dec = sub.add_parser("decisions", help="every question waiting on you")
+    p_dec.add_argument("mode", nargs="?", choices=["answer"], help="record an answer")
+    p_dec.add_argument("piece", nargs="?", help="the piece the answer belongs to")
+    p_dec.add_argument("answer", nargs="?", help="your answer, in your words")
+
     p_log = sub.add_parser("log", help="manage build logs")
     p_log_sub = p_log.add_subparsers(dest="log_command")
     p_log_sub.add_parser("list", help="show watched projects")
@@ -578,6 +592,8 @@ def main():
         sys.exit(cmd_inspire(args))
     elif args.command == "harvest":
         sys.exit(cmd_harvest(args))
+    elif args.command == "decisions":
+        return cmd_decisions(args)
     elif args.command == "log":
         sys.exit(cmd_log(args))
     elif args.command == "reflect":

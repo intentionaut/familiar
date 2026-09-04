@@ -59,11 +59,12 @@ wanted() {
   return 1
 }
 
-# Resolve where the writer's knowledge actually lives and bake it into the
-# installed commands, so a stage is told rather than left to guess. The
-# fallback is this repo's own folder, which is the shipped templates, and the
-# adapters say so when that is what they got. See scripts/paths.py.
-KDIR="$(python3 "$DIR/scripts/paths.py" --knowledge-only 2>/dev/null || echo "$DIR/knowledge")"
+# The adapters resolve the knowledge folder at runtime rather than having it
+# baked in here. Baking it meant an install done from one folder kept pointing
+# at that folder forever: move a vault, or run the installer from a temporary
+# directory once, and every command afterwards read a house that was not there.
+# Nothing is silent about it either way, because paths.py says whose files it
+# found. See scripts/paths.py.
 
 # The three ways into a piece.
 COMMANDS="board new-piece harvest"
@@ -78,14 +79,14 @@ install_for() {
   for cmd in $COMMANDS; do
     adapter="$DIR/.claude/commands/$cmd.md"
     if [ -f "$adapter" ]; then
-      sed -e "s|{{FAMILIAR_HOME}}|$DIR|g" -e "s|{{FAMILIAR_KNOWLEDGE}}|$KDIR|g" "$adapter" > "$dir/familiar-$cmd.md"
+      sed -e "s|{{FAMILIAR_HOME}}|$DIR|g" "$adapter" > "$dir/familiar-$cmd.md"
     fi
   done
 
   # The standing practice, installed unprefixed.
   alias_adapter="$DIR/.claude/commands/$ALIAS.md"
   if [ -f "$alias_adapter" ]; then
-    sed -e "s|{{FAMILIAR_HOME}}|$DIR|g" -e "s|{{FAMILIAR_KNOWLEDGE}}|$KDIR|g" "$alias_adapter" > "$dir/$ALIAS.md"
+    sed -e "s|{{FAMILIAR_HOME}}|$DIR|g" "$alias_adapter" > "$dir/$ALIAS.md"
   fi
 
   # Take out commands an earlier version installed that are no longer part of

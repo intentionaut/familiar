@@ -55,6 +55,32 @@ directions. Treat these as the default, not the exception:
   resume and say in one line where the piece is and what the open decision was.
   Do not summarise the whole history and do not push towards the next stage.
 
+## Answering the open gates
+
+Every stage stops and asks something. Over a fortnight that becomes a pile of
+questions in separate folders, and a question nobody can find is a piece that
+does not move. `scripts/decisions.py` reads the decision gate out of every
+piece's context log and prints them as one list.
+
+```
+familiar decisions                      every question waiting on you
+familiar decisions answer <piece> "..." record an answer against that piece
+```
+
+When the writer asks what is waiting, or picks the list up on a low day, work
+it as a batch:
+
+- **One question at a time**, in the order the list gives, and their answer
+  goes down in their words. This is the interview's rule and it is the same
+  reason: `learn decisions` reads these for the reasoning, and a paraphrase is
+  worth nothing to it.
+- **Recording is not advancing.** An answered gate does not start the next
+  stage. Say what the piece is now waiting for and stop.
+- **A pass is an answer.** "Not today" is recorded as skipped, and the gate
+  stays open rather than being asked again in the same sitting.
+- **Never answer one for them**, however obvious it looks. The gate exists
+  because a stage found something only the writer can settle.
+
 ## Offering a voice review
 
 The decisions and diffs pile up. The review is the moment they become rules, and
@@ -67,8 +93,21 @@ its cadence, offer one in a single line and stop:
 
 At a stage exit only, never during the work. Once per session. If they say no,
 or say nothing about it, drop it and do not raise it again in that session.
-Never offer when voice review is off, and never when the settings are still the
-template.
+Never offer when voice review is off.
+
+**A loop nobody has opened is different from one that is off**, and the rule
+above used to cover both. Where the settings are still the template and
+decisions have been accumulating, say so **once, ever**, at a stage exit, in
+one line naming what it would do and the file that turns it on:
+
+> Eleven decisions recorded and no voice review set up yet. `voice-review.md`
+> turns it on. (This is the only time I will mention it.)
+
+Then never again, in that session or any other, unless the writer asks. Not
+nagging is right; never introducing means a writer can only find a loop by
+reading a file they have no reason to open. The same applies to any other
+setting-gated loop that has never been switched on: one introduction, at a
+moment it would have paid, and then silence.
 
 A review is `learn decisions`, so it has a gate like any other and it proposes
 rather than applies.
@@ -125,9 +164,14 @@ Every stage reaches points where there is more than one defensible answer. Those
 are the moments the writer should be spending their judgement on, and they are
 the moments most easily lost to conversation.
 
-**Options go into the piece, not into the chat.** Any stage may write an options
-block to the piece folder, in `options.md`, or inline in the file it is already
-producing when the choice belongs there.
+**Options go into the piece, not into the chat.** The block goes inline in the
+file the stage is already producing, which is where most of them belong: an
+edit report, `social.md`, a draft. `options.md` is for a choice that is not
+tied to one file, and it is the exception rather than the default.
+
+Whichever home it takes, `learn decisions` reads the `Chosen:` and `Because:`
+lines, so it looks in both and a block is never left somewhere neither can
+find.
 
 ```markdown
 ## Option set: <what is being chosen>        [stage: draft · YYYY-MM-DD]
@@ -296,8 +340,13 @@ then makes is against rules the writer never set. Nothing errors. The output
 looks like a bad edit rather than a missing file, so it gets argued with instead
 of investigated.
 
-**Pieces resolve the same way**: `FAMILIAR_PIECES`, then `pieces = ` lines in
-`.familiar`, then this repo's `pieces/`. There can be more than one.
+**Pieces resolve slightly differently, and the difference is deliberate.**
+Knowledge is one folder, so the first hit wins. Pieces can be several, so
+`FAMILIAR_PIECES` and the `pieces = ` lines in `.familiar` are **added
+together**, in that order, falling back to this repo's `pieces/` when neither
+says anything. A writer with the environment variable set in their shell and a
+second folder in their config gets both, which is the point: dropping one of
+them would take a piece off the board with nothing to say why.
 
 ## The one thing Familiar refuses
 

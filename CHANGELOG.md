@@ -51,6 +51,32 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.22.0 (2026-09-04)
+
+Every question waiting on you, in one place.
+
+**What this gives you:**
+
+- **`familiar decisions` lists every gate a stage has left open**, across all
+  your pieces, newest first, with what each one is holding.
+  `familiar decisions answer <piece> "..."` records your answer in your own
+  words against that piece. Recording is not advancing: the next stage still
+  waits to be asked.
+- **A loop you have never opened gets introduced once.** Where a review or a
+  ritual is still sitting in its template and the work that would feed it has
+  been piling up, Familiar says so a single time, names the file that turns it
+  on, and then never mentions it again unless you ask.
+- **Commands find your knowledge folder wherever it is, every time they run.**
+  Move a vault, work from a different machine, or install from a different
+  folder, and the stages follow.
+- **A folder you scaffolded and have not started is counted as one.** `familiar
+  status` separates work in flight from folders waiting to begin, so the number
+  you use to decide whether you have room for another piece means what it says.
+- **Your recorded choices are read wherever you made them.** `learn decisions`
+  now looks for option blocks inside the file a stage was writing at the time,
+  which is where most of them are, as well as in `options.md` and the answers
+  you record from the list above.
+
 ## 0.21.0 (2026-09-04)
 
 Harvest works out how you write before it suggests what to write.

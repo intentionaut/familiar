@@ -105,3 +105,55 @@ class FamiliarCLI(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class HarvestAndInspire(unittest.TestCase):
+    """The two commands that feed the harvest stage.
+
+    `inspire` is the only way to create a clip and it raised on every run, so
+    the inspirations half of harvest had never worked end to end. `harvest`
+    listed the registry with a second parser that matched *-LOG.md only, so a
+    log named anything else, which the registry explicitly supports, was
+    missing from the list a writer checks before running the stage.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.house = Path(self.tmp.name) / "knowledge"
+        self.house.mkdir()
+        (self.house / "positioning.md").write_text("# marks this as a house\n")
+        self.env = {**os.environ, "FAMILIAR_KNOWLEDGE": str(self.house)}
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def run_cli(self, *args):
+        return subprocess.run(["python3", str(CLI), *args],
+                              capture_output=True, text=True, env=self.env)
+
+    def test_inspire_clips_without_raising(self):
+        r = self.run_cli("inspire", "a line worth keeping", "--url", "https://example.com")
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertNotIn("Traceback", r.stderr)
+        clips = list((self.house.parent / "inspirations").glob("*.md"))
+        self.assertEqual(1, len(clips), "the clip goes next to the knowledge folder")
+
+    def test_harvest_finds_a_clip_where_inspire_put_it(self):
+        self.run_cli("inspire", "a line worth keeping", "--url", "https://example.com")
+        r = self.run_cli("harvest")
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertIn("1", r.stdout.split("Inspirations")[-1][:40],
+                      "harvest must look where inspire writes")
+
+    def test_harvest_lists_a_log_not_named_LOG(self):
+        project = Path(self.tmp.name) / "someproject"
+        project.mkdir()
+        (project / "PROJECT-PROGRESS.md").write_text("# log\n")
+        (self.house / "build-logs.md").write_text(
+            "# Build logs\n\n## Settings\n\n"
+            f"- Projects live in: {self.tmp.name}\n\n## Watched\n\n"
+            f"- `{project}`: `PROJECT-PROGRESS.md`\n")
+        r = self.run_cli("harvest")
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertIn("PROJECT-PROGRESS.md", r.stdout,
+                      "the registry supports a log called anything at all")

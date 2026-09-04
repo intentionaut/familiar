@@ -175,7 +175,7 @@ def cmd_inspire(args):
     from datetime import date
 
     # Find where knowledge lives (inspirations goes next to it)
-    kdir = knowledge_dir()
+    kdir, _whose = knowledge_dir()
     if not kdir:
         print("No knowledge folder configured. Run 'familiar init' first.")
         return 1
@@ -270,29 +270,27 @@ def cmd_harvest(args):
     else:
         print(f"patterns.md exists: {patterns}")
 
-    # List build logs found
+    # List what harvest will read. read_settings() is the one parser for the
+    # registry: a second one here reported four logs out of five, and the one
+    # it dropped was the largest, because it matched only *-LOG.md filenames.
     build_logs = kdir / "build-logs.md"
     if build_logs.is_file():
-        text = build_logs.read_text()
-        import re
-        logs = re.findall(r"`([^`]+-LOG\.md)`", text)
-        if logs:
-            print(f"\nBuild logs registered ({len(logs)}):")
-            for log in logs:
-                print(f"  {log}")
+        from log import read_settings
+        _root, watched, _reg = read_settings()
+        if watched:
+            print(f"\nBuild logs registered ({len(watched)}):")
+            for proj, name in watched.items():
+                exists = "" if (Path(proj) / name).is_file() else "   (not found)"
+                print(f"  {Path(proj).name} -> {name}{exists}")
         else:
             print("\nNo build logs registered yet.")
-        # Check for watched project lines
-        watched = re.findall(r"`([^`]+)`\s+`([^`]+-LOG\.md)`", text)
-        if watched:
-            print(f"\nWatched projects ({len(watched)}):")
-            for proj, logfile in watched:
-                print(f"  {proj} -> {logfile}")
+            print("  Start one:  familiar log add <project>")
     else:
         print(f"\nNo build-logs.md found at {build_logs}")
 
-    # Check for inspirations
-    insp_dir = HOME / "inspirations"
+    # Check for inspirations. They live next to the knowledge folder, which is
+    # where `familiar inspire` writes them, and not in this repo.
+    insp_dir = kdir.parent / "inspirations"
     if insp_dir.is_dir():
         clips = list(insp_dir.glob("*.md"))
         clips = [c for c in clips if c.name != "README.md"]

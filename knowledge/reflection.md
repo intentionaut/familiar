@@ -12,6 +12,14 @@ It is off until you turn it on. Replace the bracketed values.
 - Reflection: [on / off]
 - Cadence: [weekly / fortnightly / monthly]
 - Reflections live in: ~/Projects/reflections
+- Quote reflections in patterns: words
+
+**What that last one does.** `harvest` reads these answers and writes
+`knowledge/patterns.md`, and a sentence of yours quoted there is what makes a
+topic writable months later. It also moves a private line into your knowledge
+folder, which for some people is a synced folder or a repo. `words` quotes you.
+`citation only` names the file and the date instead, which gives you weaker
+topics and nothing to leak. Absent means `words`.
 
 **Cadence is a floor, not an alarm.** It is how long has to pass before Familiar
 will offer a reflection at the end of a stage. You can always run

@@ -51,6 +51,25 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.23.0 (2026-09-04)
+
+A build log can live somewhere other than the project it describes.
+
+**What this gives you:**
+
+- **`familiar log move <project> <folder>` moves a log and records where it
+  went.** A log worth keeping holds what broke and what it cost, which is not
+  something you want in a repository strangers read, and hiding it from git
+  leaves exactly one copy on one disk. Now it can live with your own notes
+  while the project keeps being logged.
+- **Everything that reads a log follows it.** The registry takes a path as
+  readily as a filename, and the hook that writes an entry when a session ends
+  asks the same resolver as every other command, so nothing needs telling
+  twice.
+- **A log named anything, anywhere, is still found.** Where nothing is
+  recorded, the old behaviour stands: the first `*-LOG.md`, `*-PROGRESS.md` or
+  `LOG.md` in the project folder.
+
 ## 0.22.0 (2026-09-04)
 
 Every question waiting on you, in one place.

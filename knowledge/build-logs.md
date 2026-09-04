@@ -33,5 +33,18 @@ this to find the right file, so a log called anything at all is found.
 
 Edit by hand if you move a project or rename its log.
 
+**A log can live outside the project it describes.** Record a path rather than
+a filename and every reader follows it, including the hook. That is the answer
+for a public repository, where a candid log holding defect notes and plan of
+record cannot be committed, and gitignoring it leaves exactly one copy on one
+disk:
+
+```
+familiar log move <project> ~/wherever/your/notes/live
+```
+
+It moves the file, rewrites the line here, and leaves the hooks alone, because
+the hooks read this file.
+
 <!-- familiar log add appends below this line -->
 

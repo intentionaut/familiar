@@ -330,6 +330,9 @@ evidence, and that is the writer's call. This costs one command and turns a
 refusal at the publish gate, three stages later, into a note at the moment of
 choosing.
 
+Exit 2 means it could not run: the list did not load, so nothing was
+checked. Stop and say why. That is not the same as the list being off.
+
 The opening question **asks for judgement the writer holds today**, never for
 recall of what they thought weeks ago. Reconstructing a past mental state is
 exactly what the logs exist because nobody can do, and a question that demands

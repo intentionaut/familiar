@@ -96,8 +96,12 @@ python3 scripts/never-publish.py <the file>
   not schedule, do not edit them out yourself, and do not offer to. A string on
   that list is there because the writer decided it must never go out, and what
   to do about it is theirs.
+- **Exit 2, could not run:** stop. Say why, in one line. The list did not
+  load, so nothing was checked and the draft is not clean, it is unexamined.
+  A house that will not resolve or a list that has gone stale both land here.
+  Do not publish, and do not treat it as the list being off.
 - **The list is off or empty:** nothing happens and nothing is said. That is a
-  supported way to work.
+  supported way to work. Off is a choice the writer made. Exit 2 is not.
 
 This is the only place Familiar refuses rather than reports. It refuses to send,
 never to write.

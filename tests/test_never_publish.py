@@ -5,6 +5,7 @@ import importlib.util
 import os
 import sys
 import tempfile
+import datetime
 import unittest
 from pathlib import Path
 
@@ -76,20 +77,20 @@ class Loading(unittest.TestCase):
         self.dir.cleanup()
 
     def test_missing_file_is_off(self):
-        on, block, warn = np.load()
-        self.assertFalse(on)
+        state, block, warn = np.load()
+        self.assertEqual(state, "off")
         self.assertEqual(block, [])
 
     def test_untouched_template_is_off(self):
         (self.house / "never-publish.md").write_text(
             (ROOT / "knowledge" / "never-publish.md").read_text())
-        on, block, warn = np.load()
-        self.assertFalse(on, "placeholders must not become real entries")
+        state, block, warn = np.load()
+        self.assertEqual(state, "off", "placeholders must not become real entries")
 
     def test_a_filled_list_loads(self):
         (self.house / "never-publish.md").write_text(LIST)
-        on, block, warn = np.load()
-        self.assertTrue(on)
+        state, block, warn = np.load()
+        self.assertEqual(state, "on")
         self.assertEqual(block, ["Acme Holdings", "CAT", "£50,000"])
         self.assertEqual(warn, ["42%"])
 
@@ -101,8 +102,28 @@ class Loading(unittest.TestCase):
 
     def test_off_means_off(self):
         (self.house / "never-publish.md").write_text(LIST.replace("on", "off", 1))
-        on, _, _ = np.load()
-        self.assertFalse(on)
+        state, _, _ = np.load()
+        self.assertEqual(state, "off")
+
+    def test_a_stale_list_is_not_off_it_is_unknown(self):
+        """Off is a choice. Stale is a check that quietly stopped running.
+
+        Collapsing the two is how a gate reports clean while covering nothing.
+        """
+        old = (datetime.date.today() - datetime.timedelta(days=60)).isoformat()
+        (self.house / "never-publish.md").write_text(
+            LIST.replace("## Block", f"- Generated: {old}\n\n## Block", 1))
+        state, block, _ = np.load()
+        self.assertEqual(state, "stale")
+        self.assertEqual(block, [], "a stale list must not be used as if current")
+
+    def test_a_fresh_generated_list_still_loads(self):
+        today = datetime.date.today().isoformat()
+        (self.house / "never-publish.md").write_text(
+            LIST.replace("## Block", f"- Generated: {today}\n\n## Block", 1))
+        state, block, _ = np.load()
+        self.assertEqual(state, "on")
+        self.assertIn("Acme Holdings", block)
 
 
 if __name__ == "__main__":

@@ -31,8 +31,20 @@ if [ "$MODE" = "--global" ]; then
     exit 1
   fi
   mkdir -p "$HOME/.config/git/hooks"
-  cp "$GUARD" "$HOME/.config/git/hooks/pre-commit"
-  chmod +x "$HOME/.config/git/hooks/pre-commit"
+  # Refuse to overwrite a hook someone else extended. This guard is Familiar's
+  # scope and PII check; a hook carrying extra checks would lose them silently,
+  # and the person would find out the next time something got through.
+  TARGET="$HOME/.config/git/hooks/pre-commit"
+  if [ -f "$TARGET" ] && ! cmp -s "$GUARD" "$TARGET"; then
+    echo "There is already a pre-commit hook at $TARGET and it is not this one."
+    echo "It may carry checks this file does not, so it is not being replaced."
+    echo ""
+    echo "  See what is different:  diff $TARGET $GUARD"
+    echo "  Replace it anyway:      cp $GUARD $TARGET"
+    exit 1
+  fi
+  cp "$GUARD" "$TARGET"
+  chmod +x "$TARGET"
   git config --global core.hooksPath "$HOME/.config/git/hooks"
   WHERE="every repository on this machine"
 else

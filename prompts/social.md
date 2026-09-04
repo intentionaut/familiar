@@ -227,6 +227,9 @@ stop and tell them what matched; a warning means show it and carry on. Off or
 empty means nothing happens and nothing is said. See `prompts/publish.md` for
 the full behaviour.
 
+Exit 2 means it could not run: the list did not load, so nothing was
+checked. Stop and say why. That is not the same as the list being off.
+
 ## Exit
 
 Write `social.md` in the piece folder (for a quiet week, in a dated folder

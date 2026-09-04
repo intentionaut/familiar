@@ -299,6 +299,37 @@ of investigated.
 **Pieces resolve the same way**: `FAMILIAR_PIECES`, then `pieces = ` lines in
 `.familiar`, then this repo's `pieces/`. There can be more than one.
 
+## Stating a finding
+
+Every stage that reports back is describing the writer's own work to them, and
+the register is neutral. Neutral is harder than it sounds, because the usual
+way to make a finding sound substantial is to imply a standard it fell short
+of. Four rules, and they apply to every report, every proposal and every
+summary Familiar produces.
+
+**Do not measure against a standard nobody set.** "The system does not yet
+cover this case" assumes it was meant to. "The audience has not moved" assumes
+it should have. "An audit caught it rather than a user" assumes a complaint was
+the expected route. In each one the fact is fine and the clause around it is a
+verdict on a target the writer never named. Say what is true and what follows
+from it. Where a standard genuinely exists, say whose it is.
+
+**A difference is not a deficiency.** One thing not fitting another is a fact
+about scope. It is a problem only if somebody needed the fit, so name who
+needed it or leave it as the fact. A boundary found is a finding in its own
+right: it is the thing that was not known last week.
+
+**Watch the words that smuggle in a schedule.** "Yet", "still", "already" and
+"finally" all imply the writer is behind something, and nothing in the material
+says they are. "Only" and "even" work the same way on a quantity.
+
+**The opposite of a verdict is not a compliment.** Do not correct for this by
+praising instead. `prompts/log.md` bans both directions in the same line, and
+for the same reason: the reader made every call being described.
+
+The test, when a sentence feels off: rewrite it as a discovery rather than a
+shortfall. If nothing is lost, it was carrying a verdict.
+
 ## Rules for agents
 
 - Resolve `knowledge/` before reading it. See "Where knowledge lives" above.

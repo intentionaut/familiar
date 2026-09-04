@@ -51,6 +51,24 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.19.0 (2026-09-04)
+
+Content Safeguards in Familiar
+
+**What this gives you:**
+
+- **Write about client work without holding your breath.** Name the things that
+  must never leave your desk once, and Familiar will not schedule anything that
+  contains one. You stop carrying the list in your head while you draft.
+- **A safeguard you will not switch off.** Names and money stop a publish;
+  anything that is usually fine gets a quiet note and leaves the judgement to
+  you. It stays out of the way until it matters.
+- **Silent until you want it.** Nothing changes for anyone who does not use it.
+
+**If you are upgrading:** create `knowledge/never-publish.md` in your own
+knowledge folder and fill it in. Keep it with your other knowledge files, never
+in a public repo.
+
 ## 0.18.0 (2026-09-04)
 
 Harvest reads what you said about the work, not only what you did.

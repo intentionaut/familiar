@@ -219,6 +219,14 @@ schedules, which is where an unresolved link gets caught.
 
 Then say, in one line: the copy is approved and `publish` will schedule it.
 
+## Check the never-publish list
+
+Before the writer approves anything, run
+`python3 scripts/never-publish.py <the file>` over `## Chosen`. A block means
+stop and tell them what matched; a warning means show it and carry on. Off or
+empty means nothing happens and nothing is said. See `prompts/publish.md` for
+the full behaviour.
+
 ## Exit
 
 Write `social.md` in the piece folder (for a quiet week, in a dated folder

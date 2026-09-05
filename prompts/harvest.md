@@ -21,6 +21,10 @@ the person asking what to write about has failed at the one thing it is for.
    cross-project log path (if any).
 2. Read knowledge/patterns.md to see what was extracted last time, including
    the Ledger and the Turned down list at its foot.
+2b. If `knowledge/digests/` exists, read every digest in it. Each is one
+   project's git history, reconstructed by `scripts/project-digest.py`, and it
+   counts as a source the way a build log does, weaker on reasoning and
+   stronger on dates. Say which projects came from digests rather than logs.
 3. Read knowledge/positioning.md for the house themes. These are the lens:
    patterns that connect to the house themes are stronger candidates. Read its
    "Personal context" rules too; they govern what may reach a piece and

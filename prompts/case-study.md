@@ -24,8 +24,17 @@ process.
      each. A transcript has no "Went wrong" section; you find the wrong turns
      yourself, in the moments where the writer changed direction, corrected
      the assistant, or an error came back. Quote those moments.
+   - a project folder, or the word `project` meaning the one the writer is
+     standing in. Run `scripts/project-digest.py <dir> <piece>/history.md` and
+     read the digest: the commits by day, the days that stand out, where the
+     work went, the messages that carried reasoning, and the corrections the
+     messages admit to. This is the source a writer has before they have kept
+     any log at all. Everything in it is reconstructed, so the brief's job is
+     to turn each day that stands out into a question, never into a claim
+     about why.
    Several sources may be given together; a log plus the session that
-   produced it is the strongest starting point there is.
+   produced it is the strongest starting point there is, and a project's
+   history underneath both tells you what the log left out.
 3. Create or reuse `pieces/YYYY-MM-DD-short-slug/` (today's date; slug from the
    project named in the log). Write brief.md and interview-questions.md into it.
 

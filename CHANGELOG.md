@@ -51,6 +51,10 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.24.0 (2026-09-05)
+
+Bug fixes and updates.
+
 ## 0.23.1 (2026-09-04)
 
 Build-log commands all answer to a project's name.

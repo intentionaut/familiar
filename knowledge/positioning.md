@@ -44,6 +44,31 @@ lines: what they do, what they already know, what they are tired of reading.
 
 [your reader]
 
+### Segments
+
+Optional, and only worth filling if you keep `knowledge/themes.md`, which points
+at these by id. Delete this section otherwise; nothing else reads it.
+
+Segments are yours: you choose the ids, how many there are, and what each one
+means. One line per segment, with the id in backticks, who they are in your own
+words, and a `Reads:` line saying where you actually see them and how you know
+the number. `Reads:` is evidence about a channel and may be far larger than the
+people a theme is written for. Leave any value `unknown` rather than guess, and
+give every value a `source:` as the rest of this file does.
+
+### How often business development may run
+
+Only matters if a theme in `themes.md` has `Job: business-development`. Those
+themes may use whatever room your voice guide gives a credential, and in
+exchange they are capped: write the cap here as pieces per period, in your own
+terms (one issue in four, two a quarter). It is an editorial constant you
+declare, provisionally, with a review date, and never a number derived from
+data. Reader engagement may decide which business-development theme takes the
+next slot; it never decides how many slots there are. Until you set one, the
+cap is `unknown`, and no stage treats business development as unlimited: a
+stage proposing topics counts the recent business-development pieces and says
+so before offering another.
+
 ## Voice in brief
 
 The long version is `voice-guide.md`. Three or four lines here for stages that

@@ -14,8 +14,10 @@ settled title to point at.
    `edits/`. Read the whole finished piece before proposing anything.
 2. Read knowledge/positioning.md, knowledge/voice-guide.md, knowledge/links.md.
 3. If the writer keeps SEO notes of their own, read those and work from them.
-   Look for a file named for search or SEO in the knowledge folder, and in a
-   vault, in the publication's own resources. Their practice outranks anything
+   Look first for a filled `## Search` section at the foot of
+   `knowledge/themes.md`, and read that section only; nothing else in that
+   file is this stage's business. Then look for a file named for search or SEO
+   in the knowledge folder, and in a vault, in the publication's own resources. Their practice outranks anything
    generic in this prompt. If there are none, say so once and use section 3.
 
 **Scope:** if `$ARGUMENTS` names one of the three jobs ("finalise the title",

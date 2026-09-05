@@ -375,6 +375,45 @@ it is the last catch for a mistake they already knew they could make.
 
 An empty or absent list is off. Say nothing about it.
 
+## Declared before inferred
+
+A writer's themes, their audience and what they are trying to be known for are
+theirs to state. A stage that works them out from the writing produces something
+plausible, unfalsifiable and slightly wrong, and the writer has no obvious place
+to correct it because nobody ever asked them.
+
+**The ladder, and stages take it in order.**
+
+1. **Declared.** Read what the writer wrote down. This is the default and it is
+   where every field should end up.
+2. **Asked.** Where a field is empty and the work needs it, ask. One question,
+   in the stage that needs the answer, recorded in their words.
+3. **Inferred.** Only where the writer has said they cannot name it. An
+   inference is a suggestion, it is labelled as one, it carries the evidence it
+   was drawn from, and it stays labelled until they confirm it.
+
+**Never silently infer, and never fill a gap with a sensible default.** A
+default is how one writer's shape becomes everyone's, which is the failure
+`prompts/harvest.md` already names about the writer's shape. The same failure is
+available wherever a stage wants a theme, an audience, an intersection or a
+target query and does not have one.
+
+**Make the provenance a field, not a habit.** Every declared knowledge value
+carries how it got there:
+
+- `source: declared` - the writer said it.
+- `source: inferred (unconfirmed)` - a stage suggested it; the evidence sits
+  beside it and it is offered back for confirmation.
+- `source: unknown` - nobody has said, and no stage may proceed as though
+  somebody had.
+
+A stage reports its unknowns rather than resolving them. `doctor` counts fields
+still sitting at `inferred (unconfirmed)`, because an unconfirmed guess that
+nobody revisits becomes a fact by sitting still.
+
+**Enough writing lowers the cost of the suggestion, never the bar for asking.**
+A large archive makes an inference better. It does not make it wanted.
+
 ## Stating a finding
 
 Every stage that reports back is describing the writer's own work to them, and
@@ -435,6 +474,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 ## File map
 
 - `knowledge/positioning.md`: what the publication is, house rules, audience, themes
+- `knowledge/themes.md`: what you are trying to be known for; the declared spine harvest maps evidence onto, with a stable id and a source per value
 - `knowledge/voice-guide.md`: how the writer writes, with patterns
 - `knowledge/style-rules.md`: mechanical checklist for line edits
 - `knowledge/social-rules.md`: the four tests a short post passes before it ships, and what to do instead of a findings list when one fails

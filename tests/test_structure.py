@@ -292,6 +292,36 @@ class Structure(unittest.TestCase):
         for plugin in market["plugins"]:
             self.assertIn("source", plugin, f"{plugin['name']} has no source")
 
+    WRITING_STAGES = ("draft", "dev-edit", "line-edit")
+    SEARCH_MARKERS = ("themes.md", "target quer", "already ranks for", "## search")
+
+    def test_writing_stages_never_read_themes_or_search(self):
+        """No query reaches a sentence.
+
+        themes.md carries a Search section for finalise. The stages that write
+        or edit prose must not know it exists, or the writing starts bending
+        toward what ranks. Cheap to hold, and the only thing keeping this from
+        becoming an SEO tool.
+        """
+        offenders = []
+        for stem in self.WRITING_STAGES:
+            text = (PROMPTS / f"{stem}.md").read_text().lower()
+            for marker in self.SEARCH_MARKERS:
+                if marker in text:
+                    offenders.append(f"{stem}.md mentions {marker!r}")
+        self.assertEqual([], offenders, f"writing stages touching search: {offenders}")
+
+    def test_themes_template_keeps_search_quarantined(self):
+        """The theme block carries no query field; those live under ## Search."""
+        text = (ROOT / "knowledge" / "themes.md").read_text()
+        self.assertIn("\n## Search\n", text)
+        body, _, search = text.partition("\n## Search\n")
+        for field in ("Target queries", "Already ranks for"):
+            self.assertNotIn(field, body, f"{field} sits in the theme block, not under ## Search")
+            self.assertIn(field, search)
+        self.assertIn("Written for:", body)
+        self.assertNotIn("Serves:", body)
+
     def test_no_em_dashes_in_shipped_prose(self):
         """Familiar's own first style rule bans them, so its prose must obey.
 

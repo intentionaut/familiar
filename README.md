@@ -306,6 +306,9 @@ are the way this gets built: see `CONTRIBUTING.md`.
 
 - `prompts/` is the source of truth. One plain markdown file per stage, no
   tool-specific syntax.
+- `scripts/project-digest.py` turns a project's git history into a digest
+  `case-study` and `harvest` can read; `--all` does every project under your
+  projects folder, one file each, after you have said yes to that.
 - `scripts/familiar` is the CLI entry point: `init`, `new-piece`, `status`,
   `skill install`.
 - `.claude/commands/` holds thin adapters that say "read prompts/X.md and follow

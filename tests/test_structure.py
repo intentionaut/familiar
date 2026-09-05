@@ -379,6 +379,38 @@ class Structure(unittest.TestCase):
                     offenders.append(f"{path.relative_to(ROOT)}: {phrase!r}")
         self.assertEqual([], offenders, f"asks the writer to name a stage: {offenders}")
 
+    def test_project_digest_reads_a_history(self):
+        """Three commits in, three commits out, with the sections a brief needs."""
+        with tempfile.TemporaryDirectory() as tmp:
+            g = lambda *a: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a], cwd=tmp, capture_output=True, text=True, check=True)
+            g("init", "-q")
+            for i, (subj, body) in enumerate([("start", ""), ("add the thing", "Because the other way was wrong."), ("fix: it broke", "")]):
+                Path(tmp, f"f{i}").write_text("x")
+                g("add", ".")
+                g("commit", "-q", "-m", subj, *(["-m", body] if body else []))
+            out = subprocess.run([sys.executable, str(ROOT / "scripts" / "project-digest.py"), tmp], capture_output=True, text=True)
+            self.assertEqual(0, out.returncode, out.stderr)
+            self.assertIn("3 commits", out.stdout)
+            for section in ("## The days that stand out", "## Where the work went", "## Commits that carried reasoning", "## Corrections the messages admit to", "## The history, by day"):
+                self.assertIn(section, out.stdout)
+            self.assertIn("Because the other way was wrong.", out.stdout)
+            self.assertIn("fix: it broke", out.stdout.split("## Corrections the messages admit to")[1])
+
+    def test_project_digest_all_writes_one_file_per_repo(self):
+        with tempfile.TemporaryDirectory() as root:
+            for name in ("alpha", "beta"):
+                d = Path(root, name); d.mkdir()
+                subprocess.run(["git", "init", "-q"], cwd=d, check=True)
+                Path(d, "f").write_text("x")
+                subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", "add", "."], cwd=d, check=True)
+                subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", f"first {name}"], cwd=d, check=True)
+            Path(root, "notarepo").mkdir()
+            out_dir = Path(root, "out")
+            res = subprocess.run([sys.executable, str(ROOT / "scripts" / "project-digest.py"), "--all", root, str(out_dir)], capture_output=True, text=True)
+            self.assertEqual(0, res.returncode, res.stderr)
+            self.assertEqual({"alpha.md", "beta.md"}, {p.name for p in out_dir.iterdir()})
+            self.assertIn("2 projects", res.stdout)
+
     def test_no_em_dashes_in_shipped_prose(self):
         """Familiar's own first style rule bans them, so its prose must obey.
 

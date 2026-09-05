@@ -73,6 +73,27 @@ def resolve_log(folder, recorded):
     return folder / recorded
 
 
+def project_folder(target, root):
+    """The project a command was pointed at, by name or by path.
+
+    `add`, `move` and `--path` all take the same argument and all have to read
+    it the same way. They did not: the first two fell back to the projects root
+    when the argument was not a directory, and `--path` resolved it against the
+    current directory and stopped. So `log.py --path intentionaut` answered
+    nothing from anywhere except the projects root, while `log.py add
+    intentionaut` worked from everywhere - and the failure was silent, because
+    `--path` is called by a hook that must stay quiet in an unregistered repo.
+
+    Returns None when the target names no project. Saying which of "not a
+    project" and "no log" happened is the caller's business, because the hook
+    wants silence and a person wants a reason.
+    """
+    folder = pathlib.Path(target).expanduser()
+    if not folder.is_dir():
+        folder = root / target
+    return folder.resolve() if folder.is_dir() else None
+
+
 def find_log(folder, watched):
     """The recorded value for this project, or a guess from the folder."""
     named = watched.get(str(folder.resolve()))
@@ -188,12 +209,9 @@ def cmd_add(args):
     if "--file" in args:
         name = args[args.index("--file") + 1]
 
-    folder = pathlib.Path(target).expanduser()
-    if not folder.is_dir():
-        folder = root / target
-    if not folder.is_dir():
+    folder = project_folder(target, root)
+    if folder is None:
         sys.exit(f"No such project: {target}")
-    folder = folder.resolve()
 
     if not name:
         name = find_log(folder, watched)
@@ -251,12 +269,9 @@ def cmd_move(args):
     root, watched, reg = read_settings()
     target, dest = args[0], pathlib.Path(args[1]).expanduser()
 
-    folder = pathlib.Path(target).expanduser()
-    if not folder.is_dir():
-        folder = root / target
-    if not folder.is_dir():
+    folder = project_folder(target, root)
+    if folder is None:
         sys.exit(f"No such project: {target}")
-    folder = folder.resolve()
 
     name = watched.get(str(folder)) or find_log(folder, watched)
     if not name:
@@ -301,7 +316,9 @@ def cmd_move(args):
 def cmd_path(args):
     """Print where a project's log is. One resolver, for the hook to call."""
     root, watched, _reg = read_settings()
-    folder = pathlib.Path(args[0] if args else ".").expanduser().resolve()
+    folder = project_folder(args[0] if args else ".", root)
+    if folder is None:
+        return 1
     name = watched.get(str(folder)) or find_log(folder, watched)
     if not name:
         return 1
@@ -326,4 +343,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # The return value is the exit code. Dropping it made every run exit 0,
+    # including a `--path` that found nothing - so the session-end hook's
+    # `returncode == 0` guard was always true and only its stdout check did any
+    # work. The guard says what it means now.
+    sys.exit(main())

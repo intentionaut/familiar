@@ -51,6 +51,20 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.23.1 (2026-09-04)
+
+Build-log commands all answer to a project's name.
+
+**What this gives you:**
+
+- **Ask where a log is by name, from anywhere.** `familiar log` and the hook
+  that writes your entries already took a project's name; the command that
+  reports where its log lives now does too, so all three take the same thing
+  and read it the same way.
+- **A command that found nothing says so.** Asking for the log of a project
+  that has none now reports that plainly, which is what anything checking
+  before it writes needs to hear.
+
 ## 0.23.0 (2026-09-04)
 
 A build log can live somewhere other than the project it describes.

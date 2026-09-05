@@ -5,8 +5,11 @@ without a command, a prompt referenced but never written, a knowledge file named
 in a prompt that does not exist. No model, no network, no key. Under a second.
 """
 import json
+import os
 import re
+import shutil
 import subprocess
+import tempfile
 import sys
 import unittest
 from pathlib import Path
@@ -328,6 +331,37 @@ class Structure(unittest.TestCase):
                              capture_output=True, text=True).stdout
         self.assertIn("Reflection: template", out)
         self.assertNotIn("Reflection: on", out)
+
+    def _doctor(self, home, url):
+        env = {**os.environ, "HOME": home, "FAMILIAR_UPDATE_URL": url, "FAMILIAR_KNOWLEDGE": str(ROOT / "knowledge")}
+        return subprocess.run([sys.executable, str(ROOT / "scripts" / "doctor.py")],
+                              capture_output=True, text=True, env=env).stdout
+
+    def test_update_check_is_off_by_default(self):
+        """The shipped updates.md is the template, and the template is off."""
+        with tempfile.TemporaryDirectory() as home:
+            out = self._doctor(home, "file:///nonexistent")
+            self.assertNotIn("Update:", out)
+            self.assertFalse((Path(home) / ".familiar" / "update-check").exists())
+
+    def test_update_check_reads_a_page_says_unknown_and_caches_for_the_day(self):
+        with tempfile.TemporaryDirectory() as home, tempfile.TemporaryDirectory() as kn:
+            for name in ("positioning.md", "voice-guide.md"):
+                shutil.copy(ROOT / "knowledge" / name, Path(kn) / name)
+            (Path(kn) / "updates.md").write_text("- Update check: on\n")
+            page = Path(home) / "releases.html"
+            page.write_text('<h2 id="v9-9-9">9.9.9</h2>')
+            env = {**os.environ, "HOME": home, "FAMILIAR_UPDATE_URL": page.as_uri(), "FAMILIAR_KNOWLEDGE": kn}
+            run = lambda: subprocess.run([sys.executable, str(ROOT / "scripts" / "doctor.py")], capture_output=True, text=True, env=env).stdout
+            self.assertIn("Update: 9.9.9 is out", run())
+            stamp = Path(home) / ".familiar" / "update-check"
+            self.assertTrue(stamp.is_file())
+            # Same day: the cached answer is reprinted and the page is not read again.
+            page.unlink()
+            self.assertIn("Update: 9.9.9 is out", run())
+            # A stale stamp with an unreachable page says unknown, never current.
+            stamp.write_text("2000-01-01 9.9.9\n")
+            self.assertIn("Update: unknown", run())
 
     def test_no_em_dashes_in_shipped_prose(self):
         """Familiar's own first style rule bans them, so its prose must obey.

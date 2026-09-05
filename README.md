@@ -25,7 +25,9 @@ So Familiar does not start from a blank prompt. It starts from the work.
 
 1. **Point it at the session you just closed.** Ask your agent to
    `case-study session`, or hand it a build log. It reads the transcript,
-   writes a brief, and drafts the questions worth asking you.
+   writes a brief, and drafts the questions worth asking you. Transcripts are
+   Claude Code's today; on opencode, Codex or Gemini CLI, the build log is the
+   way in, and `familiar log entry` scaffolds one.
 2. **Answer them.** One question at a time, ten or fifteen minutes, in your own
    words. This is the part nothing else can do for you: everything downstream is
    built from what you said.

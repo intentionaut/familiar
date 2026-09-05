@@ -209,13 +209,18 @@ def main():
 
     # Reflection
     refl = cfg / "reflection.md"
-    if refl.is_file():
-        text = refl.read_text()
-        on_off = re.search(r"Reflection:\s*\[?(on|off)", text, re.IGNORECASE)
-        if on_off and on_off.group(1).lower() == "on":
-            print("  Reflection: on")
-        else:
-            print("  Reflection: off (edit knowledge/reflection.md to turn on)")
+    text = refl.read_text() if refl.is_file() else ""
+    setting = re.search(r"^- Reflection:\s*(on|off)\s*$", text, re.M | re.IGNORECASE)
+    if setting and setting.group(1).lower() == "on":
+        print("  Reflection: on")
+    elif setting:
+        print("  Reflection: off (edit knowledge/reflection.md to turn on)")
+    else:
+        # The template reads "[on / off]" and used to be counted as on. It is
+        # neither: nobody has chosen. Say what it would do and where it is set,
+        # the same way the social schedule line does.
+        print("  Reflection: template (turn on in knowledge/reflection.md: two "
+              "questions at the end of a stage, your words recorded)")
 
     print()
 

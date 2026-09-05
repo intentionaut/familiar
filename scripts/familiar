@@ -6,6 +6,8 @@ all. The prompts and knowledge files are plain markdown; this script just
 scaffolds the right folders and points you at the right files.
 
 Usage:
+    familiar                       engage on the project you are standing in
+    familiar engage [dir]          the same, for a named project
     familiar init                  set up Familiar in the current directory
     familiar new-piece <slug>      scaffold a new piece folder
     familiar inspire "text" --url X clip a snippet for later
@@ -22,8 +24,11 @@ Usage:
     familiar skill install [agent] install commands for a specific agent
 """
 import argparse
+import importlib.util
+import json
 import os
 import re
+import subprocess
 import shutil
 import sys
 from datetime import date
@@ -32,6 +37,126 @@ from pathlib import Path
 HOME = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HOME / "scripts"))
 from paths import knowledge_dir, pieces_dirs, read_config  # noqa: E402
+
+PRESENCE = "I'm here watching you work and will help you tell your story."
+
+
+def _version():
+    try:
+        return json.loads((HOME / ".claude-plugin" / "plugin.json").read_text())["version"]
+    except Exception:
+        return "unknown"
+
+
+def _digest_module():
+    spec = importlib.util.spec_from_file_location("project_digest", HOME / "scripts" / "project-digest.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _git_top(path):
+    r = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=path, capture_output=True, text=True)
+    return Path(r.stdout.strip()) if r.returncode == 0 and r.stdout.strip() else None
+
+
+def _positioning_is_template():
+    """True while the publication's name is still the bracketed prompt."""
+    try:
+        cfg, _ = knowledge_dir(None)
+        f = Path(cfg) / "positioning.md"
+        if not f.is_file():
+            return True
+        return re.search(r"^- Name: \[", f.read_text(encoding="utf-8", errors="replace"), re.M) is not None
+    except Exception:
+        return True
+
+
+def cmd_engage(args):
+    """Stand in a project and Familiar reads its history first.
+
+    This is what `familiar` with no arguments does. The facts come from
+    scripts/project-digest.py: the commits whose messages carried their
+    reasoning and the ones that admit a correction. The questions under them
+    are the agent's to write, so the terminal shows the facts and hands over.
+    """
+    target = Path(getattr(args, "dir", None) or ".").resolve()
+    top = _git_top(target)
+    print(PRESENCE)
+    print()
+    if top is None:
+        print("This folder is not a git repository, so there is no history to read yet.")
+        print("Stand in a project and run `familiar`, or tell your agent what you have:")
+        print("a session you just finished, a draft, some notes, or an idea.")
+        print()
+        return cmd_status(args)
+    if top == HOME:
+        print("This is Familiar's own folder. Stand in a project you have built and")
+        print("run `familiar`: it reads the history and finds the stories in it.")
+        print()
+        return cmd_status(args)
+
+    h = _digest_module().history(top)
+    name = top.name
+    if not h:
+        print(f"I've engaged on {name}, the project you're working on, but it has no")
+        print("commits yet. Come back once it has a history, or tell your agent what")
+        print("you have: a session you just finished, a draft, some notes, or an idea.")
+        return 0
+
+    print(f"I've engaged on {name}, the project you're working on. I'll study the")
+    print("context and look for themes.")
+    print()
+    authors = len(h["authors"])
+    print(f"  {len(h['commits'])} commits, {h['first']} to {h['last']}, "
+          f"{authors} author{'s' if authors != 1 else ''}.")
+    print(f"  {len(h['with_body'])} carried their reasoning in the message. "
+          f"{len(h['turns'])} admit a correction.")
+    print()
+    seeds = h["with_body"][-5:] if h["with_body"] else []
+    if seeds:
+        print("  Where the reasoning was written down, newest last:")
+        print()
+        for i, c in enumerate(seeds, 1):
+            body = " ".join(c["body"].split())
+            if len(body) > 110:
+                body = body[:107].rstrip() + "..."
+            print(f"  {i}. {c['date']}  {c['subject']}")
+            print(f"     {body}")
+        print()
+    else:
+        print("  No commit message carried its reasoning. The history says what")
+        print("  changed and when; the why is yours to tell.")
+        print()
+    if h["turns"]:
+        print("  Corrections the messages admit to:")
+        for c in h["turns"][-3:]:
+            print(f"    {c['date']}  {c['subject']}")
+        print()
+
+    # Write the digest where the agent and harvest look for it.
+    where = None
+    try:
+        cfg, _ = knowledge_dir(None)
+        out = Path(cfg) / "digests"
+        out.mkdir(parents=True, exist_ok=True)
+        _, digest, *_ = _digest_module().digest_repo(top)
+        (out / f"{name}.md").write_text(digest, encoding="utf-8")
+        where = out / f"{name}.md"
+    except Exception:
+        pass
+
+    print("  Which of these is worth telling? Say `familiar` to your agent and it")
+    print("  will ask about each before anything is drafted. Or tell it what you")
+    print("  had in mind.")
+    if where:
+        print(f"  The full digest is at {where}.")
+    if _positioning_is_template():
+        print()
+        print("  Your voice files are still templates. positioning.md is needed")
+        print("  before a draft, not before this.")
+    print()
+    return 0
 
 
 def _today_slug(raw):
@@ -95,18 +220,21 @@ def cmd_init(args):
     familiar_file.write_text("\n".join(lines))
     print(f"Wrote {familiar_file}")
 
-    # 2. Run setup.sh (it calls doctor.py at the end, so no need to repeat)
+    # 2. Install the agent commands. setup.sh reports what it installed and
+    # nothing else; the welcome and the next step are said once, below.
     cc_dir = Path.home() / ".claude" / "commands"
     installed = len(list(cc_dir.glob("familiar-*.md"))) if cc_dir.is_dir() else 0
     if installed == 0 or args.force:
         print()
-        print("Installing agent commands...")
-        os.system(f"bash {HOME}/scripts/setup.sh")
+        sys.stdout.flush()  # keep the installer's lines after ours, not before
+        os.system(f"bash {HOME}/scripts/setup.sh --no-doctor")
     else:
         print()
         print(f"Agent commands already installed ({installed} commands).")
         print(f"Run `bash {HOME}/scripts/setup.sh` to reinstall.")
-    return 0
+
+    # 3. The first thing after install is the project, if there is one.
+    return cmd_engage(args)
 
 
 def cmd_new_piece(args):
@@ -534,9 +662,9 @@ def cmd_skill_install(args):
 
 INTRO_MARKER = Path.home() / ".familiar" / "introduced"
 
-INTRO = """
-I'm here watching you work and will help you tell your story.
+SEEN_VERSION = Path.home() / ".familiar" / "seen-version"
 
+INTRO = """
 One thing, once. Familiar can ask you two questions at the end of a stage and
 write your answers down word for word. Those answers are the rawest record of
 your own voice it holds, and case-study reads them. It is off until you turn it
@@ -584,8 +712,57 @@ def _introduce_once():
     print(INTRO)
 
 
+def _whats_new_once():
+    """After an update, say the one thing the newest release gives you, once.
+
+    A stamp under ~/.familiar records the last version this CLI ran as. The
+    first run ever writes it silently; a run on a newer version prints the
+    lead of the newest changelog bullet and moves the stamp. A release whose
+    entry is "Bug fixes and updates." prints nothing. Off the beaten path this
+    is how a writer who installed months ago hears about the front door.
+    """
+    current = _version()
+    try:
+        seen = SEEN_VERSION.read_text().strip() if SEEN_VERSION.exists() else None
+    except OSError:
+        return
+    if seen == current:
+        return
+    try:
+        SEEN_VERSION.parent.mkdir(parents=True, exist_ok=True)
+        SEEN_VERSION.write_text(current + "\n")
+    except OSError:
+        return
+    if seen is None:
+        return
+    lead = _newest_release_lead()
+    if lead:
+        print(f"New in {current}: {lead}")
+        print()
+
+
+def _newest_release_lead():
+    """The bold lead of the first bullet under the newest changelog entry."""
+    try:
+        text = (HOME / "CHANGELOG.md").read_text(encoding="utf-8")
+    except OSError:
+        return None
+    m = re.search(r"^## (\d+\.\d+\.\d+)[^\n]*\n(.*?)(?=^## \d|\Z)", text, re.M | re.S)
+    if not m:
+        return None
+    body = m.group(2)
+    b = re.search(r"^- \*\*(.+?)\*\*(.*?)(?=^- |\n\n|\Z)", body, re.M | re.S)
+    if not b:
+        return None
+    lead = b.group(1).strip()
+    rest = " ".join(b.group(2).split())
+    sentence = rest.split(". ")[0].strip()
+    return (lead + (" " + sentence if sentence else "")).rstrip(".") + "."
+
+
 def _finish(rc):
     if rc == 0:
+        _whats_new_once()
         _introduce_once()
     sys.exit(rc)
 
@@ -596,6 +773,10 @@ def main():
         description="Onboarding and day-to-day commands for Familiar.",
     )
     sub = parser.add_subparsers(dest="command")
+
+    # engage
+    p_engage = sub.add_parser("engage", help="read the project you are standing in and find the stories in its history")
+    p_engage.add_argument("dir", nargs="?", default=None, help="project folder (default: here)")
 
     # init
     p_init = sub.add_parser("init", help="set up Familiar in the current directory")
@@ -650,7 +831,9 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "init":
+    if args.command is None or args.command == "engage":
+        _finish(cmd_engage(args))
+    elif args.command == "init":
         _finish(cmd_init(args))
     elif args.command == "new-piece":
         _finish(cmd_new_piece(args))

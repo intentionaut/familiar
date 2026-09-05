@@ -51,6 +51,17 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.30.0 (2026-09-05)
+
+The project is the front door.
+
+**What this gives you:**
+
+- **Stand in a project and run `familiar`.** It reads the git history first,
+  says what the project has been about, shows the commits that carried their
+  reasoning, and writes the digest where your agent finds it. The voice files
+  are needed before a draft, not before this, and the first run says so once.
+
 ## 0.29.0 (2026-09-05)
 
 The reflection questions are rebuilt.

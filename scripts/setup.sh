@@ -22,10 +22,12 @@ set -e
 DIR="$(cd "$(dirname "$0")/.." && pwd)"
 ONLY=""
 ALL=""
+DOCTOR="yes"
 for arg in "$@"; do
   case "$arg" in
     --only) shift ;;
     --all) ALL="yes" ;;
+    --no-doctor) DOCTOR="" ;;
     claude|opencode|codex|gemini) ONLY="$arg" ;;
   esac
 done
@@ -151,17 +153,9 @@ if [ -n "$skipped" ]; then
   echo "Left alone, not installed on this machine:$skipped"
   echo "  Add one later with:  scripts/setup.sh --only <agent>"
 fi
-echo
-echo "I'm here watching you work and will help you tell your story."
-echo
-echo "Three ways in: start a piece, pick one back up, or find something to"
-echo "write about. Everything after that is a conversation. Tell the agent"
-echo "what you have and it picks the right stage."
-echo
-echo "Two loops feed it. 'familiar log add <project>' writes what shipped as a"
-echo "Claude Code session ends (other agents: 'familiar log entry' by hand)."
-echo "'familiar reflect' asks two questions and keeps your words; it is off"
-echo "until knowledge/reflection.md turns it on."
-echo
 # Say what is actually configured and what to do next, rather than assuming.
-python3 "$DIR/scripts/doctor.py" || true
+# `familiar init` passes --no-doctor because it says the next step itself.
+if [ -n "$DOCTOR" ]; then
+  echo
+  python3 "$DIR/scripts/doctor.py" || true
+fi

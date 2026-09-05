@@ -10,9 +10,13 @@ bracket for you to fill.
 
 Plain markdown prompts, MIT, nothing leaves your machine.
 
-```sh
-npx skills add intentionaut/familiar
 ```
+/plugin marketplace add intentionaut/familiar
+/plugin install familiar@familiar
+```
+
+Then stand in a project you have built and say `familiar`. It reads the
+history and offers you the stories in it.
 
 ## Your first issue, in about thirty minutes
 
@@ -23,11 +27,14 @@ what happened and nothing about why.
 
 So Familiar does not start from a blank prompt. It starts from the work.
 
-1. **Point it at the session you just closed.** Ask your agent to
-   `case-study session`, or hand it a build log. It reads the transcript,
-   writes a brief, and drafts the questions worth asking you. Transcripts are
-   Claude Code's today; on opencode, Codex or Gemini CLI, the build log is the
-   way in, and `familiar log entry` scaffolds one.
+1. **Stand in the project and say `familiar`.** It reads the git history,
+   says what the project has been about, and offers three to five stories,
+   each resting on named days and commits. Pick one and it becomes the brief.
+   Or point it at the session you just closed with `case-study session`, or
+   hand it a build log: it reads the transcript, writes a brief, and drafts the
+   questions worth asking you. Transcripts are Claude Code's today; on
+   opencode, Codex or Gemini CLI, the build log is the way in, and
+   `familiar log entry` scaffolds one.
 2. **Answer them.** One question at a time, ten or fifteen minutes, in your own
    words. This is the part nothing else can do for you: everything downstream is
    built from what you said.
@@ -35,9 +42,9 @@ So Familiar does not start from a blank prompt. It starts from the work.
    SOURCE]` bracket everywhere a model would have guessed a number, and an
    `[ASK THE WRITER]` bracket everywhere it would have invented a quote.
 
-You need one file filled in before that draft: `knowledge/positioning.md`, which
-says what the publication is and who reads it. The voice files can wait until
-you care how the prose sounds. Run `familiar status` at any point and it will
+One file has to be filled in before the draft, and nothing before that:
+`knowledge/positioning.md`, which says what the publication is and who reads it.
+The voice files can wait until you care how the prose sounds. Run `familiar status` at any point and it will
 tell you what it can see and what it still needs.
 
 ## Why it refuses to rewrite
@@ -195,12 +202,14 @@ Log, whose story is in [`docs/origin.md`](docs/origin.md).)
 
 ## Install
 
-The skill at the top of this page is the shortest way in. In Claude Code you can
-also install it as a plugin, which brings the commands with it:
+The plugin at the top of this page is the shortest way in for Claude Code: one
+install brings the prompts, the scripts and the commands. The other two ways
+are a clone, which gives you the CLI and the folder anywhere, and the skills
+CLI, which installs the skill file alone and asks for a clone the first time it
+needs the prompts:
 
-```
-/plugin marketplace add intentionaut/familiar
-/plugin install familiar@familiar
+```sh
+npx skills add intentionaut/familiar
 ```
 
 To get the CLI and the full folder:
@@ -217,6 +226,8 @@ the agents you use. `~/Projects/` is only a suggestion; clone anywhere and run
 `init` from there.
 
 ```sh
+familiar                       engage on the project you are standing in
+familiar engage [dir]          the same, for a named project
 familiar init                  set up Familiar in the current directory
 familiar new-piece <slug>      scaffold a new piece folder
 familiar status                what Familiar can see and what it still needs
@@ -241,14 +252,14 @@ If you keep your voice files somewhere other than the repo, point
 
 Three ways in, three ways to stay current. Pick the one you installed with.
 
+Installed as a Claude Code plugin: open `/plugin` and update `familiar` from the
+marketplace list. Claude Code owns updates on this path.
+
 Installed with the skills CLI:
 
 ```sh
 npx skills update familiar
 ```
-
-Installed as a Claude Code plugin: open `/plugin` and update `familiar` from the
-marketplace list. Claude Code owns updates on this path.
 
 A clone:
 

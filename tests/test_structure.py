@@ -346,6 +346,26 @@ class Structure(unittest.TestCase):
         self.assertIn("## Tone", prompt)
         self.assertIn("two different sections", prompt)
 
+    def test_setup_reports_and_hands_back(self):
+        """The installer says what it installed; the welcome is said once, by
+        the CLI, so it must not also live here."""
+        setup = (ROOT / "scripts" / "setup.sh").read_text()
+        self.assertNotIn("watching you work", setup)
+        self.assertNotIn("Three ways in", setup)
+        self.assertIn("--no-doctor", setup)
+
+    def test_positioning_gates_the_draft_not_the_start(self):
+        out = subprocess.run([sys.executable, str(ROOT / "scripts" / "doctor.py"), "--config", str(ROOT / "knowledge")],
+                             capture_output=True, text=True).stdout
+        self.assertIn("needed before a draft", out)
+        self.assertNotIn("needed to start", out)
+        self.assertIn("run:  familiar", out)
+        text = (ROOT / "knowledge" / "positioning.md").read_text()
+        later = text.index("## Later, if you keep themes")
+        self.assertGreater(text.index("### Segments"), later)
+        self.assertGreater(text.index("### How often business development may run"), later)
+        self.assertLess(text.index("## Voice in brief"), later)
+
     def test_doctor_reads_the_template_as_unset(self):
         """The shipped reflection.md says "[on / off]"; that is neither."""
         out = subprocess.run([sys.executable, str(ROOT / "scripts" / "doctor.py"), "--config", str(ROOT / "knowledge")],

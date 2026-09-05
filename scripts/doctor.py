@@ -8,6 +8,9 @@ Run it any time:
 """
 import argparse
 import os
+import json
+from datetime import date
+import os
 import re
 import sys
 from pathlib import Path
@@ -23,7 +26,7 @@ ESSENTIAL = ["positioning.md", "voice-guide.md"]
 # A writer can begin a piece today with the first alone.
 NEEDED_TO_START = "positioning.md"
 NEEDED_TO_DRAFT = "voice-guide.md"
-OPTIONAL = ["social-schedule.md", "themes.md", "links.md", "reflection.md",
+OPTIONAL = ["social-schedule.md", "themes.md", "updates.md", "links.md", "reflection.md",
             "longform-channels.md", "examples/canonical.md"]
 SHIPS_COMPLETE = ["style-rules.md"]
 
@@ -98,6 +101,73 @@ def count_pieces():
                 if (piece / "draft.md").is_file() or (piece / "final.md").is_file():
                     with_draft += 1
     return total, with_notes, with_draft, scaffolds
+
+
+RELEASES_URL = os.environ.get("FAMILIAR_UPDATE_URL", "https://familiar.intentionaut.com/releases.html")
+UPDATE_STAMP = Path.home() / ".familiar" / "update-check"
+
+
+def local_version():
+    try:
+        return json.loads((HOME / ".claude-plugin" / "plugin.json").read_text())["version"]
+    except Exception:
+        return None
+
+
+def newest_version(url, timeout=4):
+    """The first release heading on the page, or None. No exception escapes."""
+    try:
+        import urllib.request
+        with urllib.request.urlopen(url, timeout=timeout) as r:
+            page = r.read().decode("utf-8", errors="replace")
+        m = re.search(r'id="v(\d+)-(\d+)-(\d+)"', page)
+        return ".".join(m.groups()) if m else None
+    except Exception:
+        return None
+
+
+def _vtuple(v):
+    return tuple(int(x) for x in v.split("."))
+
+
+def check_update(cfg):
+    """One line on whether a newer Familiar exists. Opt-in, daily, three-state.
+
+    Off unless knowledge/updates.md says exactly "Update check: on"; the
+    template's "[on / off]" is off. At most one fetch a day: the day's result is
+    kept in the stamp and reprinted. Unknown is said as unknown, never as
+    current. Never updates anything and never raises.
+    """
+    f = cfg / "updates.md"
+    if not f.is_file():
+        return
+    text = f.read_text(encoding="utf-8", errors="replace")
+    setting = re.search(r"^- Update check:\s*(on|off)\s*$", text, re.M | re.I)
+    if not setting or setting.group(1).lower() != "on":
+        return
+    today = date.today().isoformat()
+    newest = None
+    try:
+        stamp_day, _, cached = UPDATE_STAMP.read_text().strip().partition(" ")
+        if stamp_day == today and cached:
+            newest = cached
+    except OSError:
+        pass
+    if newest is None:
+        newest = newest_version(RELEASES_URL)
+        try:
+            UPDATE_STAMP.parent.mkdir(parents=True, exist_ok=True)
+            UPDATE_STAMP.write_text(f"{today} {newest or ''}\n")
+        except OSError:
+            pass
+    local = local_version()
+    if not newest or not local:
+        print("  Update: unknown (could not read the release page)")
+    elif _vtuple(newest) > _vtuple(local):
+        print(f"  Update: {newest} is out; this clone is {local}. git pull to update.")
+    else:
+        print(f"  Update: current ({local})")
+    print()
 
 
 def themes_report(cfg, shipped):
@@ -197,6 +267,7 @@ def main():
     print()
 
     themes_report(cfg, HOME / "knowledge" / "themes.md")
+    check_update(cfg)
 
     # Social schedule
     sched = cfg / "social-schedule.md"

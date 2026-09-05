@@ -220,6 +220,8 @@ the agents you use. `~/Projects/` is only a suggestion; clone anywhere and run
 familiar init                  set up Familiar in the current directory
 familiar new-piece <slug>      scaffold a new piece folder
 familiar status                what Familiar can see and what it still needs
+                               (and, if knowledge/updates.md says on, whether a
+                               newer Familiar exists; off by default, once a day)
 familiar skill install         install commands for all agents
 familiar skill install codex   install commands for Codex only
 ```

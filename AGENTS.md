@@ -482,6 +482,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 ## File map
 
 - `knowledge/positioning.md`: what the publication is, house rules, audience, themes
+- `knowledge/updates.md`: whether doctor may check for a newer Familiar; off in the template, one check a day, never updates anything
 - `knowledge/themes.md`: what you are trying to be known for; the declared spine harvest maps evidence onto, with a stable id and a source per value
 - `knowledge/voice-guide.md`: how the writer writes, with patterns
 - `knowledge/style-rules.md`: mechanical checklist for line edits

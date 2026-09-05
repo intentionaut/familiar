@@ -25,6 +25,11 @@ the person asking what to write about has failed at the one thing it is for.
    project's git history, reconstructed by `scripts/project-digest.py`, and it
    counts as a source the way a build log does, weaker on reasoning and
    stronger on dates. Say which projects came from digests rather than logs.
+   Each digest opens with `## Observations`: facts with a contrast in them
+   from that one project. An observation that recurs across two or more
+   digests, or that a log or reflection speaks to, is a theme candidate; one
+   that appears in a single digest stays an observation and is not offered as
+   a topic on its own.
 3. Read knowledge/positioning.md for the house themes. These are the lens:
    patterns that connect to the house themes are stronger candidates. Read its
    "Personal context" rules too; they govern what may reach a piece and

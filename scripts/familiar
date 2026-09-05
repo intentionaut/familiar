@@ -8,6 +8,7 @@ scaffolds the right folders and points you at the right files.
 Usage:
     familiar                       engage on the project you are standing in
     familiar engage [dir]          the same, for a named project
+    familiar engage --all [root]   read every project under the root, after a yes
     familiar init                  set up Familiar in the current directory
     familiar new-piece <slug>      scaffold a new piece folder
     familiar inspire "text" --url X clip a snippet for later
@@ -75,11 +76,16 @@ def _positioning_is_template():
 def cmd_engage(args):
     """Stand in a project and Familiar reads its history first.
 
-    This is what `familiar` with no arguments does. The facts come from
-    scripts/project-digest.py: the commits whose messages carried their
-    reasoning and the ones that admit a correction. The questions under them
-    are the agent's to write, so the terminal shows the facts and hands over.
+    This is what `familiar` with no arguments does. The first job is gathering
+    context, not writing, so the screen ends on what Familiar has to work from
+    and how to gather more, never on a story to pick. What it can say from one
+    repository alone are observations: facts with a contrast in them, counted
+    by scripts/project-digest.py, each an open question the writer could
+    answer later. Themes need more than one source; pieces need the writer.
     """
+    from context import context_counts, context_lines, gathering_offers, enough_for_themes
+    if getattr(args, "all", False):
+        return _engage_all(args)
     target = Path(getattr(args, "dir", None) or ".").resolve()
     top = _git_top(target)
     print(PRESENCE)
@@ -92,11 +98,12 @@ def cmd_engage(args):
         return cmd_status(args)
     if top == HOME:
         print("This is Familiar's own folder. Stand in a project you have built and")
-        print("run `familiar`: it reads the history and finds the stories in it.")
+        print("run `familiar`: it reads the history and finds what it can say about it.")
         print()
         return cmd_status(args)
 
-    h = _digest_module().history(top)
+    pd = _digest_module()
+    h = pd.history(top)
     name = top.name
     if not h:
         print(f"I've engaged on {name}, the project you're working on, but it has no")
@@ -109,59 +116,128 @@ def cmd_engage(args):
     print()
     authors = len(h["authors"])
     print(f"  {len(h['commits'])} commits, {h['first']} to {h['last']}, "
-          f"{authors} author{'s' if authors != 1 else ''}.")
-    print(f"  {len(h['with_body'])} carried their reasoning in the message. "
-          f"{len(h['turns'])} admit a correction.")
-    print()
-    seeds = h["with_body"][-5:] if h["with_body"] else []
-    if seeds:
-        print("  Where the reasoning was written down, newest last:")
-        print()
-        for i, c in enumerate(seeds, 1):
-            body = " ".join(c["body"].split())
-            if len(body) > 110:
-                body = body[:107].rstrip() + "..."
-            print(f"  {i}. {c['date']}  {c['subject']}")
-            print(f"     {body}")
-        print()
-    else:
-        print("  No commit message carried its reasoning. The history says what")
-        print("  changed and when; the why is yours to tell.")
-        print()
-    if h["turns"]:
-        print("  Corrections the messages admit to:")
-        for c in h["turns"][-3:]:
-            print(f"    {c['date']}  {c['subject']}")
-        print()
+          f"{authors} author{'s' if authors != 1 else ''}. "
+          f"{len(h['with_body'])} carried their reasoning; "
+          f"{len(h['turns'])} {'is a correction' if len(h['turns']) == 1 else 'are corrections'}.")
 
     # Write the digest where the agent and harvest look for it.
     where = None
+    cfg = None
     try:
         cfg, _ = knowledge_dir(None)
         out = Path(cfg) / "digests"
         out.mkdir(parents=True, exist_ok=True)
-        _, digest, *_ = _digest_module().digest_repo(top)
+        _, digest, *_ = pd.digest_repo(top)
         (out / f"{name}.md").write_text(digest, encoding="utf-8")
         where = out / f"{name}.md"
     except Exception:
         pass
-
-    print("  Which of these is worth telling? Say `familiar` to your agent and it")
-    print("  will ask about each before anything is drafted. Or tell it what you")
-    print("  had in mind.")
     if where:
-        print(f"  The full digest is at {where}.")
-    if _positioning_is_template():
+        print(f"  Digest written to {where}.")
+    print()
+
+    obs = pd.observations(h)
+    if obs:
+        print("  Observations, from the history alone:")
+        for i, (text, ev, _) in enumerate(obs, 1):
+            print(f"  {i}. {text}")
+            print(f"     ({ev})")
         print()
-        print("  Your voice files are still templates. positioning.md is needed")
-        print("  before a draft, not before this.")
+    else:
+        print("  No observations yet: the history is too short or too even to say")
+        print("  anything with a contrast in it.")
+        print()
+
+    seeds = h["with_body"][-3:]
+    if seeds:
+        print("  Where the reasoning was written down, newest last:")
+        for c in seeds:
+            body = " ".join(c["body"].split())
+            if len(body) > 100:
+                body = body[:97].rstrip() + "..."
+            print(f"    {c['date']}  {c['subject']}")
+            print(f"              {body}")
+        print()
+
+    counts = context_counts(cfg) if cfg else None
+    if counts:
+        print("\n".join(context_lines(counts)))
+        print()
+        offers = gathering_offers(counts, name)
+        if enough_for_themes(counts):
+            print("  Enough here for themes. `familiar harvest` finds them across what")
+            print("  I have and says which are ready to write.")
+        else:
+            print("  One project is thin material for themes. To gather more:")
+        if offers:
+            for l in offers:
+                print(l)
+        print()
+    print("  If one of these is a story you want to tell now, say so to your agent;")
+    print("  nothing is drafted until you do.")
+    print()
+    return 0
+
+
+def _engage_all(args):
+    """Read every project one level under the projects root, after a yes.
+
+    Asks once, in the terminal. Without a terminal to ask in, it lists what it
+    would read and how to confirm, and reads nothing: a folder the writer did
+    not say yes to is never opened.
+    """
+    from context import context_counts, context_lines
+    pd = _digest_module()
+    default_root, cfg = pd.projects_root()
+    root = Path(args.dir).expanduser().resolve() if getattr(args, "dir", None) else Path(default_root)
+    if not root.is_dir():
+        print(f"{root} is not a folder. Set `Projects live in:` in knowledge/build-logs.md.")
+        return 1
+    repos = sorted(p for p in root.iterdir()
+                   if p.is_dir() and not p.name.startswith(".") and (p / ".git").exists() and p.resolve() != HOME)
+    if not repos:
+        print(f"No git repositories one level under {root}.")
+        return 1
+    print(f"I can see {len(repos)} project{'s' if len(repos) != 1 else ''} under {root}:")
+    for r in repos:
+        print(f"  {r.name}")
+    if not getattr(args, "yes", False):
+        if not sys.stdin.isatty():
+            print()
+            print("Nothing read. Run `familiar engage --all --yes` to read them all, or")
+            print("`familiar engage <dir>` for one.")
+            return 0
+        answer = input("\nRead them all and look for themes across them? [y/N] ").strip().lower()
+        if answer not in ("y", "yes"):
+            print("Nothing read. `familiar engage <dir>` reads one.")
+            return 0
+    out_dir = (Path(cfg) / "digests") if cfg else root / ".familiar-digests"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    print()
+    for repo in repos:
+        r = pd.digest_repo(repo)
+        if not r:
+            print(f"  {repo.name}: no commits")
+            continue
+        name, digest, n, first, last = r
+        (out_dir / f"{repo.name}.md").write_text(digest, encoding="utf-8")
+        h = pd.history(repo)
+        top = pd.observations(h, cap=1)
+        line = f"  {repo.name}: {n} commits, {first} to {last}."
+        print(line)
+        if top:
+            print(f"      {top[0][0]}")
+    print()
+    if cfg:
+        print("\n".join(context_lines(context_counts(cfg))))
+        print()
+    print("  `familiar harvest` finds the themes across these and says which are ready.")
     print()
     return 0
 
 
 def _today_slug(raw):
     """Normalise a slug: lowercase, hyphens for spaces/slashes, strip non-alnum."""
-    import re
     slug = raw.strip().lower().replace(" ", "-").replace("/", "-")
     slug = re.sub(r"[^a-z0-9-]", "", slug)
     slug = re.sub(r"-{2,}", "-", slug).strip("-")
@@ -775,8 +851,10 @@ def main():
     sub = parser.add_subparsers(dest="command")
 
     # engage
-    p_engage = sub.add_parser("engage", help="read the project you are standing in and find the stories in its history")
-    p_engage.add_argument("dir", nargs="?", default=None, help="project folder (default: here)")
+    p_engage = sub.add_parser("engage", help="read the project you are standing in: its history, what it shows, what more would help")
+    p_engage.add_argument("dir", nargs="?", default=None, help="project folder (default: here); with --all, the projects root")
+    p_engage.add_argument("--all", action="store_true", help="read every project one level under the projects root, after a yes")
+    p_engage.add_argument("--yes", action="store_true", help="with --all: the yes, for scripts and agents")
 
     # init
     p_init = sub.add_parser("init", help="set up Familiar in the current directory")

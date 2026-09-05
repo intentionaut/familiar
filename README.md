@@ -1,12 +1,13 @@
 # Familiar
 
-Familiar turns the coding session you just finished into a newsletter issue you
-actually wrote.
+Familiar studies the work you are doing and writes about it when there is
+enough to write from, in your voice, from things you actually said and did.
 
-It reads the transcript, interviews you one question at a time, drafts in your
-voice from your own published pieces, and hands back an editor's report instead
-of a rewrite. Nothing is invented: anything it cannot source becomes a visible
-bracket for you to fill.
+It engages on a project and reads its history. It keeps the build log and the
+reflections that hold the reasons. It finds the themes across your projects.
+Then it interviews you one question at a time, drafts from your own published
+pieces, and hands back an editor's report instead of a rewrite. Nothing is
+invented: anything it cannot source becomes a visible bracket for you to fill.
 
 Plain markdown prompts, MIT, nothing leaves your machine.
 
@@ -15,26 +16,51 @@ Plain markdown prompts, MIT, nothing leaves your machine.
 /plugin install familiar@familiar
 ```
 
-Then stand in a project you have built and say `familiar`. It reads the
-history and offers you the stories in it.
+Then stand in a project you have built and say `familiar`.
 
-## Your first issue, in about thirty minutes
+## The first job is context
+
+Familiar does not start from a blank prompt, and it does not start from a piece
+either. It starts from the work, and the first thing it does is gather.
+
+Standing in a project, `familiar` reads the git history and says what it can
+see: how many commits carried their reasoning, which ones undid earlier work,
+and a handful of **observations**, facts with a contrast in them that the
+history alone supports. "Tagging shipped on 18 July and came out on 1 August,
+14 days later." "Half of all commits changed the changelog." Each carries its
+dates and commit ids, none carries an interpretation, and each is a question
+you could answer later.
+
+Then it says what it has to work from, counted: projects read, build logs,
+reflections, past writing. One project is thin material for themes, so it
+offers the ways to gather more, only the ones not already in place:
+
+```
+familiar engage --all            read your other projects (asks first)
+familiar log add <project>       capture what ships, every session, from now on
+learn ingest <past writing>      what you have already published
+knowledge/reflection.md          two questions a week, in your words
+```
+
+Three tiers follow from this. **Observations** come from one project's history.
+**Themes** need more than one source and come from `harvest`, which counts what
+it has before proposing anything. **Pieces** need you, and come from the
+interview onward. Writing is offered at every step and assumed at none.
+
+## When there is something to write
 
 The hard part of writing about your own work is that the good material is the
 part you stopped noticing. You shipped the thing. The reasons were obvious in
 June and they are gone by September, and what is left is a repo that tells you
-what happened and nothing about why.
+what happened and nothing about why. The context Familiar gathers is what makes
+the why recoverable.
 
-So Familiar does not start from a blank prompt. It starts from the work.
-
-1. **Stand in the project and say `familiar`.** It reads the git history,
-   says what the project has been about, and offers three to five stories,
-   each resting on named days and commits. Pick one and it becomes the brief.
-   Or point it at the session you just closed with `case-study session`, or
-   hand it a build log: it reads the transcript, writes a brief, and drafts the
-   questions worth asking you. Transcripts are Claude Code's today; on
-   opencode, Codex or Gemini CLI, the build log is the way in, and
-   `familiar log entry` scaffolds one.
+1. **Start from a source.** `harvest` proposes topics once it has enough to
+   count. Or point Familiar at an observation it made, at the session you just
+   closed with `case-study session`, or at a build log: it reads the source,
+   writes a brief, and drafts the questions worth asking you. Transcripts are
+   Claude Code's today; on opencode, Codex or Gemini CLI, the build log is the
+   way in, and `familiar log entry` scaffolds one.
 2. **Answer them.** One question at a time, ten or fifteen minutes, in your own
    words. This is the part nothing else can do for you: everything downstream is
    built from what you said.

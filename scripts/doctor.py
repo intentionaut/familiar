@@ -275,6 +275,17 @@ def main():
 
     print()
 
+    # What there is to work from. The first job is gathering context, and this
+    # is the block that says how far along that job is, in counts.
+    try:
+        sys.path.insert(0, str(HOME / "scripts"))
+        from context import context_counts, context_lines
+        print("\n".join(context_lines(context_counts(cfg))))
+        print()
+    except Exception as e:  # never let the report die on the context block
+        print(f"  What I have to work from: could not be counted ({e})")
+        print()
+
     themes_report(cfg, HOME / "knowledge" / "themes.md")
     check_update(cfg)
 
@@ -312,9 +323,8 @@ def main():
         print("  Start here:")
         print()
         print("    Stand in a project you have built and run:  familiar")
-        print("    It reads the history and finds the stories in it.")
-        print()
-        print("    Already know what to write?  /familiar-new-piece <slug>")
+        print("    It reads the history and says what it can see in it, then what")
+        print("    would help it see more. Writing comes when there is enough.")
         print()
         print("    Before a draft, open this and answer what you can:")
         print(f"      {short_path(cfg / NEEDED_TO_START)}")

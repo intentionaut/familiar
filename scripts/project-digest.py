@@ -24,6 +24,7 @@ only where a commit message carried it.
 """
 import pathlib
 import re
+from datetime import date
 import subprocess
 import sys
 from collections import Counter, OrderedDict
@@ -114,6 +115,106 @@ def history(project, since=None):
                 first=commits[0]["date"], last=commits[-1]["date"])
 
 
+STOP = {"the", "a", "an", "and", "to", "of", "for", "in", "on", "with", "from", "add", "adds",
+        "added", "revert", "remove", "removes", "removed", "drop", "drops", "dropped", "fix",
+        "fixes", "never", "users", "used", "it", "is", "back", "out", "introduce", "ship"}
+
+
+def _words(s):
+    return {w for w in re.findall(r"[a-z]+", s.lower()) if w not in STOP and len(w) > 2}
+
+
+def _day(s):
+    return date.fromisoformat(s)
+
+
+def observations(h, cap=5):
+    """Facts with a contrast in them, from one repository's history alone.
+
+    The lowest tier of what Familiar can say about a project: below a theme,
+    which needs more than one source, and below a story, which needs the
+    writer. Each is (text, evidence, score). A count on its own is not an
+    observation; every line here names two numbers or two dates and the gap
+    between them is the point, so the filler ("commits on 7 of 7 days") never
+    makes the list. No interpretation: "tagging was undone 14 days after it
+    shipped" is Familiar's to say, "users did not want tagging" is the
+    writer's. Ranked by how far the contrast sits from even, capped.
+    """
+    c = h["commits"]; n = len(c); out = []
+    days = list(h["by_day"].keys())
+    span = (_day(days[-1]) - _day(days[0])).days + 1
+    turns = h["turns"]
+
+    # Reasoning ratio, only when it leans.
+    wb = len(h["with_body"]); share = wb / n
+    if n >= 4 and (share <= 1 / 3 or share >= 2 / 3):
+        out.append((f"{wb} of {n} commit messages say why, not only what.",
+                    f"{h['first']} to {h['last']}", abs(share - 0.5) * 2))
+
+    # Corrections, and whether they carry reasons.
+    if turns:
+        tb = sum(1 for x in turns if x["body"])
+        k = len(turns)
+        text = (f"{k} commit{'s reverse or fix' if k != 1 else ' reverses or fixes'} earlier work; "
+                f"{tb} of them name{'s' if tb == 1 else ''} the reason.")
+        ev = "; ".join(f'{x["date"]} "{x["subject"]}"' for x in turns[-3:])
+        out.append((text, ev, 0.5 + 0.5 * abs(tb / k - 0.5) * 2))
+
+    # Something added, then undone: a lifetime.
+    for later in c:
+        if not re.search(r"\b(revert|remove|drop|back out)\b", later["subject"], re.I):
+            continue
+        lw = _words(later["subject"])
+        for earlier in c:
+            if earlier["date"] >= later["date"] or earlier is later:
+                continue
+            if re.search(r"\b(add|introduce|ship)\b", earlier["subject"], re.I) and lw & _words(earlier["subject"]):
+                gap = (_day(later["date"]) - _day(earlier["date"])).days
+                out.append((f'"{earlier["subject"]}" ({earlier["date"]}) was undone {gap} days later: '
+                            f'"{later["subject"]}".', f"{earlier['sha']} then {later['sha']}", 0.95))
+                break
+
+    # The longest quiet stretch, when it is a week or more.
+    if len(days) > 1:
+        gaps = [((_day(b) - _day(a)).days, a, b) for a, b in zip(days, days[1:])]
+        g = max(gaps)
+        if g[0] >= 7:
+            out.append((f"The longest quiet stretch was {g[0]} days, {g[1]} to {g[2]}.",
+                        "no commits", min(0.9, g[0] / max(span, 1) + 0.3)))
+
+    # Sparse cadence only; steady work is not an observation.
+    if span >= 14 and len(days) / span <= 1 / 3:
+        out.append((f"Commits landed on {len(days)} of {span} days.", f"{n} commits", 1 - len(days) / span))
+
+    # Bursts.
+    if h["bursts"]:
+        b = h["bursts"][:3]
+        out.append((f"{len(h['bursts'])} day{'s' if len(h['bursts']) != 1 else ''} carried a burst: "
+                    + "; ".join(f"{d} ({k} commits)" for k, d in b) + ".",
+                    "at least twice the median day", 0.6))
+
+    # Concentration in one file.
+    counts = h["counts"]
+    if counts:
+        top, k = counts.most_common(1)[0]
+        if k >= 3 and k / n >= 0.25:
+            out.append((f"`{top}` changed in {k} of {n} commits, more than any other file.",
+                        f"{100 * k / n:.0f}%", 0.4 + 0.6 * (k / n)))
+
+    # Where the reasons get written down.
+    rest = [x for x in c if x not in turns]
+    if turns and rest:
+        tb = sum(1 for x in turns if x["body"]) / len(turns)
+        ob = sum(1 for x in rest if x["body"]) / len(rest)
+        if abs(tb - ob) >= 0.25:
+            which = "corrections" if tb > ob else "new work"
+            out.append((f"Reasons get written down more around {which}: {tb:.0%} of corrections carry one, "
+                        f"{ob:.0%} of the rest do.", "message bodies", 0.5 + abs(tb - ob) / 2))
+
+    out.sort(key=lambda o: -o[2])
+    return out[:cap]
+
+
 def digest_repo(project, since=None):
     """Return (name, digest_markdown, commit_count, first, last) or None if not a repo / empty."""
     h = history(project, since)
@@ -131,7 +232,16 @@ def digest_repo(project, since=None):
          "messages admit to. Everything else is a question for the writer.", ""]
     if readme:
         L += ["## What the project says it is", "", readme, ""]
-    L += ["## The days that stand out", ""]
+    L += ["## Observations", "",
+          "Facts with a contrast in them, from the history alone. Each is an open",
+          "question in disguise; the why is the writer's.", ""]
+    obs = observations(h)
+    if obs:
+        for text, ev, _ in obs:
+            L.append(f"- {text} ({ev})")
+    else:
+        L.append("- None yet. The history is too short or too even to say anything with a contrast in it.")
+    L += ["", "## The days that stand out", ""]
     if bursts:
         for n, d in bursts:
             subjects = "; ".join(c["subject"] for c in by_day[d][:6])

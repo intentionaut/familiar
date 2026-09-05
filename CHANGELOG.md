@@ -51,6 +51,21 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.31.0 (2026-09-05)
+
+The first job is gathering context. Writing is offered, never assumed.
+
+**What this gives you:**
+
+- **Observations from a single project.** `familiar` now ends its first
+  screen on what one repository's history supports on its own: facts with a
+  contrast in them, each with its dates and commit ids and none with an
+  interpretation. "Tagging was undone 14 days after it shipped." "Half of all
+  commits changed the changelog." Under them, a count of what Familiar has to
+  work from and the commands that gather more, with `familiar engage --all`
+  reading your other projects after a yes. Themes come from `harvest` once
+  there is more than one source; pieces come from you.
+
 ## 0.30.0 (2026-09-05)
 
 The project is the front door.

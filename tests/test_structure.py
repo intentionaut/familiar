@@ -366,6 +366,71 @@ class Structure(unittest.TestCase):
         self.assertGreater(text.index("### How often business development may run"), later)
         self.assertLess(text.index("## Voice in brief"), later)
 
+    def test_observations_carry_a_contrast_and_skip_filler(self):
+        """A count on its own is not an observation. A repo that commits every
+        day with reasons on half its messages yields no cadence line and no
+        reasoning-ratio line; a revert of something added yields a lifetime."""
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("pd", ROOT / "scripts" / "project-digest.py")
+        pd = importlib.util.module_from_spec(spec); spec.loader.exec_module(pd)
+        with tempfile.TemporaryDirectory() as tmp:
+            g = lambda *a, **k: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a], cwd=tmp,
+                                               capture_output=True, text=True, check=True, env={**os.environ, **k})
+            g("init", "-q")
+            plan = [("2026-07-01", "start", ""), ("2026-07-02", "add tagging", "people asked"),
+                    ("2026-07-03", "tweak colours", ""), ("2026-07-16", "revert tagging", "four tags in two weeks")]
+            for i, (d, subj, body) in enumerate(plan):
+                Path(tmp, f"f{i}").write_text("x"); g("add", ".")
+                g("commit", "-q", "-m", subj, *(["-m", body] if body else []),
+                  GIT_AUTHOR_DATE=f"{d}T10:00:00", GIT_COMMITTER_DATE=f"{d}T10:00:00")
+            obs = pd.observations(pd.history(tmp))
+            texts = [o[0] for o in obs]
+            self.assertTrue(any("was undone 14 days later" in x for x in texts), texts)
+            self.assertFalse(any("say why, not only what" in x for x in texts), "2 of 4 is even, not a contrast")
+            self.assertLessEqual(len(obs), 5)
+            for text, ev, score in obs:
+                self.assertTrue(ev, f"no evidence on {text!r}")
+                self.assertTrue(0 < score <= 1, (text, score))
+            digest = pd.digest_repo(tmp)[1]
+            self.assertIn("## Observations", digest)
+            self.assertLess(digest.index("## Observations"), digest.index("## The days that stand out"))
+
+    def test_context_is_counted_not_felt(self):
+        """The context block counts digests, registered logs, reflection entries
+        and ingested writing from the filesystem, and offers only what is
+        missing."""
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import context
+        with tempfile.TemporaryDirectory() as kn, tempfile.TemporaryDirectory() as refl:
+            kn = Path(kn)
+            shutil.copy(ROOT / "knowledge" / "voice-guide.md", kn / "voice-guide.md")
+            (kn / "digests").mkdir(); (kn / "digests" / "a.md").write_text("# a\n")
+            (kn / "build-logs.md").write_text("- Projects live in: ~/Projects\n\n## Watched\n\n- `~/Projects/a`: `A-LOG.md`\n")
+            (kn / "reflection.md").write_text(f"- Reflection: on\n- Reflections live in: {refl}\n")
+            Path(refl, "a.md").write_text("## 2026-09-01\n\nx\n\n## 2026-09-04\n\ny\n")
+            c = context.context_counts(kn)
+            self.assertEqual((1, 1, 2, False), (c["projects"], c["logs"], c["reflections"], c["past_writing"]))
+            offers = "\n".join(context.gathering_offers(c, "a"))
+            self.assertIn("engage --all", offers)
+            self.assertNotIn("log add", offers, "a log is already registered")
+            self.assertIn("learn ingest", offers)
+            self.assertNotIn("reflection.md", offers, "reflection is already on")
+            self.assertTrue(context.enough_for_themes(c))
+            lines = "\n".join(context.context_lines(c))
+            self.assertIn("Reflections          2 entries", lines)
+        out = subprocess.run([sys.executable, str(ROOT / "scripts" / "doctor.py"), "--config", str(ROOT / "knowledge")],
+                             capture_output=True, text=True).stdout
+        self.assertIn("What I have to work from:", out)
+
+    def test_first_engagement_never_ends_on_a_story_gate(self):
+        skill = (ROOT / "skills" / "familiar" / "SKILL.md").read_text()
+        step3 = skill[skill.index("3. **Nothing exists yet.**"):skill.index("4. **Several pieces in flight.**")]
+        self.assertIn("Observations", step3)
+        self.assertIn("what there is to work from", step3)
+        self.assertIn("Do\n      not ask \"which of these is worth telling?\"", step3)
+        cli = (ROOT / "scripts" / "familiar").read_text()
+        self.assertNotIn("Which of these is worth telling", cli)
+
     def test_doctor_reads_the_template_as_unset(self):
         """The shipped reflection.md says "[on / off]"; that is neither."""
         out = subprocess.run([sys.executable, str(ROOT / "scripts" / "doctor.py"), "--config", str(ROOT / "knowledge")],

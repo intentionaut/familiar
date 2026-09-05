@@ -121,7 +121,15 @@ When a stage finishes and `knowledge/reflection.md` says a reflection is due on
 its cadence, offer one in a single line and stop. At a stage exit only, never
 during the work. Once per session. If they say no, or say nothing about it, drop
 it and do not raise it again in that session. Never offer when reflection is
-off, and never when the settings are still the template.
+off.
+
+**When the settings are still the template, introduce it once, ever**, the way
+voice review is introduced: at a stage exit, in one line naming what it does and
+the file that turns it on, then never again in that session or any other unless
+the writer asks. The CLI does the same the first time it does real work, and
+records that it has. A loop nobody has opened is different from one that is
+off, and a writer should not have to open a file they have no reason to open
+to learn the loop exists.
 
 A reflection is a stage, so it has a gate like any other: it ends where
 `prompts/reflect.md` says it ends.

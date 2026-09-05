@@ -157,3 +157,28 @@ class HarvestAndInspire(unittest.TestCase):
         self.assertEqual(0, r.returncode, r.stderr)
         self.assertIn("PROJECT-PROGRESS.md", r.stdout,
                       "the registry supports a log called anything at all")
+
+    def test_introduces_the_loops_once(self):
+        """First real use says what reflection and session capture are, then never again.
+
+        HOME is pointed at a temp dir so the marker never touches the real one,
+        and the knowledge folder is the shipped template, where reflection is
+        unset.
+        """
+        with tempfile.TemporaryDirectory() as home:
+            env = {**os.environ, "HOME": home, "FAMILIAR_KNOWLEDGE": str(ROOT / "knowledge")}
+            first = subprocess.run(["python3", str(CLI), "reflect"], capture_output=True, text=True, env=env)
+            self.assertEqual(0, first.returncode, first.stderr)
+            self.assertIn("One thing, once.", first.stdout)
+            self.assertTrue((Path(home) / ".familiar" / "introduced").is_file())
+            second = subprocess.run(["python3", str(CLI), "reflect"], capture_output=True, text=True, env=env)
+            self.assertEqual(0, second.returncode, second.stderr)
+            self.assertNotIn("One thing, once.", second.stdout)
+
+    def test_help_never_introduces(self):
+        with tempfile.TemporaryDirectory() as home:
+            env = {**os.environ, "HOME": home}
+            result = subprocess.run(["python3", str(CLI), "--help"], capture_output=True, text=True, env=env)
+            self.assertNotIn("One thing, once.", result.stdout)
+            self.assertFalse((Path(home) / ".familiar" / "introduced").exists())
+

@@ -156,5 +156,10 @@ echo "Three ways in: start a piece, pick one back up, or find something to"
 echo "write about. Everything after that is a conversation. Tell the agent"
 echo "what you have and it picks the right stage."
 echo
+echo "Two loops feed it. 'familiar log add <project>' writes what shipped as a"
+echo "Claude Code session ends (other agents: 'familiar log entry' by hand)."
+echo "'familiar reflect' asks two questions and keeps your words; it is off"
+echo "until knowledge/reflection.md turns it on."
+echo
 # Say what is actually configured and what to do next, rather than assuming.
 python3 "$DIR/scripts/doctor.py" || true

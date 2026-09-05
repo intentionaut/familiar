@@ -532,6 +532,62 @@ def cmd_skill_install(args):
     return 0
 
 
+INTRO_MARKER = Path.home() / ".familiar" / "introduced"
+
+INTRO = """
+One thing, once. Familiar can ask you two questions at the end of a stage and
+write your answers down word for word. Those answers are the rawest record of
+your own voice it holds, and case-study reads them. It is off until you turn it
+on: knowledge/reflection.md, two lines.
+
+Session capture is the other loop: `familiar log add <project>` writes what
+shipped as a Claude Code session ends. On another agent, keep the build log by
+hand with `familiar log entry <project>`.
+
+This is the only time the CLI will mention either.
+"""
+
+
+def _reflection_unset():
+    """True when the writer has never set reflection on or off."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from paths import knowledge_dir
+        cfg, _ = knowledge_dir(None)
+    except Exception:
+        return True
+    f = Path(cfg) / "reflection.md"
+    if not f.is_file():
+        return True
+    text = f.read_text(encoding="utf-8", errors="replace")
+    return re.search(r"^- Reflection:\s*(on|off)\s*$", text, re.M | re.I) is None
+
+
+def _introduce_once():
+    """Say what the two loops are, the first time the CLI does real work.
+
+    Once, ever: a marker under ~/.familiar records that it has been said. Never
+    on --help, never when reflection has already been set on or off, and never
+    again after the first time, whatever the answer was. A loop nobody has
+    opened is different from one that is off, and the only way a writer finds
+    it otherwise is by reading a file they have no reason to open.
+    """
+    if INTRO_MARKER.exists() or not _reflection_unset():
+        return
+    try:
+        INTRO_MARKER.parent.mkdir(parents=True, exist_ok=True)
+        INTRO_MARKER.write_text(date.today().isoformat() + "\n")
+    except OSError:
+        return
+    print(INTRO)
+
+
+def _finish(rc):
+    if rc == 0:
+        _introduce_once()
+    sys.exit(rc)
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="familiar",
@@ -593,25 +649,25 @@ def main():
     args = parser.parse_args()
 
     if args.command == "init":
-        sys.exit(cmd_init(args))
+        _finish(cmd_init(args))
     elif args.command == "new-piece":
-        sys.exit(cmd_new_piece(args))
+        _finish(cmd_new_piece(args))
     elif args.command == "inspire":
-        sys.exit(cmd_inspire(args))
+        _finish(cmd_inspire(args))
     elif args.command == "harvest":
-        sys.exit(cmd_harvest(args))
+        _finish(cmd_harvest(args))
     elif args.command == "decisions":
         return cmd_decisions(args)
     elif args.command == "log":
-        sys.exit(cmd_log(args))
+        _finish(cmd_log(args))
     elif args.command == "reflect":
-        sys.exit(cmd_reflect(args))
+        _finish(cmd_reflect(args))
     elif args.command == "learn":
-        sys.exit(cmd_learn(args))
+        _finish(cmd_learn(args))
     elif args.command == "status":
-        sys.exit(cmd_status(args))
+        _finish(cmd_status(args))
     elif args.command == "skill" and args.skill_command == "install":
-        sys.exit(cmd_skill_install(args))
+        _finish(cmd_skill_install(args))
     else:
         parser.print_help()
         sys.exit(1)

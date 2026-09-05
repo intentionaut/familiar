@@ -322,6 +322,13 @@ class Structure(unittest.TestCase):
         self.assertIn("Written for:", body)
         self.assertNotIn("Serves:", body)
 
+    def test_doctor_reads_the_template_as_unset(self):
+        """The shipped reflection.md says "[on / off]"; that is neither."""
+        out = subprocess.run([sys.executable, str(ROOT / "scripts" / "doctor.py"), "--config", str(ROOT / "knowledge")],
+                             capture_output=True, text=True).stdout
+        self.assertIn("Reflection: template", out)
+        self.assertNotIn("Reflection: on", out)
+
     def test_no_em_dashes_in_shipped_prose(self):
         """Familiar's own first style rule bans them, so its prose must obey.
 

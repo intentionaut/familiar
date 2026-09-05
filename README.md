@@ -237,6 +237,32 @@ where a cheap one will do, without naming a vendor.
 If you keep your voice files somewhere other than the repo, point
 `$FAMILIAR_CONFIG` at that folder, or let a host declare it.
 
+### Updating
+
+Three ways in, three ways to stay current. Pick the one you installed with.
+
+Installed with the skills CLI:
+
+```sh
+npx skills update familiar
+```
+
+Installed as a Claude Code plugin: open `/plugin` and update `familiar` from the
+marketplace list. Claude Code owns updates on this path.
+
+A clone:
+
+```sh
+cd ~/Projects/familiar && git pull && scripts/setup.sh
+```
+
+The second step matters. The installed commands carry the knowledge path from
+the moment they were installed, so a pull on its own leaves your agents running
+the old ones. `setup.sh` is safe to re-run: it only touches files it wrote, and
+it removes commands that no longer exist. `familiar doctor` then reports the
+version you are on, and, if `knowledge/updates.md` says on, whether a newer one
+exists.
+
 ## Keeping notes out of a public repo
 
 Writing about your own work means keeping notes about it, and those notes end up

@@ -489,6 +489,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `knowledge/social-rules.md`: the four tests a short post passes before it ships, and what to do instead of a findings list when one fails
 - `knowledge/editor-report.md`: dev-edit taxonomy and report spec
 - `knowledge/examples/canonical.md`: annotated excerpts of the writer's published work
+- `knowledge/checkin.md`: whether the session-start check-in is on and its cadence; the offer that notices a project has gone quiet
 - `knowledge/reflection.md`: whether reflection is on, its cadence, where the answers live, and the question bank
 - `knowledge/social-schedule.md`: channels, cadence, send times, slot shapes; the scaffold the social stage fills, plus the optional `## Scheduler` block publish reads
 - `knowledge/links.md`: where posts point and how clicks are tracked; publish builds every URL from it before counting characters

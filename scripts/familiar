@@ -535,6 +535,8 @@ def cmd_skill_install(args):
 INTRO_MARKER = Path.home() / ".familiar" / "introduced"
 
 INTRO = """
+I'm here watching you work and will help you tell your story.
+
 One thing, once. Familiar can ask you two questions at the end of a stage and
 write your answers down word for word. Those answers are the rawest record of
 your own voice it holds, and case-study reads them. It is off until you turn it

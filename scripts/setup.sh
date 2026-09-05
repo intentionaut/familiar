@@ -152,6 +152,8 @@ if [ -n "$skipped" ]; then
   echo "  Add one later with:  scripts/setup.sh --only <agent>"
 fi
 echo
+echo "I'm here watching you work and will help you tell your story."
+echo
 echo "Three ways in: start a piece, pick one back up, or find something to"
 echo "write about. Everything after that is a conversation. Tell the agent"
 echo "what you have and it picks the right stage."

@@ -359,9 +359,11 @@ class Structure(unittest.TestCase):
             # Same day: the cached answer is reprinted and the page is not read again.
             page.unlink()
             self.assertIn("Update: 9.9.9 is out", run())
-            # A stale stamp with an unreachable page says unknown, never current.
+            # A stale stamp with an unreachable page says unknown, never current,
+            # and the failure is not written back as the day's answer.
             stamp.write_text("2000-01-01 9.9.9\n")
             self.assertIn("Update: unknown", run())
+            self.assertEqual("2000-01-01 9.9.9", stamp.read_text().strip())
 
     def test_no_em_dashes_in_shipped_prose(self):
         """Familiar's own first style rule bans them, so its prose must obey.

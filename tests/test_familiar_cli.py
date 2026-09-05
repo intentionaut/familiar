@@ -200,10 +200,20 @@ class HarvestAndInspire(unittest.TestCase):
             self.assertIn("move to sqlite", r.stdout)
             self.assertIn("Json files corrupted twice.", r.stdout)
             self.assertIn("fix: dedupe", r.stdout)
-            self.assertIn("needed\n  before a draft", r.stdout.replace("needed\n  before", "needed\n  before"))
             self.assertTrue((Path(kn) / "digests" / f"{name}.md").is_file())
             self.assertEqual(1, r.stdout.count("I'm here watching you work"))
             self.assertNotIn("usage:", r.stdout)
+            # The first job is gathering context: the screen ends on what there
+            # is to work from and how to gather more, never on a story to pick.
+            self.assertIn("What I have to work from:", r.stdout)
+            self.assertIn("Projects read        1", r.stdout)
+            self.assertIn("familiar engage --all", r.stdout)
+            self.assertIn(f"familiar log add {name}", r.stdout)
+            self.assertNotIn("worth telling", r.stdout)
+            self.assertIn("nothing is drafted until you do", r.stdout)
+            # Observations are the tier one repo supports, and a correction is one.
+            self.assertIn("Observations, from the history alone:", r.stdout)
+            self.assertIn("earlier work", r.stdout)
 
     def test_bare_familiar_outside_a_repo_falls_back_to_status(self):
         with tempfile.TemporaryDirectory() as home, tempfile.TemporaryDirectory() as tmp:
@@ -247,6 +257,31 @@ class HarvestAndInspire(unittest.TestCase):
             self.assertIn("New in", second.stdout)
             third = subprocess.run(["python3", str(CLI), "reflect"], capture_output=True, text=True, env=env)
             self.assertNotIn("New in", third.stdout)
+
+    def test_engage_all_reads_nothing_without_a_yes(self):
+        """A folder the writer did not say yes to is never opened. Without a
+        terminal to ask in, --all lists what it would read and stops."""
+        with tempfile.TemporaryDirectory() as home, tempfile.TemporaryDirectory() as root, tempfile.TemporaryDirectory() as kn:
+            # The knowledge folder has to look like a house for paths.py to pick
+            # it over the shipped templates, and a house has a positioning file.
+            for name in ("positioning.md", "voice-guide.md"):
+                (Path(kn) / name).write_text((ROOT / "knowledge" / name).read_text())
+            (Path(kn) / "build-logs.md").write_text(f"- Projects live in: {root}\n")
+            for name in ("alpha", "beta"):
+                d = Path(root, name); d.mkdir()
+                self._repo(str(d), [("start", ""), ("add x", "why"), ("revert x", "because")])
+            env = {**os.environ, "HOME": home, "FAMILIAR_KNOWLEDGE": kn, "FAMILIAR_CONFIG": kn}
+            r = subprocess.run(["python3", str(CLI), "engage", "--all"], capture_output=True, text=True, env=env, stdin=subprocess.DEVNULL)
+            self.assertEqual(0, r.returncode, r.stderr)
+            self.assertIn("2 projects", r.stdout)
+            self.assertIn("Nothing read", r.stdout)
+            self.assertFalse((Path(kn) / "digests").exists())
+            r = subprocess.run(["python3", str(CLI), "engage", "--all", "--yes"], capture_output=True, text=True, env=env, stdin=subprocess.DEVNULL)
+            self.assertEqual(0, r.returncode, r.stderr)
+            for name in ("alpha", "beta"):
+                self.assertTrue((Path(kn) / "digests" / f"{name}.md").is_file())
+            self.assertIn("Projects read        2", r.stdout)
+            self.assertIn("reverse", r.stdout, "each project shows its top observation")
 
     def test_help_never_introduces(self):
         with tempfile.TemporaryDirectory() as home:

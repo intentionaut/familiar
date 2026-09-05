@@ -1,6 +1,6 @@
 ---
 name: familiar
-description: Turns the coding session you just finished into a newsletter issue you actually wrote. Interview, outline, draft, dev-edit, line-edit, finalise, social and learn stages for writing about your own work in your own voice; it reports rather than rewrites, brackets rather than invents, and every stage stops for the writer's decision. Use when the user says "familiar", wants to write about a project they have built, interview themselves about an idea, draft or edit a newsletter issue, turn a piece into social posts, schedule approved posts, or teach Familiar their voice from past writing.
+description: Studies the work you are doing, gathers the context for writing about it, and writes when there is enough to write from. Engages on a project's git history and reports observations; keeps build logs and reflections; finds themes across projects; then interview, outline, draft, dev-edit, line-edit, finalise, social and learn stages for writing about your own work in your own voice. It reports rather than rewrites, brackets rather than invents, and every stage stops for the writer's decision. Use when the user says "familiar", "engage", wants to know what their project's history shows, wants to write about a project they have built, interview themselves about an idea, draft or edit a newsletter issue, turn a piece into social posts, schedule approved posts, or teach Familiar their voice from past writing.
 ---
 
 # Familiar
@@ -90,36 +90,47 @@ gives one. When they do not, work it out and say so:
    what it is about to do:
    > I've engaged on <project>, the project you're working on. I'll study the
    > context and look for themes.
-   Then do exactly that, before saying anything else: run
-   `scripts/project-digest.py <dir>` and read the digest, plus the most recent
-   session transcript for the folder if there is one and a registered build
-   log if there is one. Come back with the stories the history holds: three to
-   five, each resting on named days and commits, each phrased as a question
-   the writer can answer rather than a claim about why. Then stop at the gate:
-   > Which of these is worth telling? Or none of them, and tell me what you
-   > had in mind.
-   The one they pick goes to `case-study` with the digest as its source.
-   `familiar` with no arguments does the first half of this in the terminal:
-   the engagement line, the commits that carried reasoning, and the digest
-   written to `knowledge/digests/<project>.md`. Read that digest rather than
-   running the script again if it is from today.
+   Then do exactly that, before saying anything else. The first job is
+   gathering context, not writing, so this step ends on what Familiar has to
+   work from, never on a story to pick.
+
+   a. **Read the history.** Run `scripts/project-digest.py <dir>` (or read
+      today's digest at `knowledge/digests/<project>.md` if `familiar` already
+      wrote it) and read the most recent session transcript for the folder if
+      there is one, plus a registered build log if there is one.
+   b. **Report the observations.** The digest's `## Observations` section:
+      facts with a contrast in them, from the history alone, each with its
+      evidence. Say them as they are written. Never add an interpretation;
+      "tagging was undone 14 days after it shipped" is Familiar's to say,
+      "users did not want tagging" is the writer's. This is the lowest tier of
+      what Familiar can say about a project, and it is real value from one
+      repository on day one. Below it there is nothing; above it are themes,
+      which need more than one source, and pieces, which need the writer.
+   c. **Say what there is to work from**, counted: projects read, build logs,
+      reflection entries, whether past writing has been ingested
+      (`scripts/context.py` prints the block). Then offer what would gather
+      more, only the things not already in place, in this order: the other
+      projects, the build log for this one, past writing, reflection.
+   d. **Offer the rest of the projects, once.** Read `knowledge/build-logs.md`
+      for where projects live (default `~/Projects`), count the git
+      repositories there, and ask before reading any of them:
+      > I can see <N> other projects under <root>. Pull them all in and look for
+      > themes across them, or name the ones you want me to read?
+      On a yes, `scripts/project-digest.py --all` writes one digest per project
+      under `knowledge/digests/`, and `harvest` reads them alongside the logs.
+      Never read a folder the writer did not say yes to; never read outside
+      the projects root.
+   e. **Writing is offered, not assumed.** Close with one line: if one of the
+      observations or reasoning commits is a story they want to tell now, say
+      so and it goes to `case-study` with the digest as its source; otherwise
+      `harvest` proposes writing once there is enough context to count. Do
+      not ask "which of these is worth telling?" on a first engagement.
 
    **The writer can ask for this at any time**, pieces in flight or not:
-   "engage", "look at this project", "what's the story in this repo", or
+   "engage", "look at this project", "what does this repo's history show", or
    `familiar engage <dir>`. It is how someone who installed Familiar before
-   this existed gets the same first experience. Run the digest and offer the
-   stories; do not route them to a piece first.
-
-   **Then offer the rest.** The writer usually has more than one project, and
-   the story is often across them. Read `knowledge/build-logs.md` for where
-   projects live (default `~/Projects`), count the git repositories there, and
-   ask once, by default, before reading any of them:
-   > I can see <N> other projects under <root>. Pull them all in and look for
-   > themes across them, or name the ones you want me to read?
-   On a yes, `scripts/project-digest.py --all` writes one digest per project
-   under `knowledge/digests/`, and `harvest` reads them alongside the logs.
-   Never read a folder the writer did not say yes to; never read outside the
-   projects root.
+   this existed gets the same first experience. Run the history and report;
+   do not route them to a piece first.
 
    If the working folder is not a repository, there is nothing to engage on
    yet, so ask about their material, not about Familiar:
@@ -148,7 +159,7 @@ The stages, for Familiar's own routing:
 | `social` | `prompts/social.md` | A week of posts on the writer's cadence; includes the quality pass; ends at approved copy |
 | `publish [file]` | `prompts/publish.md` | Schedules already-approved posts; builds and counts URLs first, never rewrites copy |
 | `bring [draft\|notes] <path>` | `prompts/bring.md` | A draft or notes you already have: the spine it has, the claims it makes, the questions it cannot answer |
-| `engage [dir]` | this file, step 3 above | Read a project's git history and offer the stories in it; the way in when there is no piece yet, and on request at any time |
+| `engage [dir]` | this file, step 3 above | Read a project's git history, report its observations and what there is to work from; the way in when there is no piece yet, and on request at any time |
 | `case-study <LOG.md \| transcript.jsonl \| session [dir] \| project [dir]>` | `prompts/case-study.md` | Brief and questions from a build log, a coding session, or a project's git history (`scripts/project-digest.py`) |
 | `learn ingest <path>` / `learn diff <piece>` / `learn decisions` | `prompts/learn.md` | Propose voice rules from past writing, from draft-vs-final, or from the choices the writer made |
 | `reflect` | `prompts/reflect.md` | Two questions about the work, recorded in the writer's own words |

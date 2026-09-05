@@ -118,7 +118,10 @@ def newest_version(url, timeout=4):
     """The first release heading on the page, or None. No exception escapes."""
     try:
         import urllib.request
-        with urllib.request.urlopen(url, timeout=timeout) as r:
+        # The site's edge refuses Python's default agent with a 403; a named one
+        # is let through, and it says who is asking.
+        req = urllib.request.Request(url, headers={"User-Agent": f"familiar-doctor/{local_version() or '0'}"})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
             page = r.read().decode("utf-8", errors="replace")
         m = re.search(r'id="v(\d+)-(\d+)-(\d+)"', page)
         return ".".join(m.groups()) if m else None
@@ -155,11 +158,15 @@ def check_update(cfg):
         pass
     if newest is None:
         newest = newest_version(RELEASES_URL)
-        try:
-            UPDATE_STAMP.parent.mkdir(parents=True, exist_ok=True)
-            UPDATE_STAMP.write_text(f"{today} {newest or ''}\n")
-        except OSError:
-            pass
+        # Only a successful read is kept for the day. A failed one is not an
+        # answer, and caching it would turn one bad request into a day of
+        # "unknown" with no retry.
+        if newest:
+            try:
+                UPDATE_STAMP.parent.mkdir(parents=True, exist_ok=True)
+                UPDATE_STAMP.write_text(f"{today} {newest}\n")
+            except OSError:
+                pass
     local = local_version()
     if not newest or not local:
         print("  Update: unknown (could not read the release page)")

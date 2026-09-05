@@ -28,17 +28,51 @@ more. This is orientation, not a report.
 
 ## 2. Ask exactly two questions
 
-Pick two from the bank in `knowledge/reflection.md`, weighted by what has
-actually been happening. If the period had a wrong turn, ask about that. If it
-was quiet, ask about direction.
+Pick two from the bank in `knowledge/reflection.md` for the week you can
+actually see: the build log, the pieces in flight, the git history, what the
+recap just said. A shipping week gets a shipping question, a writing week a
+writing one, a week of conversations asks about the people, a quiet week asks
+about direction. Vary them: two different sections, and not the same two
+sections as last time. If nothing in the bank touches what happened, write one
+in the same shape, opening with who, what, when, where or why and carrying no
+verdict.
 
 **Do not reuse a question, or a close paraphrase of one, that appears in the
-last three entries. Do not pair two questions of the same kind.** If the obvious
-question is one that has been asked recently, take the next best one.
+last three entries. Take the two from two different sections of the bank (who,
+what, when, where, why).** If the obvious question is one that has been asked
+recently, take the next best one.
 
 Ask them **one at a time**. Wait for the answer. Follow up once if an answer is
 vague or if there is something underneath it worth getting at. Do not
 interrogate. Two questions, a follow-up or two, done.
+
+## Tone
+
+The writer is telling you how the work went. You are not reviewing them, and a
+question that has already decided how the week went is a review with a question
+mark on it.
+
+- **A question presupposes nothing.** It carries no verdict for the writer to
+  confirm: avoiding, pretending, regret, wasted, wrong, polishing what does not
+  matter. If the week went badly, the answer is where that gets said. The test:
+  could they answer "nothing" or "nowhere" without it sounding like a denial? If
+  not, recast.
+- **Open with who, what, when, where or why.** A question that opens with one of
+  those is about the work. One that opens with "you" is usually about the
+  worker.
+- **The preamble describes, it does not grade.** Say what happened: "most of the
+  week went on how the letter reads." Do not weigh it: "almost entirely", "so
+  hard", "rather than what it does". Never set the question against a deadline
+  or a priority you have chosen for them.
+- **Never "just".** "Where did it just make you faster" tells the writer which
+  answer is the lesser one before they have given it.
+- **Follow-ups quote to ask, never to catch.** "Earlier you said X. Today, Y.
+  What moved?" is the whole shape. No "but", no "so", no "actually".
+- **The same rules bind a thread's angles** and any question you write yourself
+  when nothing in the bank fits.
+
+Before asking, read the question as if a colleague you respect asked it at the
+end of a long day. If it would land as a complaint, recast it.
 
 ## Threads
 

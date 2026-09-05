@@ -325,6 +325,27 @@ class Structure(unittest.TestCase):
         self.assertIn("Written for:", body)
         self.assertNotIn("Serves:", body)
 
+    def test_reflection_questions_open_with_a_w_and_carry_no_verdict(self):
+        """Every question in the shipped bank opens with who, what, when, where
+        or why, sits under one of exactly those five headings, and contains none
+        of the words that turn a question into a review."""
+        text = (ROOT / "knowledge" / "reflection.md").read_text()
+        bank = text.partition("## The questions\n")[2]
+        heads = re.findall(r"^### (.+)$", bank, re.M)
+        self.assertEqual(heads, ["Who", "What", "When", "Where", "Why"])
+        questions = [l[2:] for l in bank.splitlines() if l.startswith("- ")]
+        self.assertGreaterEqual(len(questions), 25)
+        verdicts = ("avoid", "pretend", "regret", "wrong", "waste", "should",
+                    " just ", "polish", "any right to", "actually")
+        for q in questions:
+            self.assertRegex(q, r"^(Who|What|When|Where|Why)\b", q)
+            self.assertTrue(q.endswith("?"), q)
+            for v in verdicts:
+                self.assertNotIn(v, q.lower(), f"{v!r} in {q!r}")
+        prompt = (ROOT / "prompts" / "reflect.md").read_text()
+        self.assertIn("## Tone", prompt)
+        self.assertIn("two different sections", prompt)
+
     def test_doctor_reads_the_template_as_unset(self):
         """The shipped reflection.md says "[on / off]"; that is neither."""
         out = subprocess.run([sys.executable, str(ROOT / "scripts" / "doctor.py"), "--config", str(ROOT / "knowledge")],

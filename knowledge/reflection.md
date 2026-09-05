@@ -72,47 +72,69 @@ as a question, not as a correction.
 
 ## The questions
 
-Two per reflection, one at a time, never two of the same kind. Edit this list,
-add your own, delete the ones that do nothing for you. The stage will not repeat
-a question, or a close paraphrase, that appears in your last three entries.
+Two per reflection, one at a time, from two different sections below, picked for
+the week that actually happened: a shipping week gets a shipping question, a
+writing week a writing one, a week of conversations asks about the people. Edit
+this list, add your own, delete the ones that do nothing for you. The stage will
+not repeat a question, or a close paraphrase, that appears in your last three
+entries.
 
-### Feel and noticing
+Every question here opens with who, what, when, where or why, and none of them
+carries a verdict for you to confirm. A question that already contains a
+judgement (what are you avoiding, what did you get wrong) is a review with a
+question mark on it. If a week went badly, the answer is where that gets said.
+
+### Who
+
+- Who did this week's work turn out to be for?
+- Who were you thinking about while you worked?
+- Who would you show this to first, and why them?
+- Who helped this week, whether or not they knew it?
+- Who did you talk to about the work this week, and what did they hear?
+- Who else has this problem, and what do they do about it?
+- Who do you want reading this in a year?
+
+### What
 
 - What surprised you this week?
 - What are you noticing about how this is going?
-- What went better than it had any right to?
-- What is true now that would have surprised you a month ago?
-
-### Worry and risk
-
-- What is worrying you about the project right now?
-- What decision this week are you least sure about?
-- What did we get wrong that you have not spotted?
-- Where did you spend time you will regret in a month?
-
-### Direction and purpose
-
-- What do you want to be true about this in three months?
-- Has anything changed your mind about what this is for?
-- Who is this actually for, and has that answer moved?
-- What would have to be true for you to stop working on this?
-
-### Work and craft
-
-- What is the most useful thing that happened, and why that one?
-- What did you cut, and do you still think that was right?
-- What got easier that used to be hard, and what does that free you up to do?
-- Where are you polishing something that does not matter yet?
+- What is true now that was not true a month ago?
 - What did you learn this week that changes what you build next?
-
-### Honesty and avoidance
-
-- What are you avoiding?
-- What are you pretending to have decided that you actually have not?
-- What is the thing you keep meaning to do and have not?
-- Which part of this would you least want to hand to someone else?
-
-### Users
-
+- What did you cut, and how does that decision look now?
+- What is on your mind about the project right now?
+- What did you write this week that you would stand behind in a year?
+- What did you read or hear this week that stayed with you?
+- What did the week show you about how you work?
 - What did someone using this do that you did not expect?
+- What do you want to be true about this in three months?
 - What would you tell someone starting this from scratch?
+
+### When
+
+- When this week did the work feel most like yours?
+- When did you last change your mind about something here, and what moved?
+- When did the time go faster than you expected, and when slower?
+- When did a piece of writing come easily this week, and what was around it?
+- When did you stop for the day, and what made that the moment?
+- When did you last enjoy this, and what were you doing?
+- When will you know this has done what you wanted it to?
+
+### Where
+
+- Where did the work go this week, and where did you expect it to go?
+- Where is this easier than it used to be?
+- Where does the hard part live now?
+- Where did the piece you were writing end up, compared with where it started?
+- Where did a reader or a user meet the work this week, and what did they see?
+- Where did the week's biggest decision come from: a fact, a hunch, or someone else?
+- Where would you like the time to go next week?
+
+### Why
+
+- Why does this project matter to you right now?
+- Why did this project get the week's attention rather than another?
+- Why did the most useful thing that happened turn out to be that one?
+- Why did the week's biggest decision go the way it did?
+- Why this piece, this week, for these readers?
+- Why now, for the thing you started this week?
+- Why did something you expected to be hard turn out otherwise, or the reverse?

@@ -44,16 +44,22 @@ kills it.
 **A theme written for two or three segments is normal. One written for all of
 them is a theme that has not been narrowed.**
 
-**`Job:` is what the theme is for.** It decides three things: how the outcome is
-read, which authority rules apply, and how often the theme may run.
+**What a theme is for.** A theme carries positioning for future work, and it
+implies the tone and the audience a piece takes. It does not set cadence. How
+often anything publishes is a publishing rule in `positioning.md`; that rule may
+read a theme's `Job:`, but the theme does not own it, and no stage treats a
+theme as a slot in a rota.
+
+**`Job:` implies tone and which authority rules apply.**
 
 - **`thought-leadership`** builds standing with the people who read. Judged by
   replies and shares. Your `voice-guide.md` authority rules apply in full.
 - **`business-development`** exists to attract clients. Judged by the
   conversations that follow. Whatever room your `voice-guide.md` gives a
   credential, this is the job that may use it, and no other. **And it is
-  capped**, in `positioning.md`, because a letter that runs business
-  development too often stops being a letter.
+  capped** by a publishing rule in `positioning.md`, because a letter that runs
+  business development too often stops being a letter. The cap belongs to the
+  publication, not to the theme.
 
 **The cap is the price of the relaxation.** Take one without the other and the
 publication turns into a brochure. A stage proposing topics counts how many
@@ -66,9 +72,10 @@ stage forgets this. `voice-guide.md`, "Authority: show, don't tell", is the
 countermeasure, and the reader addressed is still the one `positioning.md`
 names.
 
-**How many themes is not settled.** It follows from your cadence and how long a
-theme stays useful, and neither has been worked out. Fewer themes compound
-faster at a fortnightly cadence.
+**How many themes is not settled, and it does not follow from your cadence.** A
+theme is a position you hold, not a slot you fill, so nine themes at a
+fortnightly letter is not "a piece per theme every four months". Declare the
+positions you actually hold and let the number be what it is.
 
 ## Themes
 

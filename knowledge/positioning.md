@@ -44,6 +44,20 @@ lines: what they do, what they already know, what they are tired of reading.
 
 [your reader]
 
+## Voice in brief
+
+The long version is `voice-guide.md`. Three or four lines here for stages that
+only need the gist:
+
+- [warm / dry / direct / formal]
+- [what you never do]
+- [what you always do]
+
+## Later, if you keep themes
+
+Nothing below is needed to start, to interview or to draft. It matters once
+`knowledge/themes.md` points at segments by id, and not before.
+
 ### Segments
 
 Optional, and only worth filling if you keep `knowledge/themes.md`, which points
@@ -68,12 +82,3 @@ next slot; it never decides how many slots there are. Until you set one, the
 cap is `unknown`, and no stage treats business development as unlimited: a
 stage proposing topics counts the recent business-development pieces and says
 so before offering another.
-
-## Voice in brief
-
-The long version is `voice-guide.md`. Three or four lines here for stages that
-only need the gist:
-
-- [warm / dry / direct / formal]
-- [what you never do]
-- [what you always do]

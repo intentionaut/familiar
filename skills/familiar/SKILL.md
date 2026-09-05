@@ -99,6 +99,16 @@ gives one. When they do not, work it out and say so:
    > Which of these is worth telling? Or none of them, and tell me what you
    > had in mind.
    The one they pick goes to `case-study` with the digest as its source.
+   `familiar` with no arguments does the first half of this in the terminal:
+   the engagement line, the commits that carried reasoning, and the digest
+   written to `knowledge/digests/<project>.md`. Read that digest rather than
+   running the script again if it is from today.
+
+   **The writer can ask for this at any time**, pieces in flight or not:
+   "engage", "look at this project", "what's the story in this repo", or
+   `familiar engage <dir>`. It is how someone who installed Familiar before
+   this existed gets the same first experience. Run the digest and offer the
+   stories; do not route them to a piece first.
 
    **Then offer the rest.** The writer usually has more than one project, and
    the story is often across them. Read `knowledge/build-logs.md` for where
@@ -138,6 +148,7 @@ The stages, for Familiar's own routing:
 | `social` | `prompts/social.md` | A week of posts on the writer's cadence; includes the quality pass; ends at approved copy |
 | `publish [file]` | `prompts/publish.md` | Schedules already-approved posts; builds and counts URLs first, never rewrites copy |
 | `bring [draft\|notes] <path>` | `prompts/bring.md` | A draft or notes you already have: the spine it has, the claims it makes, the questions it cannot answer |
+| `engage [dir]` | this file, step 3 above | Read a project's git history and offer the stories in it; the way in when there is no piece yet, and on request at any time |
 | `case-study <LOG.md \| transcript.jsonl \| session [dir] \| project [dir]>` | `prompts/case-study.md` | Brief and questions from a build log, a coding session, or a project's git history (`scripts/project-digest.py`) |
 | `learn ingest <path>` / `learn diff <piece>` / `learn decisions` | `prompts/learn.md` | Propose voice rules from past writing, from draft-vs-final, or from the choices the writer made |
 | `reflect` | `prompts/reflect.md` | Two questions about the work, recorded in the writer's own words |

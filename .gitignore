@@ -19,3 +19,4 @@ __pycache__/
 
 # Familiar per-install paths. Not committed.
 .familiar
+knowledge/digests/

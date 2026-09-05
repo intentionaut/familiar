@@ -44,8 +44,12 @@ def project_name(root):
     return pathlib.Path(root).name
 
 
-def digest_repo(project, since=None):
-    """Return (name, digest_markdown, commit_count) or None if not a repo / empty."""
+def history(project, since=None):
+    """Read a repository's history once and return the facts a digest or an
+    engagement line needs: root, name, commits (oldest first), the commits
+    whose message carried reasoning, the ones that admit a correction, the
+    days, authors, path counts and the README's first paragraph. None if the
+    folder is not a repository or has no commits."""
     top = run(["rev-parse", "--show-toplevel"], project)
     if top.returncode != 0:
         return None
@@ -104,8 +108,21 @@ def digest_repo(project, since=None):
             readme = (lines[0] + "\n" + " ".join(para)).strip() if lines else ""
             break
 
-    name = project_name(root)
-    first, last = commits[0]["date"], commits[-1]["date"]
+    return dict(root=root, name=project_name(root), commits=commits, by_day=by_day,
+                counts=counts, authors=authors, with_body=with_body, turns=turns,
+                bursts=bursts, readme=readme,
+                first=commits[0]["date"], last=commits[-1]["date"])
+
+
+def digest_repo(project, since=None):
+    """Return (name, digest_markdown, commit_count, first, last) or None if not a repo / empty."""
+    h = history(project, since)
+    if not h:
+        return None
+    root, name, commits = h["root"], h["name"], h["commits"]
+    by_day, counts, authors = h["by_day"], h["counts"], h["authors"]
+    with_body, turns, bursts, readme = h["with_body"], h["turns"], h["bursts"], h["readme"]
+    first, last = h["first"], h["last"]
     L = [f"# {name}: what the history says", "",
          f"Reconstructed from `git log` on {root}. {len(commits)} commits, {first} to {last},",
          f"{len(by_day)} days with commits, {len(authors)} author{'s' if len(authors) != 1 else ''}.",

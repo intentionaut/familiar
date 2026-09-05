@@ -24,7 +24,10 @@ picks a topic (or brings their own), the interview proceeds normally.
 
 ## Setup
 
-1. Read knowledge/positioning.md, knowledge/voice-guide.md.
+1. Read knowledge/positioning.md, knowledge/voice-guide.md. If positioning.md
+   is still the shipped template, say so in one line and carry on: the
+   interview works from what the writer tells you. The file is needed before
+   a draft, not before this.
 2. Take the idea from $ARGUMENTS, or ask: "What's rattling around?"
 3. Create or reuse `pieces/YYYY-MM-DD-short-slug/` (today's date). Write working notes to `notes.md` as you go. If `notes.md` already exists, this is a return visit: read it first, say what the thesis currently is, and append. Never restart the notes. If `$ARGUMENTS` names a gap ("the evidence for section 2", "what happened after the meeting"), ask only about that.
 

@@ -175,6 +175,79 @@ class HarvestAndInspire(unittest.TestCase):
             self.assertEqual(0, second.returncode, second.stderr)
             self.assertNotIn("One thing, once.", second.stdout)
 
+    def _repo(self, tmp, commits):
+        g = lambda *a: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a],
+                                      cwd=tmp, capture_output=True, text=True, check=True)
+        g("init", "-q")
+        for i, (subj, body) in enumerate(commits):
+            Path(tmp, f"f{i}").write_text("x")
+            g("add", ".")
+            g("commit", "-q", "-m", subj, *(["-m", body] if body else []))
+
+    def test_bare_familiar_engages_on_the_project_it_stands_in(self):
+        """`familiar` with no arguments in a repo reads the history first: the
+        engagement line, the commits that carried reasoning, and the digest
+        written where the agent looks. The form comes later, and says so."""
+        with tempfile.TemporaryDirectory() as home, tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as kn:
+            for name in ("positioning.md", "voice-guide.md"):
+                (Path(kn) / name).write_text((ROOT / "knowledge" / name).read_text())
+            self._repo(tmp, [("start", ""), ("move to sqlite", "Json files corrupted twice."), ("fix: dedupe", "")])
+            env = {**os.environ, "HOME": home, "FAMILIAR_KNOWLEDGE": kn, "FAMILIAR_CONFIG": kn}
+            r = subprocess.run(["python3", str(CLI)], capture_output=True, text=True, cwd=tmp, env=env)
+            self.assertEqual(0, r.returncode, r.stderr)
+            name = Path(tmp).resolve().name
+            self.assertIn(f"I've engaged on {name}, the project you're working on", r.stdout)
+            self.assertIn("move to sqlite", r.stdout)
+            self.assertIn("Json files corrupted twice.", r.stdout)
+            self.assertIn("fix: dedupe", r.stdout)
+            self.assertIn("needed\n  before a draft", r.stdout.replace("needed\n  before", "needed\n  before"))
+            self.assertTrue((Path(kn) / "digests" / f"{name}.md").is_file())
+            self.assertEqual(1, r.stdout.count("I'm here watching you work"))
+            self.assertNotIn("usage:", r.stdout)
+
+    def test_bare_familiar_outside_a_repo_falls_back_to_status(self):
+        with tempfile.TemporaryDirectory() as home, tempfile.TemporaryDirectory() as tmp:
+            env = {**os.environ, "HOME": home, "FAMILIAR_KNOWLEDGE": str(ROOT / "knowledge"), "FAMILIAR_CONFIG": str(ROOT / "knowledge")}
+            r = subprocess.run(["python3", str(CLI)], capture_output=True, text=True, cwd=tmp, env=env)
+            self.assertEqual(0, r.returncode, r.stderr)
+            self.assertIn("not a git repository", r.stdout)
+            self.assertIn("Voice:", r.stdout)
+
+    def test_familiar_does_not_engage_on_its_own_folder(self):
+        with tempfile.TemporaryDirectory() as home:
+            env = {**os.environ, "HOME": home, "FAMILIAR_KNOWLEDGE": str(ROOT / "knowledge"), "FAMILIAR_CONFIG": str(ROOT / "knowledge")}
+            r = subprocess.run(["python3", str(CLI)], capture_output=True, text=True, cwd=ROOT, env=env)
+            self.assertEqual(0, r.returncode, r.stderr)
+            self.assertIn("Familiar's own folder", r.stdout)
+            self.assertNotIn("I've engaged on", r.stdout)
+
+    def test_init_says_the_welcome_once_and_points_at_the_project(self):
+        with tempfile.TemporaryDirectory() as home, tempfile.TemporaryDirectory() as tmp:
+            Path(home, ".claude").mkdir()
+            self._repo(tmp, [("start", ""), ("the reason", "Because it was slow.")])
+            env = {**os.environ, "HOME": home, "FAMILIAR_KNOWLEDGE": "", "FAMILIAR_CONFIG": "", "FAMILIAR_PIECES": ""}
+            r = subprocess.run(["python3", str(CLI), "init", "--force"], capture_output=True, text=True, cwd=tmp, env=env)
+            self.assertEqual(0, r.returncode, r.stderr)
+            self.assertEqual(1, r.stdout.count("I'm here watching you work"), r.stdout)
+            self.assertIn("I've engaged on", r.stdout)
+            self.assertIn("Because it was slow.", r.stdout)
+            self.assertNotIn("Installing agent commands", r.stdout)
+            self.assertNotIn("Three ways in", r.stdout)
+            self.assertIn("One thing, once.", r.stdout)
+
+    def test_whats_new_is_said_once_after_an_update_and_never_on_first_install(self):
+        with tempfile.TemporaryDirectory() as home:
+            env = {**os.environ, "HOME": home, "FAMILIAR_KNOWLEDGE": str(ROOT / "knowledge")}
+            first = subprocess.run(["python3", str(CLI), "reflect"], capture_output=True, text=True, env=env)
+            self.assertNotIn("New in", first.stdout)
+            stamp = Path(home) / ".familiar" / "seen-version"
+            self.assertTrue(stamp.is_file())
+            stamp.write_text("0.0.1\n")
+            second = subprocess.run(["python3", str(CLI), "reflect"], capture_output=True, text=True, env=env)
+            self.assertIn("New in", second.stdout)
+            third = subprocess.run(["python3", str(CLI), "reflect"], capture_output=True, text=True, env=env)
+            self.assertNotIn("New in", third.stdout)
+
     def test_help_never_introduces(self):
         with tempfile.TemporaryDirectory() as home:
             env = {**os.environ, "HOME": home}

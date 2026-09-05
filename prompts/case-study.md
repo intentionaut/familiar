@@ -10,7 +10,9 @@ process.
 
 1. Read knowledge/positioning.md and knowledge/voice-guide.md. You need the
    scope in positioning.md and the voice to classify the
-   material and to phrase questions that draw specifics.
+   material and to phrase questions that draw specifics. If either is still
+   the shipped template, say so in one line and carry on from the material;
+   the questions still work, and positioning.md is needed before a draft.
 2. Take the source from $ARGUMENTS. It is one of:
    - a build log kept per prompts/log.md (`<PROJECT>-LOG.md` or similar; check
      knowledge/build-logs.md for the project's registered filename), optionally followed by a

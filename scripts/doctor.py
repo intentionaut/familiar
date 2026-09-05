@@ -243,12 +243,14 @@ def main():
     elif NEEDED_TO_START in filled:
         # The gate that matters is open. Whatever else is still a template can
         # be filled in later, so it is reported as pending rather than missing.
-        print("  Voice: ready to interview")
-        line(NEEDED_TO_START, "needed to start")
+        print("  Voice: ready to draft")
+        line(NEEDED_TO_START, "ready")
         line(NEEDED_TO_DRAFT, "fill in before the draft sounds like you")
     else:
-        print("  Voice: one file to go before you can start")
-        line(NEEDED_TO_START, "needed to start")
+        # Nothing here stops the history being read or the interview running.
+        # The positioning file is the gate on the draft, and it says so.
+        print("  Voice: templates")
+        line(NEEDED_TO_START, "needed before a draft")
         line(NEEDED_TO_DRAFT, "not needed yet")
 
     print()
@@ -309,12 +311,15 @@ def main():
         # a first run feel like a form to complete before anything can happen.
         print("  Start here:")
         print()
-        print("    Open this and answer what you can:")
+        print("    Stand in a project you have built and run:  familiar")
+        print("    It reads the history and finds the stories in it.")
+        print()
+        print("    Already know what to write?  /familiar-new-piece <slug>")
+        print()
+        print("    Before a draft, open this and answer what you can:")
         print(f"      {short_path(cfg / NEEDED_TO_START)}")
         print("    Short answers are fine. The name, who reads it, and what it")
-        print("    covers is enough to begin; the rest can wait.")
-        print()
-        print("    Then start a piece:  /familiar-new-piece <slug>")
+        print("    covers is enough; the rest can wait.")
         print()
         print("    If you have published before, this is the faster way in:")
         print("      Ask your agent:  learn ingest <your past writing>")

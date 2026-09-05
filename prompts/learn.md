@@ -34,7 +34,9 @@ propose; none edits a knowledge file without the writer saying yes.
    - `decisions [since <date>]`: every `Chosen` and `Because` pair across all
      pieces, or since the date given. Default is since the last review recorded
      in `knowledge/proposals/`.
-   - Nothing: ask which mode, in one line.
+   - Nothing: work it out from what exists and say which you took. A path to
+     writing is `ingest`; a piece with both `draft.md` and `final.md` is `diff`;
+     otherwise `decisions`. Never ask the writer to name a mode.
 
 ## Ingest
 

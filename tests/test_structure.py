@@ -365,6 +365,20 @@ class Structure(unittest.TestCase):
             self.assertIn("Update: unknown", run())
             self.assertEqual("2000-01-01 9.9.9", stamp.read_text().strip())
 
+    def test_nothing_asks_the_writer_which_stage(self):
+        """A writer should never be asked to name a stage or a mode.
+
+        Familiar records where every piece is and can read it. The one
+        question it may ask is about the writer's material or which piece.
+        """
+        offenders = []
+        for path in list(PROMPTS.glob("*.md")) + list((ROOT / "skills").rglob("*.md")) + list((ROOT / "dex").rglob("*.md")):
+            text = path.read_text().lower()
+            for phrase in ("ask which stage", "ask which mode", "ask which one", "which stage are you", "what stage are you"):
+                if phrase in text:
+                    offenders.append(f"{path.relative_to(ROOT)}: {phrase!r}")
+        self.assertEqual([], offenders, f"asks the writer to name a stage: {offenders}")
+
     def test_no_em_dashes_in_shipped_prose(self):
         """Familiar's own first style rule bans them, so its prose must obey.
 

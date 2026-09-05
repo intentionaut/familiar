@@ -23,7 +23,7 @@ ESSENTIAL = ["positioning.md", "voice-guide.md"]
 # A writer can begin a piece today with the first alone.
 NEEDED_TO_START = "positioning.md"
 NEEDED_TO_DRAFT = "voice-guide.md"
-OPTIONAL = ["social-schedule.md", "links.md", "reflection.md",
+OPTIONAL = ["social-schedule.md", "themes.md", "links.md", "reflection.md",
             "longform-channels.md", "examples/canonical.md"]
 SHIPS_COMPLETE = ["style-rules.md"]
 
@@ -100,6 +100,31 @@ def count_pieces():
     return total, with_notes, with_draft, scaffolds
 
 
+def themes_report(cfg, shipped):
+    """One block on declared themes, only when the writer keeps the file.
+
+    Absent or still the template: say nothing. A file nobody has filled is not
+    a gap to nag about, per AGENTS.md on setting-gated loops.
+    """
+    path = cfg / "themes.md"
+    st, _ = state(path, shipped)
+    if st != OK:
+        return
+    text = path.read_text(encoding="utf-8", errors="replace")
+    body = text.split("\n## Search\n")[0]
+    blocks = re.split(r"(?m)^### T\d", body)[1:]
+    if not blocks:
+        return
+    shipped_n = sum(1 for b in blocks if re.search(r"\*\*Pieces shipped:\*\*(?!\s*none)", b))
+    unknown_for = sum(1 for b in blocks if re.search(r"\*\*Written for:\*\*[^\n]*unknown", b))
+    print(f"  Themes: {len(blocks)} declared")
+    if shipped_n:
+        print(f"    {shipped_n} with a shipped piece")
+    if unknown_for:
+        print(f"    {unknown_for} not yet saying who they are written for")
+    print()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", help="a knowledge folder to check instead")
@@ -170,6 +195,8 @@ def main():
         print(f"    {scaffolds} scaffolded and not started ({word} only)")
 
     print()
+
+    themes_report(cfg, HOME / "knowledge" / "themes.md")
 
     # Social schedule
     sched = cfg / "social-schedule.md"

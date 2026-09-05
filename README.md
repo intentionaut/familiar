@@ -261,6 +261,7 @@ familiar status                what Familiar can see and what it still needs
                                newer Familiar exists; off by default, once a day)
 familiar skill install         install commands for all agents
 familiar skill install codex   install commands for Codex only
+familiar checkin [on / off]    the weekly session-start check-in: set it, or see its status
 ```
 
 **It runs anywhere the prompts do.** Nothing in them is tied to one vendor or
@@ -273,6 +274,27 @@ where a cheap one will do, without naming a vendor.
 
 If you keep your voice files somewhere other than the repo, point
 `$FAMILIAR_CONFIG` at that folder, or let a host declare it.
+
+### The weekly check-in
+
+Familiar can notice, at the start of a session, that it has been a while, and
+offer to run itself before you get to work: `knowledge/checkin.md`. Whether
+that is on automatically depends on how you installed it.
+
+The **Claude Code plugin** wires this for you: `hooks/hooks.json` ships with
+the plugin, so enabling it wires the check-in globally, on by default, with
+nothing more to do. This is the only install path where a hook can wire
+itself; it is a real feature of plugins, not of skills in general.
+
+**The skills CLI and a clone** have no such lifecycle: nothing runs
+automatically just because a file exists. Run `familiar checkin on` once to
+get the same behaviour, which flips the setting and merges the hook into
+`~/.claude/settings.json` the way `familiar log add` already merges hooks
+into a project's. `familiar checkin` on its own shows the current status;
+`familiar checkin off` turns it off everywhere.
+
+However it got turned on, a repo takes itself back out with `engage = off` in
+its own `.familiar` file, without touching the setting for anywhere else.
 
 ### Updating
 

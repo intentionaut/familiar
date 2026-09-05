@@ -342,6 +342,14 @@ Order, highest first, first hit wins:
 writer's files or the templates. Run it if you are unsure; it is cheaper than
 editing against the wrong house.
 
+**A repo opts itself out of the automatic loops with `engage = off` in its own
+`.familiar` file.** Check-in and first engagement default to on wherever the
+skill is installed, per `knowledge/checkin.md`; this line is how a project that
+should never hear from Familiar unprompted (client work, a codebase that is
+not the writer's to narrate) says so. It silences the session-start offer in
+that repo only. A `familiar` the writer types there by hand still runs: the
+line takes a project out of the ambient loop, it does not disable the tool.
+
 **Check rather than assume.** A stage that reads the templates without noticing
 falls back to defaults for spelling and house rules, and every correction it
 then makes is against rules the writer never set. Nothing errors. The output

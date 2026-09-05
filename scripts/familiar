@@ -130,6 +130,8 @@ def cmd_engage(args):
         _, digest, *_ = pd.digest_repo(top)
         (out / f"{name}.md").write_text(digest, encoding="utf-8")
         where = out / f"{name}.md"
+        from checkin import mark_engaged
+        mark_engaged(cfg)
     except Exception:
         pass
     if where:
@@ -229,6 +231,8 @@ def _engage_all(args):
             print(f"      {top[0][0]}")
     print()
     if cfg:
+        from checkin import mark_engaged
+        mark_engaged(cfg)
         print("\n".join(context_lines(context_counts(cfg))))
         print()
     print("  `familiar harvest` finds the themes across these and says which are ready.")
@@ -709,6 +713,84 @@ def cmd_status(args):
     return 0
 
 
+def _wire_global_checkin_hook():
+    """Merge the SessionStart check-in hook into ~/.claude/settings.json.
+
+    Only needed on the skills-only install: a real plugin install wires
+    hooks/hooks.json automatically when the plugin is enabled, with nothing
+    for this CLI to do. `npx skills add` has no such lifecycle, so `familiar
+    checkin on` does by hand what a plugin enable does for free. Merges,
+    never replaces, and is safe to run more than once: it dedupes on the
+    script's own path before appending.
+    """
+    sp = Path.home() / ".claude" / "settings.json"
+    sp.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        data = json.loads(sp.read_text(encoding="utf-8")) if sp.exists() else {}
+    except Exception:
+        print(f"{sp} is not valid JSON. Fix it, then run this again.")
+        return False
+    script = str(HOME / "hooks" / "session-checkin.sh")
+    entry = {"type": "command", "command": script, "timeout": 10}
+    hooks = data.setdefault("hooks", {})
+    groups = hooks.setdefault("SessionStart", [])
+    for g in groups:
+        g["hooks"] = [h for h in g.get("hooks", []) if "session-checkin.sh" not in h.get("command", "")]
+    groups[:] = [g for g in groups if g.get("hooks")]
+    groups.append({"hooks": [entry]})
+    sp.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    return True
+
+
+def cmd_checkin(args):
+    """Turn the session-start check-in on or off, or show its status.
+
+    A real plugin install already wires this via hooks/hooks.json the moment
+    the plugin is enabled: `checkin.md` ships with `Check-in: on`, so nothing
+    more is needed there. This command exists for the skills-only install,
+    which has no plugin lifecycle to auto-wire anything, and for anyone who
+    wants the check-in off everywhere rather than opting individual repos out.
+    """
+    kdir, whose = knowledge_dir()
+    if not kdir or whose == "the shipped templates":
+        print("No knowledge folder configured. Run 'familiar init' first.")
+        return 1
+    sys.path.insert(0, str(HOME / "scripts"))
+    from checkin import settings, _set_field
+
+    dest = Path(kdir) / "checkin.md"
+    if args.state is not None and not dest.is_file():
+        template = HOME / "knowledge" / "checkin.md"
+        if not template.is_file():
+            print(f"No shipped checkin.md template found at {template}.")
+            return 1
+        shutil.copy2(template, dest)
+        print(f"Created {dest}")
+
+    if args.state is None:
+        s = settings(kdir)
+        print(f"Check-in: {'on' if s['on'] else 'off'}")
+        print(f"Cadence: {[k for k, v in {'weekly': 7, 'fortnightly': 14, 'monthly': 30}.items() if v == s['cadence_days']][0]}")
+        print(f"Last engaged: {s['last_engaged'] or 'never'}")
+        print(f"Last offered: {s['last_offered'] or 'never'}")
+        return 0
+
+    _set_field(kdir, "Check-in", args.state)
+    if args.state == "on":
+        text = (Path(kdir) / "checkin.md").read_text(encoding="utf-8", errors="replace")
+        if not re.search(r"^- Cadence:\s*(weekly|fortnightly|monthly)\s*$", text, re.M | re.I):
+            _set_field(kdir, "Cadence", "weekly")
+        print(f"Check-in is on. {kdir / 'checkin.md'}")
+        if _wire_global_checkin_hook():
+            print("Wired the session-start hook in ~/.claude/settings.json.")
+            print("(A plugin install wires this on enable; this is the manual")
+            print(" equivalent for the skills-only install.)")
+    else:
+        print(f"Check-in is off. {kdir / 'checkin.md'}")
+        print("The hook, if wired, stays in place and does nothing: off means off.")
+    return 0
+
+
 AGENTS = {
     "claude": ("Claude Code", Path.home() / ".claude" / "commands"),
     "opencode": ("opencode", Path.home() / ".config" / "opencode" / "command"),
@@ -900,6 +982,11 @@ def main():
     # status
     sub.add_parser("status", help="what Familiar can see and what it still needs")
 
+    # checkin
+    p_checkin = sub.add_parser("checkin", help="the weekly check-in: on, off, or its status")
+    p_checkin.add_argument("state", nargs="?", choices=["on", "off"],
+                            help="turn the session-start check-in on or off (omit to see its status)")
+
     # skill install
     p_skill = sub.add_parser("skill", help="manage agent skills")
     p_skill_sub = p_skill.add_subparsers(dest="skill_command")
@@ -929,6 +1016,8 @@ def main():
         _finish(cmd_learn(args))
     elif args.command == "status":
         _finish(cmd_status(args))
+    elif args.command == "checkin":
+        _finish(cmd_checkin(args))
     elif args.command == "skill" and args.skill_command == "install":
         _finish(cmd_skill_install(args))
     else:

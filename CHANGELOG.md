@@ -51,6 +51,22 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.32.0 (2026-09-05)
+
+Familiar can check in with you.
+
+**What this gives you:**
+
+- **A check-in at the start of a session, once a week.** If it has been quiet,
+  Familiar says so in one line, for a project it has read before or one it
+  has not, and offers to run itself. Nothing runs until you say yes.
+  `knowledge/checkin.md` turns it off, or changes how often it asks.
+- **A repo can opt itself out.** A line in that project's `.familiar` file,
+  `engage = off`, keeps Familiar from speaking there on its own. A `familiar`
+  you run yourself still works.
+- **On automatically with the Claude Code plugin.** The skills CLI and a
+  clone need one command instead: `familiar checkin on`.
+
 ## 0.31.0 (2026-09-05)
 
 The first job is gathering context. Writing is offered, never assumed.

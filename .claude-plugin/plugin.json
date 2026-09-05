@@ -1,7 +1,7 @@
 {
   "name": "familiar",
   "description": "Studies the work you are doing and writes about it when there is enough to write from. Engages on a project and reads its history, keeps the build logs and reflections that hold the reasons, finds themes across projects, then interviews you one question at a time, drafts in your voice, and hands back an editor's report instead of a rewrite. Every stage stops and waits for you.",
-  "version": "0.31.0",
+  "version": "0.32.0",
   "author": {
     "name": "Intentionaut",
     "url": "https://intentionaut.com"

@@ -53,31 +53,80 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ## 0.29.0 (2026-09-05)
 
-Bug fixes and updates.
+The reflection questions are rebuilt.
+
+**What this gives you:**
+
+- **The reflection bank is rebuilt around who, what, when, where and why.**
+  Forty questions under five headings, picked for the week that actually
+  happened: a shipping week gets a shipping question, a writing week a writing
+  one.
 
 ## 0.28.0 (2026-09-05)
 
-Bug fixes and updates.
+Familiar reads a project's history and finds the stories in it.
+
+**What this gives you:**
+
+- **Familiar finds the story in a project's history.** Run it inside any repo
+  with no piece open and it reads the commits, says what the project has been
+  about, and offers three to five stories worth telling, with `familiar
+  case-study project` and `scripts/project-digest.py` behind it. Ask, and it
+  will read every project you have.
 
 ## 0.27.0 (2026-09-05)
 
-Bug fixes and updates.
+Familiar picks the stage.
+
+**What this gives you:**
+
+- **Familiar picks the stage itself.** It reads the piece you are in, says
+  where it stands, and carries on from there. If nothing exists yet it starts
+  from what you have, so the first thing you hear is where the work is, not a
+  question about it.
 
 ## 0.26.1 (2026-09-05)
 
-Bug fixes and updates.
+The update check reports plainly.
+
+**What this gives you:**
+
+- **`familiar doctor` reports the update check honestly.** A check that could
+  not reach the releases page says so and tries again next time, rather than
+  remembering a blank.
 
 ## 0.26.0 (2026-09-05)
 
-Bug fixes and updates.
+Familiar can tell you when a newer version exists.
+
+**What this gives you:**
+
+- **`familiar doctor` can tell you when a newer Familiar exists.** Turn it on
+  in `knowledge/updates.md` and it checks the public releases page once a
+  day, saying newer, current, or that it could not tell. Off by default and
+  nothing leaves your machine except a request for that page.
 
 ## 0.25.0 (2026-09-05)
 
-Bug fixes and updates.
+The first run introduces the two loops.
+
+**What this gives you:**
+
+- **The first real run introduces the two loops, once.** Reflection, which
+  asks you two questions about the work and records your answers in your own
+  words, and session capture, which writes a build log as you go. One short
+  note the first time, then Familiar gets out of the way.
 
 ## 0.24.0 (2026-09-05)
 
-Bug fixes and updates.
+Themes are declared, in your words.
+
+**What this gives you:**
+
+- **Themes are yours to declare.** `knowledge/themes.md` names what you write
+  about, who each theme is written for and what job it does, in words you
+  choose. The writing stages read a theme's position and audience; search
+  terms sit apart at the foot of the file and only `finalise` reads them.
 
 ## 0.23.1 (2026-09-04)
 

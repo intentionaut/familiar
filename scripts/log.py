@@ -51,6 +51,182 @@ def read_settings():
             watched[str(pathlib.Path(m.group(1)).expanduser().resolve())] = m.group(2)
     return pathlib.Path(root).expanduser(), watched, p
 
+# The answer to the one-time ask, and the token inside it.
+LOGS_SETTING = "Build logs live in"
+PROJECT_TOKEN = "{project}"
+
+
+def read_log_home(text=None):
+    """Where this writer keeps build logs. Asked once, then never again.
+
+    Before this, `log add` put the log at the project root and the writer found
+    out it was the wrong place by having a commit refused, or worse by not
+    having it refused -- a build log carries defect notes and plan of record,
+    and a public repository is the one place it must not be. The remedy was a
+    second command, `log move`, which you only knew to run after the mistake.
+
+    So the location is a setting, not a default: asked the first time a log is
+    added, written into the Settings block beside the others, and read from
+    there forever after. One question, once, instead of a correction every time.
+
+    Returns None when it has never been answered, which is the signal to ask.
+    """
+    if text is None:
+        p = settings_path()
+        text = p.read_text(encoding="utf-8") if p.exists() else ""
+    m = re.search(rf"^- {LOGS_SETTING}:\s*(.+?)\s*$", text, re.M)
+    if not m:
+        return None
+    value = m.group(1).strip()
+    # A template placeholder is not an answer.
+    if not value or value.startswith("[") or value.lower() == "none":
+        return None
+    return value
+
+
+def log_destination(folder, name, home):
+    """The recorded value for a project, given the writer's answer.
+
+    `in the project` keeps the historical behaviour: a bare filename, which
+    resolve_log reads as being inside the project. Anything else is a folder,
+    optionally with {project} in it, and the recorded value is a full path --
+    which resolve_log already understands, because that is what `log move`
+    has always written.
+    """
+    if home is None or home.strip().lower() == "in the project":
+        return name
+    slot = (home.replace("{Project}", folder.name.replace("-", " ").title().replace(" ", ""))
+                .replace(PROJECT_TOKEN, folder.name))
+    return str(pathlib.Path(slot) / name)
+
+
+
+def wire_instructions(folder, project):
+    """Put the log block in the project's own instructions.
+
+    `log add` used to print "paste this into CLAUDE.md" and leave. Skipping it
+    is easy and the cost is invisible: the hooks still fire at session end, so a
+    log appears and looks fine, while the entries written DURING the work --
+    the ones holding the reasoning, which is the whole point -- never happen.
+
+    A command that already edits .claude/settings.json in this project is not
+    made more intrusive by also writing the instructions that make the thing it
+    just installed useful. Idempotent: it looks for the heading before adding.
+    """
+    block = (ROOT / "prompts" / "log.md").read_text(encoding="utf-8")
+    try:
+        body = block.split("```")[1].strip().replace("<PROJECT>", project)
+    except IndexError:
+        return None
+    for candidate in ("CLAUDE.md", "AGENTS.md"):
+        f = folder / candidate
+        if not f.exists():
+            continue
+        text = f.read_text(encoding="utf-8")
+        if "Keep a build log for this project" in text:
+            return None
+        f.write_text(text.rstrip("\n") + "\n\n## The build log\n\n" + body + "\n",
+                     encoding="utf-8")
+        return f
+    return None
+
+
+def hide_local_settings(folder):
+    """Keep .claude/settings.json out of git, without touching the repo.
+
+    The hook is recorded as an absolute path on this machine, so the file is
+    machine-specific by construction and committing it hands a teammate a path
+    that does not exist. .git/info/exclude rather than .gitignore: it is local,
+    it needs no commit, and it does not modify a tracked file that somebody
+    else on the project owns.
+
+    Silent when there is no .git -- not every project is a repository, and that
+    is not a problem to report.
+    """
+    info = folder / ".git" / "info"
+    if not (folder / ".git").is_dir():
+        return None
+    info.mkdir(parents=True, exist_ok=True)
+    f = info / "exclude"
+    text = f.read_text(encoding="utf-8") if f.exists() else ""
+    line = ".claude/settings.json"
+    if line in text.split():
+        return None
+    f.write_text(text.rstrip("\n") + f"\n{line}\n", encoding="utf-8")
+    return f
+
+
+def ask_log_home(stream=None):
+    """Ask once where build logs go, write the answer, never ask again.
+
+    ONE QUESTION, and it is asked at the only moment the writer has the context
+    to answer it: they have just said they want a log for a project. Asking at
+    install time would be asking about a thing they have not met.
+
+    THE COPY LEADS WITH THE PROMISE, not the risk. Familiar's promise is that it
+    learns from what you are building and brings you topics; a build log is the
+    input to that. harvest reads the watched list to find them and case-study
+    turns one log into a brief and a set of interview questions. So the first
+    thing this says is what the writer gets, and the location is the clause
+    after it.
+
+    The first draft of this said "records what broke and what it cost", three
+    lines of risk before any reason to want one. That is the mechanism sold as
+    the outcome, and it makes a setup question read like a warning.
+
+    The order of the options is still the recommendation, because a log holds
+    candid defect notes and plan of record and a repository other people read
+    is the one place those must not be.
+
+    NON-INTERACTIVE RUNS DO NOT HANG AND DO NOT GUESS SILENTLY. With no
+    terminal -- a hook, CI, a script -- this takes the recommended option and
+    says so, because the alternative is a command that blocks forever in a
+    context where nobody can type.
+    """
+    out = stream or sys.stdout
+    default = "~/Documents/{Project}"
+    print("\n  Where should build logs live?\n", file=out)
+    print("  Familiar reads these to bring you topics: what you built, what you", file=out)
+    print("  decided, what broke. They hold candid notes and plan of record, so a", file=out)
+    print("  folder of your own keeps them out of a repository others read.\n", file=out)
+    print(f"  1. A folder of your own   {default}", file=out)
+    print("  2. In the project         <PROJECT>-LOG.md at its root\n", file=out)
+
+    if not sys.stdin.isatty():
+        print(f"  No terminal, so: 1, {default}. Change it in the Settings", file=out)
+        print("  block of knowledge/build-logs.md.\n", file=out)
+        answer = default
+    else:
+        try:
+            reply = input(f"  1, 2, or a path [{default}]: ").strip()
+        except EOFError:
+            reply = ""
+        if reply == "2" or reply.lower() == "in the project":
+            answer = "in the project"
+        elif reply in ("", "1"):
+            answer = default
+        else:
+            answer = reply
+
+    write_log_home(answer)
+    return answer
+
+
+def write_log_home(answer):
+    """Record the answer in the Settings block, beside the others."""
+    p = settings_path()
+    text = p.read_text(encoding="utf-8") if p.exists() else ""
+    line = f"- {LOGS_SETTING}: {answer}"
+    if re.search(rf"^- {LOGS_SETTING}:", text, re.M):
+        text = re.sub(rf"^- {LOGS_SETTING}:.*$", line, text, count=1, flags=re.M)
+    elif re.search(r"^- Projects live in:.*$", text, re.M):
+        text = re.sub(r"^(- Projects live in:.*)$", r"\1\n" + line, text,
+                      count=1, flags=re.M)
+    else:
+        text = text.rstrip() + "\n\n## Settings\n\n" + line + "\n"
+    p.write_text(text, encoding="utf-8")
+    return p
+
 
 def resolve_log(folder, recorded):
     """Where a project's log actually is.
@@ -215,11 +391,21 @@ def cmd_add(args):
 
     if not name:
         name = find_log(folder, watched)
+    fresh = not name
     if not name:
         name = f"{folder.name.upper().replace('-', '_')}-LOG.md"
         print(f"  No build log found. Using {name}.")
-        print(f"  Paste the block from {ROOT / 'prompts' / 'log.md'} into that")
-        print(f"  project's CLAUDE.md so entries get written during the work too.")
+
+    # THE ONE-TIME ASK. Only for a log this command is about to create, and
+    # only when it has never been answered. A project that already has a log
+    # keeps it where it is: `log add` is being asked to wire hooks, not to move
+    # somebody's file out from under them.
+    if fresh and "/" not in name and not name.startswith("~"):
+        home = read_log_home()
+        if home is None:
+            home = ask_log_home()
+        name = log_destination(folder, name, home)
+
     dest = resolve_log(folder, name)
     if not dest.exists():
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -258,8 +444,17 @@ def cmd_add(args):
                 else text.rstrip() + "\n\n" + line + "\n")
         reg.write_text(text, encoding="utf-8")
 
+    wired = wire_instructions(folder, folder.name)
+    hidden = hide_local_settings(folder)
+
     print(f"  Wired {folder.name}: {added} hooks, log is {name}")
     print(f"  Recorded in {reg}")
+    if wired:
+        print(f"  Log block added to {wired.name}, so entries get written "
+              f"during the work")
+    if hidden:
+        print("  .claude/settings.json excluded locally: it holds this "
+              "machine's hook path")
 
 
 def cmd_move(args):

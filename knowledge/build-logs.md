@@ -1,5 +1,10 @@
 # Build logs
 
+Familiar reads build logs to bring you topics. `harvest` takes the watched list
+below and looks across it for what is worth writing about; `case-study` turns
+one log into a brief and a set of interview questions. A project that is not
+watched is a project harvest cannot draw from.
+
 A build log is where the material for writing about your work comes from. It
 records what shipped, what was decided, what went wrong and what it cost, while
 you still remember. The `case-study` stage reads one and turns it into a brief
@@ -10,6 +15,7 @@ Run `familiar log` to see every project and which ones are keeping one.
 ## Settings
 
 - Projects live in: ~/Projects
+- Build logs live in: [a folder, with {Project} in it, or "in the project"]
 - Cross-project log: [path, or "none"]
 
 ## Cross-project days

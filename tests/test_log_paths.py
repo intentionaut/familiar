@@ -116,3 +116,139 @@ class ExitCode(unittest.TestCase):
             )
             self.assertEqual(1, out.returncode)
             self.assertEqual("", out.stdout.strip())
+
+
+class TheOneTimeAsk(unittest.TestCase):
+    """Where build logs go is a setting, asked once.
+
+    Before this, `log add` put the log at the project root and you found out it
+    was the wrong place by having a commit refused -- or worse, by not having it
+    refused, because a build log carries defect notes and plan of record and a
+    public repository is the one place it must not be. The remedy was a second
+    command you only knew to run after the mistake.
+
+    So: one question, at the moment the writer has the context to answer it,
+    written into the Settings block, and never asked again.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.settings = Path(self.tmp.name) / "build-logs.md"
+        self.settings.write_text(
+            "# Build logs\n\n## Settings\n\n- Projects live in: ~/Projects\n",
+            encoding="utf-8")
+        self.real = flog.settings_path
+        flog.settings_path = lambda: self.settings
+
+    def tearDown(self):
+        flog.settings_path = self.real
+        self.tmp.cleanup()
+
+    def test_never_answered_reads_as_not_answered(self):
+        self.assertIsNone(flog.read_log_home())
+
+    def test_a_template_placeholder_is_not_an_answer(self):
+        """The shipped template carries a bracketed placeholder. Reading that
+        as a real path is how a writer ends up with logs in a folder called
+        [path, or "none"]."""
+        for placeholder in ("[a folder]", "[path]", "none", ""):
+            self.settings.write_text(
+                f"## Settings\n\n- Build logs live in: {placeholder}\n", encoding="utf-8")
+            self.assertIsNone(flog.read_log_home(), placeholder)
+
+    def test_the_answer_is_written_beside_the_other_settings(self):
+        flog.write_log_home("~/vault/{Project}")
+        text = self.settings.read_text()
+        self.assertIn("- Build logs live in: ~/vault/{Project}", text)
+        # Directly after the setting it belongs with, not appended to the file.
+        lines = [l for l in text.splitlines() if l.startswith("- ")]
+        self.assertEqual(lines[0], "- Projects live in: ~/Projects")
+        self.assertEqual(lines[1], "- Build logs live in: ~/vault/{Project}")
+
+    def test_answering_again_replaces_rather_than_repeats(self):
+        flog.write_log_home("~/one/{Project}")
+        flog.write_log_home("~/two/{Project}")
+        text = self.settings.read_text()
+        self.assertEqual(text.count("- Build logs live in:"), 1)
+        self.assertIn("~/two/", text)
+
+    def test_it_survives_a_round_trip(self):
+        flog.write_log_home("~/vault/{Project}")
+        self.assertEqual(flog.read_log_home(), "~/vault/{Project}")
+
+    def test_in_the_project_keeps_the_old_behaviour(self):
+        """A bare filename is what resolve_log has always read as "inside the
+        project", so choosing that must produce exactly that and not a path."""
+        got = flog.log_destination(Path("/x/widget"), "WIDGET-LOG.md", "in the project")
+        self.assertEqual(got, "WIDGET-LOG.md")
+        self.assertEqual(flog.resolve_log(Path("/x/widget"), got),
+                         Path("/x/widget/WIDGET-LOG.md"))
+
+    def test_a_folder_answer_produces_a_path_resolve_log_understands(self):
+        got = flog.log_destination(Path("/x/widget"), "WIDGET-LOG.md", "~/vault/{Project}")
+        self.assertEqual(flog.resolve_log(Path("/x/widget"), got),
+                         Path.home() / "vault/Widget/WIDGET-LOG.md")
+
+    def test_both_project_tokens_are_understood(self):
+        """{project} is the folder as it is; {Project} is what a person would
+        call it, because a vault folder is read by a human."""
+        lower = flog.log_destination(Path("/x/cv-coach"), "L.md", "~/v/{project}")
+        upper = flog.log_destination(Path("/x/cv-coach"), "L.md", "~/v/{Project}")
+        self.assertIn("/v/cv-coach/", lower)
+        self.assertIn("/v/CvCoach/", upper)
+
+
+class ThingsThatShouldNotNeedAsking(unittest.TestCase):
+    """Two steps that were printed as instructions and therefore skipped."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.folder = Path(self.tmp.name) / "widget"
+        self.folder.mkdir()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_the_log_block_goes_into_the_project_instructions(self):
+        """Skipping the paste is easy and its cost is invisible: the hooks
+        still fire at session end, so a log appears and looks fine, while the
+        entries written during the work never happen."""
+        (self.folder / "CLAUDE.md").write_text("# widget\n", encoding="utf-8")
+        wrote = flog.wire_instructions(self.folder, "widget")
+        self.assertIsNotNone(wrote)
+        text = (self.folder / "CLAUDE.md").read_text()
+        self.assertIn("Keep a build log for this project", text)
+        self.assertIn("widget-LOG.md", text)
+        self.assertNotIn("<PROJECT>", text)
+
+    def test_it_does_not_add_the_block_twice(self):
+        (self.folder / "CLAUDE.md").write_text("# widget\n", encoding="utf-8")
+        flog.wire_instructions(self.folder, "widget")
+        first = (self.folder / "CLAUDE.md").read_text()
+        self.assertIsNone(flog.wire_instructions(self.folder, "widget"))
+        self.assertEqual(first, (self.folder / "CLAUDE.md").read_text())
+
+    def test_with_no_instructions_file_it_writes_nothing(self):
+        self.assertIsNone(flog.wire_instructions(self.folder, "widget"))
+        self.assertEqual(list(self.folder.iterdir()), [])
+
+    def test_the_machine_specific_settings_file_is_excluded_locally(self):
+        """.git/info/exclude rather than .gitignore: the hook path is this
+        machine's, the exclusion needs no commit, and it does not modify a
+        tracked file somebody else on the project owns."""
+        (self.folder / ".git" / "info").mkdir(parents=True)
+        wrote = flog.hide_local_settings(self.folder)
+        self.assertIsNotNone(wrote)
+        self.assertIn(".claude/settings.json",
+                      (self.folder / ".git" / "info" / "exclude").read_text())
+        self.assertFalse((self.folder / ".gitignore").exists())
+
+    def test_excluding_twice_does_not_repeat_the_line(self):
+        (self.folder / ".git" / "info").mkdir(parents=True)
+        flog.hide_local_settings(self.folder)
+        self.assertIsNone(flog.hide_local_settings(self.folder))
+        text = (self.folder / ".git" / "info" / "exclude").read_text()
+        self.assertEqual(text.count(".claude/settings.json"), 1)
+
+    def test_a_project_that_is_not_a_repository_is_not_a_problem(self):
+        self.assertIsNone(flog.hide_local_settings(self.folder))

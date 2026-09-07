@@ -51,6 +51,26 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.33.0 (2026-09-07)
+
+Adding a project to Familiar is one command.
+
+**What this gives you:**
+
+- **`familiar log add <project>` finishes the job.** It asks once where your
+  build logs should live, remembers the answer, and every project after that
+  goes straight there. The log is what `harvest` reads to bring you topics and
+  what `case-study` turns into a brief, so a project you have added is a
+  project those can draw from.
+- **The log block lands in the project's own instructions.** Entries get
+  written while you work, when the reasoning is still there, rather than only
+  when a session ends.
+- **A folder of your own is the offered default.** Build logs carry candid
+  notes and plan of record, and that is a different thing from the code they
+  sit beside.
+- **Hook settings stay out of your commits.** The file records a path on this
+  machine, so it is excluded locally and there is nothing to notice.
+
 ## 0.32.0 (2026-09-05)
 
 Familiar can check in with you.

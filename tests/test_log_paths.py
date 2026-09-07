@@ -252,3 +252,60 @@ class ThingsThatShouldNotNeedAsking(unittest.TestCase):
 
     def test_a_project_that_is_not_a_repository_is_not_a_problem(self):
         self.assertIsNone(flog.hide_local_settings(self.folder))
+
+
+class EveryCommandResolvesTheLogTheSameWay(unittest.TestCase):
+    """`log move` writes a ~ path. `log entry` has to be able to read it.
+
+    A recorded value is a bare filename, an absolute path, or a ~ path, and
+    resolve_log exists to turn any of the three into a real one. cmd_log_entry
+    built `Path(project) / recorded` itself instead, and `Path("/x/proj") /
+    "~/vault/L.md"` is `/x/proj/~/vault/L.md`, because a tilde is not absolute.
+
+    So an absolute recorded path worked and a ~ path did not, which is the
+    exact form `log move` writes -- the two commands disagreed about what the
+    registry means, and the failure looked like a missing project.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.home = Path(self.tmp.name) / "home"
+        self.know = self.home / "knowledge"
+        self.proj = Path(self.tmp.name) / "Projects" / "widget"
+        self.know.mkdir(parents=True)
+        self.proj.mkdir(parents=True)
+        # knowledge_dir only accepts a candidate that holds positioning.md, so
+        # without this the temp house is skipped and the real one answers.
+        (self.know / "positioning.md").write_text("# Positioning\n", encoding="utf-8")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def run_entry(self, recorded):
+        (self.know / "build-logs.md").write_text(
+            "# Build logs\n\n## Settings\n\n"
+            f"- Projects live in: {self.proj.parent}\n\n"
+            "## Watched\n\n"
+            f"- `{self.proj}`: `{recorded}`\n", encoding="utf-8")
+        env = dict(os.environ, HOME=str(self.home),
+                   FAMILIAR_KNOWLEDGE=str(self.know))
+        return subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "familiar"),
+             "log", "entry", "widget"],
+            capture_output=True, text=True, env=env)
+
+    def test_a_tilde_path_is_found(self):
+        target = self.home / "vault" / "WIDGET-LOG.md"
+        target.parent.mkdir(parents=True)
+        target.write_text("# widget build log\n", encoding="utf-8")
+        out = self.run_entry("~/vault/WIDGET-LOG.md")
+        self.assertIn("2026", out.stdout + out.stderr,
+                      msg=f"stdout={out.stdout!r} stderr={out.stderr!r}")
+        self.assertIn("**Shipped**", target.read_text())
+
+    def test_a_bare_filename_still_means_inside_the_project(self):
+        target = self.proj / "WIDGET-LOG.md"
+        target.write_text("# widget build log\n", encoding="utf-8")
+        out = self.run_entry("WIDGET-LOG.md")
+        self.assertIn("**Shipped**", target.read_text(),
+                      msg=f"stdout={out.stdout!r} stderr={out.stderr!r}")

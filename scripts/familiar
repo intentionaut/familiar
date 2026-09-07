@@ -576,7 +576,7 @@ def cmd_log_entry(args):
         print("  e.g. familiar log entry my-app")
         return 1
 
-    from log import read_settings
+    from log import read_settings, resolve_log
 
     _root, watched, build_logs = read_settings()
     if not build_logs.is_file():
@@ -584,12 +584,21 @@ def cmd_log_entry(args):
         return 1
 
     # Match the folder, its name, then anything containing what was asked for.
+    # resolve_log, NOT Path(proj) / name. A recorded value may be a bare
+    # filename inside the project, an absolute path, or a ~ path -- and
+    # `log move` writes the ~ form. `Path("/x/proj") / "~/vault/L.md"` is
+    # /x/proj/~/vault/L.md, because a tilde is not absolute, so every log
+    # moved out of its project became invisible to this command while an
+    # absolute one kept working. One resolver, used everywhere.
     log_file = None
     for match in (lambda proj, name: proj == args.project or Path(proj).name == args.project,
                   lambda proj, name: args.project in proj or args.project in name):
         for proj, name in watched.items():
-            if match(proj, name) and (Path(proj) / name).is_file():
-                log_file = Path(proj) / name
+            if not match(proj, name):
+                continue
+            candidate = resolve_log(Path(proj), name)
+            if candidate and candidate.is_file():
+                log_file = candidate
                 break
         if log_file:
             break

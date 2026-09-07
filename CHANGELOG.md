@@ -51,6 +51,23 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.34.0 (2026-09-07)
+
+Harvest listens for the themes you declared.
+
+**What this gives you:**
+
+- **Harvest files what it finds under your themes.** Every finding carries the
+  `id` of the theme it belongs to, so the list you get back is sorted by what
+  you already said you write about.
+- **It tells you which themes nothing touched.** A theme you declared and
+  nothing you built spoke to is either a gap in the work or a theme that has
+  stopped being true, and the report says which ones without telling you what
+  to do about it.
+- **Anything that fits none of them is offered, not dropped.** It keeps its
+  place in the findings and lands in `knowledge/proposals/` as a candidate
+  theme, for you to take or leave in `themes.md`.
+
 ## 0.33.0 (2026-09-07)
 
 Adding a project to Familiar is one command.

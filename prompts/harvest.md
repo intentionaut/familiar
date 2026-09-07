@@ -30,14 +30,21 @@ the person asking what to write about has failed at the one thing it is for.
    digests, or that a log or reflection speaks to, is a theme candidate; one
    that appears in a single digest stays an observation and is not offered as
    a topic on its own.
-3. Read knowledge/positioning.md for the house themes. These are the lens:
-   patterns that connect to the house themes are stronger candidates. Read its
-   "Personal context" rules too; they govern what may reach a piece and
-   therefore what is worth offering as a topic.
-4. Read knowledge/reflection.md for the reflections folder and for
+3. Read knowledge/themes.md for the writer's declared themes. THESE ARE WHAT
+   THE STAGE IS LISTENING FOR, and they are the lens: a finding that connects
+   to a declared theme is a stronger candidate than one that does not. Each
+   theme has an `id`, which never changes, and that id is how a finding is
+   filed. If the file is absent or its Themes section is still the shipped
+   template, say so once and carry on -- a writer who has not declared any
+   themes yet gets an unfiltered harvest, not an empty one.
+4. Read knowledge/positioning.md for the rules that govern themes: audience
+   segments, which are declared there and not in themes.md, and the "Personal
+   context" rules, which govern what may reach a piece and therefore what is
+   worth offering as a topic.
+5. Read knowledge/reflection.md for the reflections folder and for
    `Quote reflections in patterns`. If reflection is on and the folder exists,
    read every file in it, including `threads.md` if there is one.
-5. Resolve the piece folders the way `scripts/paths.py` does, and read what has
+6. Resolve the piece folders the way `scripts/paths.py` does, and read what has
    already been written: every `final.md` (a piece that was sent), the thesis
    line of every `notes.md`, and every `cuts.md`. A topic the writer has
    already published is not a ready topic, and a cut flagged `reusable` is a
@@ -226,6 +233,50 @@ tooling (e.g. "uses Claude Code") rather than the work. Skip themes that would
 be true of any competent engineer's week: the test is whether the finding needs
 this writer, these projects and this fortnight to be worth stating.
 
+### Filing a finding under a declared theme
+
+Every finding gets a declared theme's `id`, or it gets none and says so. This
+is the contract themes.md already states: harvest maps findings onto ids, and
+never edits that file.
+
+Two senses of the word meet here and they must not be confused. A **declared
+theme** is what the writer has said they write about, and it is stable. A
+**recurring theme** above is a finding, discovered from the work, and it is
+this fortnight's. Findings are filed under declarations, never the other way
+round.
+
+- Put the id in brackets after the finding's name: `deployment anxiety [ai]`.
+- **A finding that fits no declared theme is not discarded.** It keeps its
+  place in the list, marked `[unfiled]`, and goes to `knowledge/proposals/` as
+  a candidate theme with its citations. The writer decides whether their
+  themes should grow; the stage does not decide it for them by dropping the
+  evidence.
+- **Do not stretch a finding to reach an id.** An honest `[unfiled]` is worth
+  more than a wrong file, because the whole point of the id is that a writer
+  can trust what is under it.
+- Where a finding could sit under two, name one and say which other it touches.
+  A finding filed in two places is counted twice in coverage below, which makes
+  a thin theme look fed.
+
+### Theme coverage
+
+Say which declared themes this harvest found evidence for and which it did not.
+Both halves are the answer, and the second is the more useful one: a theme the
+writer declared and nothing they built has touched is either a gap in the work
+or a theme that has stopped being true, and only they can say which.
+
+- **Fed**: the id, and how many findings landed under it.
+- **Untouched**: the id, and when it was last fed if the previous patterns.md
+  says. No advice attached. A theme with nothing behind it this fortnight is
+  not a failing, and telling somebody to go and write about leadership because
+  a counter is empty is the stage inventing work.
+- **Unfiled**: how many findings reached no declared theme. Two or three every
+  harvest is a taxonomy that has stopped describing the work, and that is worth
+  saying once.
+
+This section is a reading of the evidence, never an instruction. `themes.md`
+is the writer's file and this stage does not write to it.
+
 ### Growth signals
 
 Things the writer was learning or struggling with in one project that they
@@ -357,8 +408,8 @@ engineer could have written is not a topic, whatever it cites.
 
 Write knowledge/patterns.md in full. This is a snapshot, not append: each
 harvest replaces the previous content. Keep the section headers (Recurring
-themes, Growth signals, Inspiration connections, Ready topics) so the
-interview stage can find them.
+themes, Theme coverage, Growth signals, Inspiration connections, Ready topics)
+so the interview stage can find them.
 
 Do not repeat the raw log content. Every finding must cite its source (project
 name + date), but the finding itself is the synthesis, not a copy of the log
@@ -411,6 +462,8 @@ Report what was found:
   found
 - How many clips were read from inspirations/, if the folder exists
 - How many themes, signals, connections, and ready topics were extracted
+- Which declared themes were fed and which were untouched, and how many
+  findings reached no declared theme at all
 - How many clips are not yet annotated
 - What was already written, in one line: how many positions a sent piece
   already carries, so a returning writer sees the stage is reading their work
@@ -435,9 +488,16 @@ On yes, print both, in the conversation, in this order and nothing else:
   its project-and-date citations. Not the paragraph from the file: the line
   the writer needs in order to say "that one".
 - **Every ready topic**, as its phrase, its tension, its opening question, and
-  the house theme it connects to. The tension and the question are the whole
+  the declared theme it connects to. The tension and the question are the whole
   point of the topic, so neither is ever summarised away. Say which one the
   file picked, and why, in the same line it is printed on.
+- **Anything that reached no declared theme**, if there is any: the findings,
+  and the candidate themes written to `knowledge/proposals/`. One line, naming
+  what was noticed and where the proposal is, and stop. The writer may want a
+  new theme, may want an existing one to widen, or may want neither -- that is
+  their call and it is made in `themes.md`, not here. Do not ask them to decide
+  now: a stage that exits with an open question has handed back the homework it
+  exists to remove.
 
 Growth signals and inspiration connections stay in the file unless asked for.
 They are the reasoning behind the topics rather than a thing to pick from, and

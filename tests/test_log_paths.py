@@ -414,3 +414,35 @@ class Quip(unittest.TestCase):
         self.assertEqual(out.returncode, 1)
         self.assertIn("familiar quip", out.stdout)
         self.assertEqual(before, self.log.read_text())
+
+
+class EveryCommandReportsWhetherItWorked(unittest.TestCase):
+    """A verb that fails has to exit non-zero.
+
+    main() does not return its result -- `__main__` calls it and drops the
+    value -- so a dispatch branch that says `return cmd_x(args)` exits 0
+    whatever happened. `_finish` is the one that calls sys.exit, and it is also
+    what prints the once-per-version line, so an outlier loses both.
+
+    Twelve branches used `_finish` and one used `return`, which is exactly the
+    shape that survives review: it reads like the others.
+    """
+
+    def dispatch(self):
+        src = (ROOT / "scripts" / "familiar").read_text()
+        start = src.index("    args = parser.parse_args()")
+        return src[start:]
+
+    def test_no_dispatch_branch_drops_its_exit_code(self):
+        import re
+        bad = re.findall(r"^\s+return (cmd_\w+)\(args\)", self.dispatch(), re.M)
+        self.assertEqual(
+            bad, [],
+            "these exit 0 however they finished, and skip the New in line; "
+            f"wrap them in _finish(...): {bad}")
+
+    def test_a_failing_verb_actually_exits_non_zero(self):
+        out = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "familiar"), "log"],
+            capture_output=True, text=True)
+        self.assertEqual(out.returncode, 1, out.stdout + out.stderr)

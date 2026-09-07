@@ -1128,7 +1128,7 @@ def main():
     elif args.command == "harvest":
         _finish(cmd_harvest(args))
     elif args.command == "decisions":
-        return cmd_decisions(args)
+        _finish(cmd_decisions(args))
     elif args.command == "log":
         _finish(cmd_log(args))
     elif args.command == "quip":

@@ -38,6 +38,7 @@ offers the ways to gather more, only the ones not already in place:
 ```
 familiar engage --all            read your other projects (asks first)
 familiar log add <project>       capture what ships, every session, from now on
+familiar quip "..."              one line into today's entry, mid-flow
 learn ingest <past writing>      what you have already published
 knowledge/reflection.md          two questions a week, in your words
 ```
@@ -217,6 +218,19 @@ Familiar can sit beside the work itself, before there is a piece.
   and what it cost, written while you still remember, plus an automatic entry
   when a session ends or compacts. The format is `prompts/log.md`, one block you
   can also paste into a project's `CLAUDE.md`.
+- **`familiar quip "..."`** puts one line into today's entry without stopping
+  what you are doing. A reaction, a half-formed reason, a thing you noticed:
+
+  ```
+  familiar quip "the box-sizing thing was mine, not the framework's"
+  ```
+
+  It reads the project you are standing in, so there is nothing to name and
+  nothing to open. Quips are kept as you said them and are never tidied into
+  decisions -- the value is in one being unfinished, and in it existing at all
+  rather than being remembered on Friday. An agent working with you is told to
+  use the wait, too: a running build or a working subagent is a beat where a
+  question costs you nothing, and that is when it asks.
 - **`familiar reflect`** asks you two questions about how the work is going and
   records your answers word for word. Opt in and pick a cadence in
   `knowledge/reflection.md`. The answers are the rawest voice reference the

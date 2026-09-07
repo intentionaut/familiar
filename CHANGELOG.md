@@ -51,6 +51,23 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.35.0 (2026-09-07)
+
+A note, without stopping.
+
+**What this gives you:**
+
+- **`familiar quip "..."` puts one line into today's entry.** It reads the
+  project you are standing in, so there is nothing to name and nothing to
+  open. Kept as you said it, under Quips, never tidied into a decision.
+- **An agent working with you uses the wait.** A running build or a working
+  subagent is a beat where a question costs you nothing, so that is when it
+  asks its one question, and it tells you once that you can note something
+  yourself.
+- **Quips are their own section in the entry format.** A reaction in the
+  moment and a considered decision are different evidence, and `harvest` can
+  now tell them apart.
+
 ## 0.34.0 (2026-09-07)
 
 Harvest listens for the themes you declared.

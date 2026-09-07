@@ -569,6 +569,39 @@ def cmd_log_add(args):
     return _run_log_py("add", args.project)
 
 
+def find_watched_log(watched, project, exact=False):
+    """The log file for a project name, or None.
+
+    resolve_log, NOT `Path(project) / recorded`. A recorded value may be a bare
+    filename inside the project, an absolute path, or a ~ path -- and
+    `log move` writes the ~ form. `Path("/x/proj") / "~/vault/L.md"` is
+    /x/proj/~/vault/L.md, because a tilde is not absolute, so every log moved
+    out of its project was invisible while an absolute one kept working.
+
+    One lookup, shared, so `quip` cannot be a third opinion about what the
+    registry means.
+    """
+    from log import resolve_log
+
+    # EXACT IS FOR A PATH, FUZZY IS FOR A NAME, and mixing them loses a quip
+    # into another project's log. Walking up from the current directory, the
+    # fuzzy matcher makes ~/Projects match ~/Projects/widget by substring, so a
+    # quip typed in an unregistered sibling landed in whichever project shared
+    # its parent. A folder either is a registered project or it is not.
+    matchers = [lambda proj, name: str(Path(proj).resolve()) == str(Path(project).resolve())]
+    if not exact:
+        matchers = [lambda proj, name: proj == project or Path(proj).name == project,
+                    lambda proj, name: project in proj or project in name]
+    for match in matchers:
+        for proj, name in watched.items():
+            if not match(proj, name):
+                continue
+            candidate = resolve_log(Path(proj), name)
+            if candidate and candidate.is_file():
+                return candidate
+    return None
+
+
 def cmd_log_entry(args):
     """Scaffold a dated log entry in a project's build log."""
     if not args.project:
@@ -584,24 +617,7 @@ def cmd_log_entry(args):
         return 1
 
     # Match the folder, its name, then anything containing what was asked for.
-    # resolve_log, NOT Path(proj) / name. A recorded value may be a bare
-    # filename inside the project, an absolute path, or a ~ path -- and
-    # `log move` writes the ~ form. `Path("/x/proj") / "~/vault/L.md"` is
-    # /x/proj/~/vault/L.md, because a tilde is not absolute, so every log
-    # moved out of its project became invisible to this command while an
-    # absolute one kept working. One resolver, used everywhere.
-    log_file = None
-    for match in (lambda proj, name: proj == args.project or Path(proj).name == args.project,
-                  lambda proj, name: args.project in proj or args.project in name):
-        for proj, name in watched.items():
-            if not match(proj, name):
-                continue
-            candidate = resolve_log(Path(proj), name)
-            if candidate and candidate.is_file():
-                log_file = candidate
-                break
-        if log_file:
-            break
+    log_file = find_watched_log(watched, args.project)
 
     if not log_file or not log_file.is_file():
         print(f"Project '{args.project}' not found or log file missing.")
@@ -634,6 +650,97 @@ def cmd_log_entry(args):
 
     print(f"Appended entry for {today} to {log_file}")
     print("Fill in what shipped, what was decided, what went wrong.")
+    return 0
+
+
+def cmd_quip(args):
+    """One line, into today's entry, while the thought is still there.
+
+    The build log's own instructions already say to ask in the moment rather
+    than at session end, because the reasoning is gone by then. This is the
+    other direction: the writer volunteering a line without stopping to open a
+    file or fill in five empty sections.
+
+    NO PROJECT ARGUMENT BY DEFAULT. A quip is worth having because it costs
+    nothing, and naming the project is most of the cost. It reads the folder
+    you are standing in, which for a thought about the work you are doing is
+    always the right one.
+
+    Appends under today's date, creating the heading if this is the first
+    entry today, and adding a Quips section under it if there is not one. It
+    never touches an earlier date: the log is append-only, and a quip filed
+    under yesterday would be a small lie about when the thought happened.
+    """
+    from log import read_settings
+
+    text = " ".join(args.text).strip() if args.text else ""
+    if not text:
+        print('Usage: familiar quip "what you were thinking"')
+        print("  Adds one line to today's entry in this project's build log.")
+        return 1
+
+    _root, watched, build_logs = read_settings()
+    if not build_logs.is_file():
+        print(f"No build-logs.md at {build_logs}")
+        return 1
+
+    here = Path.cwd().resolve()
+    log_file = None
+    # The folder you are in, or any parent of it: a quip typed in a
+    # subdirectory is still about this project.
+    for folder in [here, *here.parents]:
+        log_file = find_watched_log(watched, str(folder), exact=True)
+        if log_file:
+            break
+    if args.project:
+        log_file = find_watched_log(watched, args.project)
+
+    if not log_file:
+        where = args.project or here.name
+        print(f"No build log registered for '{where}'.")
+        print(f"  Start one:  familiar log add {where}")
+        return 1
+
+    today = date.today().isoformat()
+    body = log_file.read_text(encoding="utf-8")
+    line = f"- {text}\n"
+
+    heading = f"## {today}"
+    lines = body.rstrip("\n").split("\n")
+    if heading in lines:
+        # Line arithmetic, not string offsets: the first version of this put
+        # the new quip before the blank line after the header, so it rendered
+        # as "**Quips**- the line" and in reverse order.
+        start = lines.index(heading)
+        end = len(lines)
+        for i in range(start + 1, len(lines)):
+            if lines[i].startswith("## "):
+                end = i
+                break
+        try:
+            q = lines.index("**Quips**", start, end)
+        except ValueError:
+            # Start the section at the end of today's entry, never in the
+            # middle of somebody's Shipped list.
+            tail = end
+            while tail > start + 1 and not lines[tail - 1].strip():
+                tail -= 1
+            lines[tail:tail] = ["", "**Quips**", "", line.rstrip("\n")]
+        else:
+            # After the last quip already there, so the day reads in order.
+            at = q + 1
+            while at < end and (not lines[at].strip() or lines[at].startswith("- ")):
+                at += 1
+            while at > q + 1 and not lines[at - 1].strip():
+                at -= 1
+            lines[at:at] = [line.rstrip("\n")]
+        body = "\n".join(lines) + "\n"
+    else:
+        body = (body.rstrip("\n") + f"\n\n## {today}\n\n**Quips**\n\n"
+                + line)
+
+    log_file.write_text(body, encoding="utf-8")
+    print(f"  Noted, in {log_file.name}.")
     return 0
 
 
@@ -983,6 +1090,11 @@ def main():
     p_log_entry.add_argument("project", nargs="?", help="project name")
 
     # reflect
+    p_quip = sub.add_parser(
+        "quip", help="one line into today's build log, without stopping")
+    p_quip.add_argument("text", nargs="*", help="what you were thinking")
+    p_quip.add_argument("--project", help="another project, if not this folder")
+
     sub.add_parser("reflect", help="show reflection status")
 
     # learn
@@ -1019,6 +1131,8 @@ def main():
         return cmd_decisions(args)
     elif args.command == "log":
         _finish(cmd_log(args))
+    elif args.command == "quip":
+        _finish(cmd_quip(args))
     elif args.command == "reflect":
         _finish(cmd_reflect(args))
     elif args.command == "learn":

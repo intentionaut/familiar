@@ -309,3 +309,108 @@ class EveryCommandResolvesTheLogTheSameWay(unittest.TestCase):
         out = self.run_entry("WIDGET-LOG.md")
         self.assertIn("**Shipped**", target.read_text(),
                       msg=f"stdout={out.stdout!r} stderr={out.stderr!r}")
+
+
+class Quip(unittest.TestCase):
+    """One line into today's entry, without stopping.
+
+    The build log's own instructions already say to ask in the moment, because
+    the reasoning is gone by session end. This is the other direction: the
+    writer volunteering a line without opening a file or filling in five empty
+    sections.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        root = Path(self.tmp.name)
+        self.home = root / "home"
+        self.know = self.home / "knowledge"
+        self.proj = root / "Projects" / "widget"
+        self.other = root / "Projects" / "unwatched"
+        (self.proj / "sub").mkdir(parents=True)
+        self.other.mkdir(parents=True)
+        self.know.mkdir(parents=True)
+        (self.know / "positioning.md").write_text("# Positioning\n", encoding="utf-8")
+        (self.know / "build-logs.md").write_text(
+            "# Build logs\n\n## Settings\n\n"
+            f"- Projects live in: {self.proj.parent}\n\n"
+            "## Watched\n\n"
+            f"- `{self.proj}`: `WIDGET-LOG.md`\n", encoding="utf-8")
+        self.log = self.proj / "WIDGET-LOG.md"
+        self.log.write_text("# widget build log\n", encoding="utf-8")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def quip(self, *args, cwd=None):
+        env = dict(os.environ, HOME=str(self.home), FAMILIAR_KNOWLEDGE=str(self.know))
+        return subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "familiar"), "quip", *args],
+            capture_output=True, text=True, env=env, cwd=str(cwd or self.proj))
+
+    def test_a_line_lands_under_today(self):
+        import datetime
+        self.quip("the box-sizing thing was mine")
+        text = self.log.read_text()
+        self.assertIn(f"## {datetime.date.today().isoformat()}", text)
+        self.assertIn("**Quips**", text)
+        self.assertIn("- the box-sizing thing was mine", text)
+
+    def test_quips_stay_in_the_order_they_were_said(self):
+        """A day read back out of order is a day misremembered."""
+        for q in ("first", "second", "third"):
+            self.quip(q)
+        lines = [l for l in self.log.read_text().splitlines() if l.startswith("- ")]
+        self.assertEqual(lines, ["- first", "- second", "- third"])
+
+    def test_the_section_is_not_jammed_against_its_heading(self):
+        self.quip("one")
+        self.quip("two")
+        self.assertNotIn("**Quips**-", self.log.read_text())
+
+    def test_it_works_from_a_subdirectory(self):
+        out = self.quip("from below", cwd=self.proj / "sub")
+        self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+        self.assertIn("- from below", self.log.read_text())
+
+    def test_an_unregistered_project_is_refused_not_guessed(self):
+        """The bug this test exists for: walking up from the current folder,
+        a substring match made ~/Projects match ~/Projects/widget, so a quip
+        typed in an unregistered sibling landed in another project's log. A
+        note in the wrong log is worse than no note."""
+        out = self.quip("should not be filed", cwd=self.other)
+        self.assertEqual(out.returncode, 1)
+        self.assertIn("No build log registered", out.stdout)
+        self.assertNotIn("should not be filed", self.log.read_text())
+
+    def test_it_never_edits_an_earlier_day(self):
+        """Append-only. A quip filed under yesterday is a small lie about when
+        the thought happened."""
+        self.log.write_text(
+            "# widget build log\n\n## 2026-01-01\n\n**Shipped**\n- old work\n",
+            encoding="utf-8")
+        self.quip("today's thought")
+        text = self.log.read_text()
+        older = text.index("## 2026-01-01")
+        self.assertIn("- old work", text)
+        self.assertGreater(text.index("- today's thought"), older)
+        self.assertNotIn("**Quips**", text[older:text.index("- old work")])
+
+    def test_it_joins_an_entry_that_already_has_sections(self):
+        import datetime
+        today = datetime.date.today().isoformat()
+        self.log.write_text(
+            f"# widget build log\n\n## {today}\n\n**Shipped**\n- a thing\n",
+            encoding="utf-8")
+        self.quip("a thought")
+        text = self.log.read_text()
+        self.assertEqual(text.count(f"## {today}"), 1)
+        self.assertIn("- a thing", text)
+        self.assertGreater(text.index("**Quips**"), text.index("**Shipped**"))
+
+    def test_saying_nothing_explains_itself_and_writes_nothing(self):
+        before = self.log.read_text()
+        out = self.quip()
+        self.assertEqual(out.returncode, 1)
+        self.assertIn("familiar quip", out.stdout)
+        self.assertEqual(before, self.log.read_text())

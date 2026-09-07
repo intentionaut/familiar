@@ -72,6 +72,12 @@ prose only where prose earns it.
   - Anything measurable: users, cost per operation, spend, conversion, timings.
     Unrecoverable if not written down now.
 
+  **Quips**
+  - Whatever I said in passing that is worth keeping, one line each, in my
+    words. A reaction, a half-formed reason, a thing I noticed. These are not
+    decisions and must not be tidied into them: a quip is evidence of what I
+    thought at the time, and the value is in it being unfinished.
+
   **Open**
   - Carried forward: unresolved questions, known risks, things waiting on me.
 
@@ -89,6 +95,26 @@ Ask in the moment, rather than at session end, when you notice:
     while I still remember it.
   - Something didn't work and I seemed to have a view on why.
   - I changed direction. Capture what prompted it, not just the new direction.
+
+USE THE WAIT. The best moment to ask is the one where I am already waiting:
+a build running, a test suite, a long install, a subagent working. Say the
+question then, in one line, and carry on with the work while I answer or
+don't. That beat costs me nothing, which is the whole reason it is the right
+one -- an interruption during work is a tax on the work, and the same question
+asked while I watch a progress bar is free.
+
+One question, not a list. If I do not answer, do not ask again in that gap and
+do not ask a second time later; it was not worth an interruption or it would
+have been asked as one.
+
+Tell me once in a session, the first time such a gap comes up, that I can note
+something myself without stopping:
+
+    familiar quip "the box-sizing thing was mine, not Tailwind's"
+
+Once. It goes into today's entry under Quips. A tool that reminds you it exists
+every time you might use it has become the thing it was supposed to save you
+from.
 
 COMPACTION
 

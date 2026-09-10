@@ -51,6 +51,32 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.36.0 (2026-09-10)
+
+Topics arrive sorted by who they are for.
+
+**What this gives you:**
+
+- **Ready topics are grouped by reader, not by idea.** Each of the readers you
+  declared gets its own heading, with what the work actually offers that
+  person underneath. The reader used to be a line of small print at the bottom
+  of a topic; now it is the question the whole section is answering.
+- **Each reader gets the thing they came for.** Somebody who wants an argument
+  gets a claim they can use on their own work. Somebody who wants a method
+  gets the steps and the thinking under them. Somebody who forwards your work
+  gets one sentence that stands up without you in the room.
+- **You can say what a win looks like, and it gets used as a test.** Your
+  readers section now takes two more lines per reader: what they want, and
+  what a win looks like. A topic aimed at somebody whose win is forwarding you
+  on gets dropped if it only makes sense to people who already know you.
+- **A reader nobody wrote for is reported, not hidden.** If a fortnight of work
+  gives one of your readers nothing, harvest says so and says what would
+  change it. That is easy to miss otherwise, because the readers who quietly
+  pass your work along never show up in replies.
+- **Nothing to fill in before it works.** Leave the new lines blank and harvest
+  writes for the one reader you already described, and tells you once. A first
+  week gets a full set of topics, not an empty page.
+
 ## 0.35.0 (2026-09-07)
 
 A note, without stopping.

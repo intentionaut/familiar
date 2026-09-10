@@ -37,10 +37,14 @@ the person asking what to write about has failed at the one thing it is for.
    filed. If the file is absent or its Themes section is still the shipped
    template, say so once and carry on -- a writer who has not declared any
    themes yet gets an unfiltered harvest, not an empty one.
-4. Read knowledge/positioning.md for the rules that govern themes: audience
-   segments, which are declared there and not in themes.md, and the "Personal
-   context" rules, which govern what may reach a piece and therefore what is
-   worth offering as a topic.
+4. Read knowledge/positioning.md, and read its `## Audience` section BEFORE
+   you read any of the work. The segments are declared there and not in
+   themes.md, each with what it wants from a piece and what a win looks like.
+   THEY ARE THE LENS FOR THE READY TOPICS SECTION, not a label applied at the
+   end: a stage that reads the logs first proposes what is vivid in a log,
+   and what is vivid in a log is craft nobody asked for. Read the same file's
+   "Personal context" rules, which govern what may reach a piece and therefore
+   what is worth offering at all.
 5. Read knowledge/reflection.md for the reflections folder and for
    `Quote reflections in patterns`. If reflection is on and the folder exists,
    read every file in it, including `threads.md` if there is one.
@@ -316,9 +320,50 @@ finding, and do not repeat that line in the exit report.
 
 ### Ready topics
 
-3-5 concrete interview angles for low-energy days. A topic is an angle, not a
+Concrete interview angles for low-energy days. A topic is an angle, not a
 subject: a claim, a reader, and a reason it is worth saying now. "What I
 learned about X" is a subject and will produce an interview that goes nowhere.
+
+**Organise this section by segment, not by topic.** Take the segments from
+`positioning.md`'s `## Audience`, in the order they are declared, and under each
+one put what this period's work actually offers that reader. One to three
+topics, no more. The segment is the heading; the work is what fills it.
+
+That order is the whole method and it is easy to lose. Reading the work first
+produces what the logs are loudest about, which is craft: the fault found, the
+query hoisted, the test that could not fail. Reading the segment first makes
+its stated want the question, and the work either answers it or does not.
+
+**What each segment wants is a different object.** Write the object, not a
+sentence about the writer:
+
+| If the segment wants | Offer | It has failed when |
+|---|---|---|
+| an argument | a claim stated so the reader can apply it to their own work | it is about the writer rather than about the problem |
+| a method | the steps AND the reasoning under them, including the failure it hits | the method is there and the reasoning is not |
+| peers, a conversation | a situation the reader recognises, and how it was handled | it reads as advice rather than as a colleague's account |
+| something forwardable | one sentence that works for a stranger | it needs setup, or points at nothing published |
+| evidence of judgement | a real constraint, the call, and what it cost | the constraint was one the writer set themselves |
+
+**The win is the test, and it runs before the topic is written down.** Where a
+segment declares one, apply it and drop the topic if it fails. A topic for a
+segment whose win is a forward, that cannot be forwarded without the writer
+being explained first, is not a weaker topic; it is not a topic for that
+segment. Say which win you applied.
+
+**A segment with nothing is the most useful line in the section.** Name it, say
+why, and say what would change it: a different period, a project not yet
+watched, or a piece that has to be published before that reader can be served
+at all. Never pad a segment to avoid an empty one, and never report a segment
+as unserved without saying which of those three it is. A win that is invisible
+in replies, like a forward, will go unserved silently if this stage does not
+say so.
+
+**Where the house has no segments**, meaning the section is untouched
+template or `Wants` and `Win` are `unknown`, frame for the one reader that
+`## Audience` describes, say in one line that segments are not declared, and carry on. A
+writer in their first week gets an unfiltered set of topics, not an empty one,
+and no default segments are invented for them.
 
 A topic is pitched between two failures, and both are easy to write.
 
@@ -352,11 +397,12 @@ handed the work back.
 Each topic carries these, in this order, one line each unless stated:
 
 - **The name**, a phrase
-- **A metadata line**: who it is for, the house intersection, and where it
-  goes. The destination is chosen by applying the house's own test to this
-  topic and naming the channel whose stated job it fits, with a length taken
-  from what this writer has actually sent. Where no channel file exists, the
-  line carries the reader and the intersection and stops
+- **A metadata line**: the house intersection and where it goes. The reader is
+  the section it sits under and is not repeated here. The destination is chosen
+  by applying the house's own test to this topic and naming the channel whose
+  stated job it fits, with a length taken from what this writer has actually
+  sent. Where no channel file exists, the line carries the intersection and
+  stops
 - **The position**, one sentence. Use the writer's own words wherever the
   reflections give them. A position stated in the stage's voice has to be
   agreed with before it can be written from, which is a step nobody needs

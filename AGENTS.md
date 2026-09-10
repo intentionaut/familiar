@@ -27,7 +27,7 @@ pasted into a claude.ai Project.
 /learn      → knowledge/proposals/*.md  (ingest past writing, or diff draft vs final; proposes rules, applies only what is accepted)
 /reflect    → <reflections>/<project>.md  (two questions about the work, recorded verbatim; where the voice comes from)
 /log        → a build log per project   (what shipped, decisions, went wrong, numbers; the hook writes an (auto) entry at session end)
-/harvest    → knowledge/patterns.md     (cross-project pattern extraction: themes, growth signals, ready topics)
+/harvest    → knowledge/patterns.md     (cross-project pattern extraction: themes, growth signals, ready topics by audience segment)
 /inspire    → inspirations/<date>-<slug>.md  (clip a snippet, article, or quote for later; optional "why it stuck" note)
 ```
 

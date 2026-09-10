@@ -70,6 +70,27 @@ the number. `Reads:` is evidence about a channel and may be far larger than the
 people a theme is written for. Leave any value `unknown` rather than guess, and
 give every value a `source:` as the rest of this file does.
 
+**Two more per segment, and they are what make this section do work**: what
+that segment wants from a piece, and what a win looks like. Not all of your
+readers have the same job. Somebody who forwards your work to a stranger needs
+one sentence that stands without you; somebody deciding whether to hire you
+needs evidence of judgement under a constraint they can see was real; somebody
+building the same kind of thing needs a method with the reasoning under it, not
+the method alone.
+
+Write them in your own words, one line each:
+
+    - `id`: who they are. Wants: [what they want from a piece].
+      Win: [what a win looks like]. Reads: [where you see them]. source: declared
+
+The win is the useful half, because it is a test rather than a description. A
+piece aimed at a segment whose win is a forward has failed if it needs you
+explained first, however good it is. Stages apply it that way.
+
+Leave `Wants` and `Win` `unknown` if you have not decided. A stage reads an
+unknown as "frame for the one reader above" and says so, rather than inventing
+a job for a segment you have not thought about.
+
 ### How often business development may run
 
 Only matters if a theme in `themes.md` has `Job: business-development`. Those

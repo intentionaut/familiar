@@ -51,6 +51,33 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.37.0 (2026-09-10)
+
+The first thing worth telling Familiar is who you write for.
+
+**What this gives you:**
+
+- **It asks once, after it has shown you something.** Stand in a project and
+  Familiar reads its history first, the way it always has. Then, once, it asks
+  who you write for. Everything else it gathers has to build up over weeks;
+  this you already know on your first evening, and it is what sorts the rest.
+- **It never asks twice.** Once you have answered, the question is gone from
+  every screen. It also stops appearing lower down the same screen it was just
+  asked on, which it used to do.
+- **Your reader has its own line in what Familiar has to work from.** Sitting
+  above projects read and build logs, because it comes before them.
+- **A finished positioning file no longer hides an empty reader.** That file
+  could read as done while the part saying who you write for was untouched.
+  Familiar now looks at that section rather than the whole file, and the
+  checkup says so plainly.
+- **Readers are no longer filed under "later".** They sit next to the one
+  reader they grow out of, because harvest now sorts everything it finds by
+  them. The business-development cap is still further down; nothing reads it
+  until you ask for it.
+- **Nothing is required before you start.** Skip the question and Familiar
+  carries on, writes for the one reader it has, and tells you it is doing that.
+  No form, no setup screen, no progress bar toward being finished.
+
 ## 0.36.0 (2026-09-10)
 
 Topics arrive sorted by who they are for.

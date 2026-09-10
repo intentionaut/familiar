@@ -362,7 +362,14 @@ class Structure(unittest.TestCase):
         self.assertIn("run:  familiar", out)
         text = (ROOT / "knowledge" / "positioning.md").read_text()
         later = text.index("## Later, if you keep themes")
-        self.assertGreater(text.index("### Segments"), later)
+        # Segments moved up under Audience on 2026-09-10, when harvest started
+        # organising ready topics by them. A section a stage reads every run is
+        # not "later", and the writer meets it next to the one reader it grows
+        # out of. The business-development cap stays below: nothing reads it
+        # until a theme declares that job.
+        audience = text.index("## Audience")
+        self.assertGreater(text.index("### Segments"), audience)
+        self.assertLess(text.index("### Segments"), text.index("## Voice in brief"))
         self.assertGreater(text.index("### How often business development may run"), later)
         self.assertLess(text.index("## Voice in brief"), later)
 
@@ -394,6 +401,47 @@ class Structure(unittest.TestCase):
             digest = pd.digest_repo(tmp)[1]
             self.assertIn("## Observations", digest)
             self.assertLess(digest.index("## Observations"), digest.index("## The days that stand out"))
+
+    def test_the_reader_is_offered_first_and_only_when_missing(self):
+        """The one rung that needs no history, and the guard against nagging.
+
+        Both directions, because a check that fires on a writer who has already
+        answered is worse than no check: it is the offer they learn to skip.
+        The reader is a section, not a file, so a complete positioning.md with
+        the shipped `[your reader]` still counts as unsaid.
+        """
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import context
+        shipped = (ROOT / "knowledge" / "positioning.md").read_text()
+        with tempfile.TemporaryDirectory() as kn:
+            kn = Path(kn)
+
+            (kn / "positioning.md").write_text(shipped)
+            c = context.context_counts(kn)
+            self.assertEqual("template", c["reader"])
+            offers = context.gathering_offers(c, "a")
+            self.assertIn("who you write for", offers[0],
+                          "the rung needing no history is offered first")
+            self.assertIn("Reader               not said yet",
+                          "\n".join(context.context_lines(c)))
+
+            said = shipped.replace("[your reader]",
+                                   "A product lead who has read the pitch already.")
+            (kn / "positioning.md").write_text(said)
+            c = context.context_counts(kn)
+            self.assertEqual("declared", c["reader"])
+            self.assertNotIn("who you write for", "\n".join(context.gathering_offers(c, "a")),
+                             "answered once is never asked again")
+
+            # Segments are counted wherever the writer put them under Audience,
+            # by the id in backticks, and the shipped `id` example is not one.
+            self.assertEqual(0, context.segment_count(kn))
+            (kn / "positioning.md").write_text(said.replace(
+                "## Voice in brief",
+                "- `buyers`: who they are. Wants: proof. Win: a call.\n"
+                "- `referrers`: who they are. Wants: one line. Win: a forward.\n\n"
+                "## Voice in brief", 1))
+            self.assertEqual(2, context.segment_count(kn))
 
     def test_context_is_counted_not_felt(self):
         """The context block counts digests, registered logs, reflection entries

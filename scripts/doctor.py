@@ -255,6 +255,24 @@ def main():
 
     print()
 
+    # REPORTED SEPARATELY FROM ITS FILE, because the file can be ready while
+    # this is not. positioning.md counts as filled once its blanks are gone,
+    # and `## Audience` is one section of it: a writer can have a complete
+    # positioning file and still have told nobody who they write for, which
+    # is what `harvest` now organises everything by.
+    from context import reader_state, segment_count  # noqa: E402
+    reader = reader_state(cfg)
+    if reader == "declared":
+        n = segment_count(cfg)
+        extra = f", {n} segment{'' if n == 1 else 's'}" if n else ""
+        print(f"  Reader: described{extra}")
+    else:
+        print(f"  Reader: {TEMPLATE if reader == 'template' else MISSING}")
+        print("    positioning.md, under Audience. Two or three lines, no history")
+        print("    needed. It is what harvest sorts your topics by.")
+
+    print()
+
     if total == 0:
         print("  Pieces: none in flight")
     elif total == 1:

@@ -42,26 +42,23 @@ this list to name which theme a piece serves and where themes cross.
 Write to one reader, not an audience. Describe that person in two or three
 lines: what they do, what they already know, what they are tired of reading.
 
+**This is the one thing here that needs no history**, and it is worth doing on
+your first evening. Every other kind of context accumulates: projects read,
+sessions logged, pieces sent. You already know who you are writing for, and it
+is what sorts everything Familiar finds from here on. `harvest` organises what
+it gives you by this.
+
 [your reader]
-
-## Voice in brief
-
-The long version is `voice-guide.md`. Three or four lines here for stages that
-only need the gist:
-
-- [warm / dry / direct / formal]
-- [what you never do]
-- [what you always do]
-
-## Later, if you keep themes
-
-Nothing below is needed to start, to interview or to draft. It matters once
-`knowledge/themes.md` points at segments by id, and not before.
 
 ### Segments
 
-Optional, and only worth filling if you keep `knowledge/themes.md`, which points
-at these by id. Delete this section otherwise; nothing else reads it.
+The natural second step, once one reader is not enough. Skip it while one is:
+nothing breaks, and stages frame for the reader above. It stops being optional
+the moment you have two readers who want different things from the same piece,
+because that is the point at which one description cannot serve both.
+
+`knowledge/themes.md` points at these by id, and `harvest` groups what it finds
+by them.
 
 Segments are yours: you choose the ids, how many there are, and what each one
 means. One line per segment, with the id in backticks, who they are in your own
@@ -90,6 +87,19 @@ explained first, however good it is. Stages apply it that way.
 Leave `Wants` and `Win` `unknown` if you have not decided. A stage reads an
 unknown as "frame for the one reader above" and says so, rather than inventing
 a job for a segment you have not thought about.
+
+## Voice in brief
+
+The long version is `voice-guide.md`. Three or four lines here for stages that
+only need the gist:
+
+- [warm / dry / direct / formal]
+- [what you never do]
+- [what you always do]
+
+## Later, if you keep themes
+
+Nothing below is needed to start, to interview or to draft.
 
 ### How often business development may run
 

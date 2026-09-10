@@ -150,6 +150,21 @@ def cmd_engage(args):
         print("  anything with a contrast in it.")
         print()
 
+    # ASKED HERE, AND THE PLACE IS THE POINT. The writer has just seen Familiar
+    # say something true about work they did. That is what earns one question;
+    # the same question on the first screen is an intake form, which is what
+    # 0.30.0 removed. One question, once, and never again once it is answered.
+    asked_reader = False
+    if cfg:
+        from context import reader_state
+        if reader_state(cfg) != "declared":
+            asked_reader = True
+            print("  One more thing, and it needs no history: who do you write for?")
+            print("  Two or three lines in knowledge/positioning.md, under Audience.")
+            print("  Everything else I gather accumulates. This one you already know,")
+            print("  and it is what sorts the rest.")
+            print()
+
     seeds = h["with_body"][-3:]
     if seeds:
         print("  Where the reasoning was written down, newest last:")
@@ -165,10 +180,16 @@ def cmd_engage(args):
     if counts:
         print("\n".join(context_lines(counts)))
         print()
-        offers = gathering_offers(counts, name)
+        offers = gathering_offers(counts, name, asked_reader=asked_reader)
         if enough_for_themes(counts):
             print("  Enough here for themes. `familiar harvest` finds them across what")
             print("  I have and says which are ready to write.")
+            if counts.get("reader") != "declared":
+                # The safety net, said out loud. Harvest degrades rather than
+                # refusing, and a writer who is not told that reads the missing
+                # reader as something they have broken.
+                print("  Until you say who for, it writes for one reader I had to")
+                print("  guess at, and tells you so.")
         else:
             print("  One project is thin material for themes. To gather more:")
         if offers:

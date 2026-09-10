@@ -198,19 +198,22 @@ class Structure(unittest.TestCase):
 
         releases.html is generated from CHANGELOG.md. It is committed so the
         site keeps its promise of needing no build step, which means it can be
-        committed stale. Regenerating and comparing is what stops that.
+        committed stale. Comparing against a fresh render is what stops that.
+
+        `--check` rather than a rebuild, because the rebuild repaired the file
+        as a side effect of testing it: the first run went red and wrote the
+        fix, every run after went green, and the stale page could still be the
+        one in the commit. A check that heals what it finds can only fail once.
         """
         page = ROOT / "site" / "releases.html"
         if not (ROOT / "site").is_dir():
             self.skipTest("no site/ in this checkout")
-        self.assertTrue(page.is_file(),
-                        "site/releases.html is missing. Run scripts/build-site.py")
-        before = page.read_text()
-        subprocess.run([sys.executable, str(ROOT / "scripts" / "build-site.py")],
-                       capture_output=True, check=True)
-        self.assertEqual(before, page.read_text(),
-                         "site/releases.html is out of date with CHANGELOG.md. "
-                         "Run scripts/build-site.py and commit the result.")
+        before = page.read_text() if page.is_file() else None
+        r = subprocess.run([sys.executable, str(ROOT / "scripts" / "build-site.py"), "--check"],
+                           capture_output=True, text=True)
+        self.assertEqual(0, r.returncode, r.stderr.strip())
+        self.assertEqual(before, page.read_text() if page.is_file() else None,
+                         "--check wrote to the page it was checking")
 
     def test_no_prompt_fixes_anything_silently(self):
         """Every edit surfaces a decision; the writer accepts or rejects it.

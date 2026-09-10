@@ -118,13 +118,13 @@ Sweep for every pattern below. Each flag gets the exact rewritten line. When uns
 - "It's safe to say that..."
 - "The good news is..."
 - **A second clause that drops its verb to lean on the first one's.** "...gives
-  every line one sentence, and nothing enough room to be evidence" — "and
-  nothing *gives* enough room" is what it means, and the elision is a rhythm
-  move rather than a meaning one. Reads as craft, costs the reader the verb.
+  every line one sentence, and nothing enough room to be evidence". It means
+  "and nothing *gives* enough room", and the elision is a rhythm move rather
+  than a meaning one. Reads as craft, costs the reader the verb.
   Same family: "and none more so than", "and nowhere more than". Added
   2026-09-08, from Saielle's own homepage.
 - **A decisive verb pointed at a vague "it".** "Ten requirements, and two of
-  them decide it" — decide *what*? The application, the shortlist, the hiring
+  them decide it". Decide *what*? The application, the shortlist, the hiring
   call, all three? It sounds consequential and names nothing, so the reader
   supplies a stake the sentence never stated. Same family: "make or break it",
   "is what matters", "is the whole game", "that's the difference". Name the

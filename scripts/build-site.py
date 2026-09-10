@@ -9,11 +9,13 @@ somebody has to remember to update is not.
 Only the release entries are rendered. The "How these are written" rules at the
 top of the changelog are for whoever writes an entry, not for whoever reads one.
 
-    python3 scripts/build-site.py
+    python3 scripts/build-site.py           write site/releases.html
+    python3 scripts/build-site.py --check    exit 1 if it is out of date
 
 Run by the Pages workflow before the site is uploaded, so what deploys always
 matches the changelog in the same commit.
 """
+import argparse
 import html
 import re
 import sys
@@ -146,6 +148,15 @@ ENTRY = """  <article class="release">
 
 
 def main() -> int:
+    ap = argparse.ArgumentParser()
+    # A CHECK MUST NOT REPAIR WHAT IT IS CHECKING. Without this the only way
+    # to test the page was to rebuild it in place and compare, which fixed a
+    # stale page as a side effect of noticing it: the run that caught it went
+    # red, every run after went green, and the stale file could still be the
+    # one in the commit.
+    ap.add_argument("--check", action="store_true",
+                    help="say whether the page is current; write nothing")
+    args = ap.parse_args()
     if not CHANGELOG.is_file():
         print(f"no changelog at {CHANGELOG}", file=sys.stderr)
         return 1
@@ -158,7 +169,17 @@ def main() -> int:
         ENTRY.format(version=v, anchor=v.replace(".", "-"), date=d, body=render_body(b))
         for v, d, b in found
     )
-    OUT.write_text(PAGE.format(releases=entries))
+    page = PAGE.format(releases=entries)
+    if args.check:
+        current = OUT.read_text() if OUT.is_file() else None
+        if current == page:
+            print(f"{OUT.relative_to(ROOT)} is current ({len(found)} releases)")
+            return 0
+        what = "is missing" if current is None else "is out of date with CHANGELOG.md"
+        print(f"{OUT.relative_to(ROOT)} {what}. Run scripts/build-site.py "
+              f"and commit the result.", file=sys.stderr)
+        return 1
+    OUT.write_text(page)
     print(f"wrote {OUT.relative_to(ROOT)} ({len(found)} releases, newest {found[0][0]})")
     return 0
 

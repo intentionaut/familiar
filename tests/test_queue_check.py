@@ -4,12 +4,15 @@ Both have already shipped bugs: the scheduler flag was read out of the prose
 that explains it, and the scheduler was asked for `status` as a string when it
 requires an array. Neither needs a network to catch.
 """
+import contextlib
 import datetime as dt
 import importlib.util
+import io
 import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -153,6 +156,48 @@ class Responses(unittest.TestCase):
                             .replace("| 08:30 | Europe/London |", "| 08:30 |") \
                             .replace("| 12:30 | Europe/London |", "| 12:30 |")
         self.assertEqual("Europe/Berlin", qc.timezone_of(header_only))
+
+
+class Handshake(unittest.TestCase):
+    def test_initialize_asks_for_the_version_the_bridge_answers(self):
+        """The scheduler's bridge never answered an initialize asking for
+        2025-06-18, so the check timed out and reported unknown."""
+        first = json.loads(qc.list_request("abc").splitlines()[0])
+        self.assertEqual("2024-11-05", first["params"]["protocolVersion"])
+
+
+class Retry(unittest.TestCase):
+    """The scheduler's connection drops now and then. One drop must not become
+    a week reported as unknown, and two must not become a week reported empty."""
+
+    def run_main(self, query_all):
+        out = io.StringIO()
+        argv = ["queue-check.py", "2026-09-07", "--config", str(write(FILLED))]
+        with mock.patch.object(qc, "query_all", query_all), \
+             mock.patch("sys.argv", argv), \
+             contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
+            code = qc.main()
+        return code, out.getvalue()
+
+    def test_one_dropped_connection_is_tried_again(self):
+        calls = []
+
+        def flaky(wanted):
+            calls.append(1)
+            if len(calls) == 1:
+                return None, "no response to initialize"
+            return {ch: [] for ch in wanted}, None
+
+        code, out = self.run_main(flaky)
+        self.assertEqual(2, len(calls))
+        self.assertEqual(0, code)
+        self.assertIn("queue: gaps", out)
+
+    def test_two_drops_are_unknown_not_empty(self):
+        code, out = self.run_main(lambda wanted: (None, "no response to initialize"))
+        self.assertEqual(2, code)
+        self.assertIn("queue: unknown", out)
+        self.assertNotIn(": empty", out)
 
 
 if __name__ == "__main__":

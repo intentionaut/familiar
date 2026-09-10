@@ -51,6 +51,10 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.37.1 (2026-09-10)
+
+Bug fixes and updates.
+
 ## 0.37.0 (2026-09-10)
 
 The first thing worth telling Familiar is who you write for.

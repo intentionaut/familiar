@@ -1,5 +1,6 @@
 """Tests for the familiar CLI entry point."""
 import os
+import re
 import subprocess
 import tempfile
 import unittest
@@ -246,6 +247,10 @@ class HarvestAndInspire(unittest.TestCase):
             self.assertIn("One thing, once.", r.stdout)
 
     def test_whats_new_is_said_once_after_an_update_and_never_on_first_install(self):
+        """A quiet release says nothing, so expect a line only when the newest entry has a bullet."""
+        newest = re.search(r"^## \d+\.\d+\.\d+[^\n]*\n(.*?)(?=^## \d|\Z)",
+                           (ROOT / "CHANGELOG.md").read_text(), re.M | re.S).group(1)
+        announces = bool(re.search(r"^- \*\*", newest, re.M))
         with tempfile.TemporaryDirectory() as home:
             env = {**os.environ, "HOME": home, "FAMILIAR_KNOWLEDGE": str(ROOT / "knowledge")}
             first = subprocess.run(["python3", str(CLI), "reflect"], capture_output=True, text=True, env=env)
@@ -254,7 +259,11 @@ class HarvestAndInspire(unittest.TestCase):
             self.assertTrue(stamp.is_file())
             stamp.write_text("0.0.1\n")
             second = subprocess.run(["python3", str(CLI), "reflect"], capture_output=True, text=True, env=env)
-            self.assertIn("New in", second.stdout)
+            if announces:
+                self.assertIn("New in", second.stdout)
+            else:
+                self.assertNotIn("New in", second.stdout)
+            self.assertNotEqual("0.0.1", stamp.read_text().strip(), "the stamp moves either way")
             third = subprocess.run(["python3", str(CLI), "reflect"], capture_output=True, text=True, env=env)
             self.assertNotIn("New in", third.stdout)
 

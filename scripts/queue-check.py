@@ -165,7 +165,8 @@ def rpc(id_, method, params=None):
     return json.dumps(msg)
 
 
-INIT = {"protocolVersion": "2025-06-18", "capabilities": {},
+# The scheduler's bridge never answers an initialize that asks for 2025-06-18.
+INIT = {"protocolVersion": "2024-11-05", "capabilities": {},
         "clientInfo": {"name": "familiar-queue-check", "version": "2.0"}}
 
 
@@ -367,6 +368,8 @@ def main():
         print(f"{ch}: not connected (no channel id in {config.name})")
 
     queues, err = (query_all(wanted) if wanted else ({}, None))
+    if queues is None:  # the scheduler's connection drops now and then; one retry often lands
+        queues, err = query_all(wanted)
     if queues is None:
         print(f"could not check: {err}", file=sys.stderr)
         print("queue: unknown")

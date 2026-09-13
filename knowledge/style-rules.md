@@ -80,6 +80,15 @@ Sweep for every pattern below. Each flag gets the exact rewritten line. When uns
   improve decision-making and human capability, they multiply over time."
   (Matches humanizer's overused-word list; adopted 2026-09-03 from a real
   draft.)
+- "Tell the story", as narration-by-announcement ("tell the story of how we
+  got here", "the data tells the story"). It performs storytelling instead
+  of doing it: open the scene or state the fact. Added 2026-09-13, from
+  Saielle's own review sessions ("Tell the story is a never use. That's
+  ai.").
+- "A familiar moment", as intimacy-by-announcement. It declares the moment
+  familiar instead of rendering one the reader recognises. Same family: "a
+  familiar scene", "a familiar feeling". Added 2026-09-13, from Saielle's
+  own review sessions.
 
 ### Structural tells
 
@@ -203,3 +212,4 @@ Fix: <exact rewritten line in the writer's voice>
 
 Then a summary table: total flags per category, reading ease score, grade level,
 and the three highest-impact fixes.
+

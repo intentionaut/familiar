@@ -5,6 +5,23 @@ Familiar knows nothing about. `scripts/setup.sh` installs the rule below into
 each agent's own memory file, so it is read at the start of every session rather
 than only inside a Familiar stage.
 
+## Where it reaches
+
+Three surfaces, and they do not share a mechanism:
+
+| Surface | Reads | Installed by |
+|---|---|---|
+| Claude Code, opencode, Codex, Gemini CLI | that agent's memory file | `scripts/setup.sh` |
+| An ordinary chat, on the web, desktop or a phone | your account's personal-preferences setting | you, by pasting |
+| A project or a workspace in one of those accounts | the same setting, plus whatever the project itself says | you |
+
+**The second one is a paste and will stay one.** There is no file behind it and
+nothing to write to, so `python3 scripts/engagement.py --copy` puts the rule on
+the clipboard and you put it in the box. That is worth doing rather than
+retyping, because the value of this file is that there is one of it: a rule that
+exists twice is a rule that disagrees with itself the first time you change your
+mind.
+
 Off until you turn it on, and the template counts as off. A bracket installed
 into a memory file is a placeholder that every session afterwards reads as an
 instruction, which is worse than having no rule at all.

@@ -130,6 +130,35 @@ class Rule(unittest.TestCase):
         self.assertEqual(0, out.returncode)
         self.assertIn("by hand", out.stdout)
 
+    # --- the surface with no file ---
+
+    def test_copy_prints_the_rule_and_nothing_around_it(self):
+        """It is going into a settings box, so the explanation and the heading
+        that suit a memory file are both wrong there."""
+        self.write()
+        out = self.run_script("--copy")
+        self.assertEqual(0, out.returncode)
+        self.assertIn("chief of staff", out.stdout)
+        self.assertNotIn("## Writing it", out.stdout)
+        self.assertNotIn(engagement.START, out.stdout)
+
+    def test_copy_says_what_to_do_with_it(self):
+        self.write()
+        out = self.run_script("--copy")
+        self.assertIn("preferences", out.stdout)
+
+    def test_copy_has_nothing_to_copy_from_a_template(self):
+        out = subprocess.run(
+            [sys.executable, str(SCRIPT), "--config", str(ROOT / "knowledge"), "--copy"],
+            capture_output=True, text=True)
+        self.assertEqual(2, out.returncode)
+
+    def test_check_names_the_surface_it_cannot_see(self):
+        """A surface nobody mentions is a surface somebody assumes is covered."""
+        self.write()
+        out = self.run_script("--check")
+        self.assertIn("no file to read", out.stdout)
+
     # --- coming back out ---
 
     def test_remove_takes_the_block_and_nothing_else(self):

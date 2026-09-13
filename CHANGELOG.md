@@ -51,6 +51,16 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.38.1 (2026-09-13)
+
+- **The engagement rule reaches an ordinary chat too.** A chat on the web, a
+  desktop app or a phone reads your account's preferences setting rather than a
+  file, so `engagement.py --copy` puts the rule on your clipboard for it. Same
+  rule, one place to edit it.
+- **`--check` lists that surface as well**, marked as one it cannot see, so a
+  rule installed for four agents does not read as a rule that reaches
+  everything.
+
 ## 0.38.0 (2026-09-13)
 
 - **How you want to be talked to now applies everywhere, not just in a stage.**

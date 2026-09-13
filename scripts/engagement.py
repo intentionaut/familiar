@@ -16,8 +16,15 @@ Those files are yours and usually hold a great deal else, so the rule goes in
 between two markers and nothing outside them is touched. Re-running replaces the
 block rather than adding a second one.
 
+An ordinary chat reads none of them. It reads an account setting instead, and
+there is no file and no API behind it, so that one is a paste and always will be:
+`--copy` puts the rule on the clipboard so the paste is not a retype, and the
+rule it copies is the same one it installs. One source, several surfaces, which
+is the only arrangement where editing it once is enough.
+
     python3 scripts/engagement.py --check
     python3 scripts/engagement.py --install ~/.claude/CLAUDE.md
+    python3 scripts/engagement.py --copy
     python3 scripts/engagement.py --remove  ~/.claude/CLAUDE.md
 
 Exit codes: 0 done, 2 nothing to install (off, or still a template), 1 a real
@@ -188,6 +195,26 @@ def installed_in(target):
     return "installed" if m else MISSING
 
 
+# One per platform, tried in order. A missing tool is not a failure: the rule is
+# printed either way, and printed is what makes the command useful over ssh.
+CLIPBOARDS = (["pbcopy"], ["wl-copy"], ["xclip", "-selection", "clipboard"], ["clip"])
+
+
+def to_clipboard(text):
+    """Put the rule on the clipboard. Returns the tool that took it, or None."""
+    import shutil
+    import subprocess
+    for cmd in CLIPBOARDS:
+        if not shutil.which(cmd[0]):
+            continue
+        try:
+            subprocess.run(cmd, input=text, text=True, check=True)
+            return cmd[0]
+        except subprocess.SubprocessError:
+            continue
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -195,6 +222,8 @@ def main():
     ap.add_argument("--remove", metavar="FILE", help="take the block out again")
     ap.add_argument("--check", action="store_true", help="say what would happen")
     ap.add_argument("--config", help="a knowledge folder to read instead")
+    ap.add_argument("--copy", action="store_true",
+                    help="the rule on the clipboard, for a surface with no file")
     ap.add_argument("--quiet", action="store_true", help="one line at most")
     args = ap.parse_args()
 
@@ -221,10 +250,37 @@ def main():
             where = installed_in(target)
             mark = "installed" if where == "installed" else "not installed"
             print(f"  {agent:9} {short_path(path)}  {mark}")
+        if state == READY:
+            # Reported as unknown rather than left out. A surface nobody
+            # mentions is a surface a writer assumes is covered, and this is
+            # the one that reaches every ordinary chat.
+            print("  chat      your Claude account's preferences  "
+                  "unknown, no file to read")
+            print("            --copy, then paste it there")
+        return 0
+
+    if args.copy:
+        if state != READY:
+            print(f"  nothing to copy: {short_path(source)} is not a written rule")
+            return 2
+        took = to_clipboard(body)
+        print(body)
+        print()
+        # Where it goes is said whether or not the clipboard worked. Without it
+        # the command answers "how do I copy this" and leaves the question that
+        # was actually asked, which is where an ordinary chat reads it from.
+        print("Goes in the personal preferences setting on your Claude account.")
+        print("That is what an ordinary chat reads; Claude Code reads the memory")
+        print("file instead, and setup.sh has already put it there.")
+        print()
+        if took:
+            print(f"On the clipboard, via {took}.")
+        else:
+            print("No clipboard tool here, so copy it from above.")
         return 0
 
     if not args.install:
-        ap.error("nothing to do: pass --install, --remove or --check")
+        ap.error("nothing to do: pass --install, --remove, --copy or --check")
 
     if state != READY:
         if not args.quiet:

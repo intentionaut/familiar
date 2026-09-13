@@ -407,6 +407,16 @@ writer's and hold a great deal Familiar knows nothing about:
 state for this file - "installed where" is, and nothing else would show a rule
 that is written and reaching nobody.
 
+**One surface has no file, and it is the one that reaches every ordinary chat.**
+A chat on the web, on a desktop app or on a phone reads an account setting
+rather than anything on disk, and there is nothing exposed to write it. So
+`engagement.py --copy` puts the rule on the clipboard and the writer pastes it
+there once. Say that plainly when it comes up rather than describing the memory
+file as covering everything: a writer who has installed the rule for four agents
+and hears nothing about chats will assume chats were included. `--check` lists
+that surface as `unknown, no file to read` for the same reason - a surface
+nobody mentions is a surface somebody assumes is covered.
+
 ## The one thing Familiar refuses
 
 Every other check reports. The writer accepts it, rejects it, or revises it, and

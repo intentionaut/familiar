@@ -58,4 +58,3 @@ correct the same thing twice.
 - [structures you avoid: correlatives, hedging filler, marketing rhythm]
 - [spellings]
 - [anything that would not be said aloud to a friend]
-

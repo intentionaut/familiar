@@ -36,7 +36,7 @@ card says which folder it came from:
 import argparse, datetime, html, json, os, pathlib, re, secrets, shutil, sys, threading, webbrowser
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from paths import pieces_dirs as resolved_pieces  # noqa: E402
+from paths import knowledge_dir, pieces_dirs as resolved_pieces  # noqa: E402
 
 # --------------------------------------------------------------------------
 # Markdown to HTML, for display only
@@ -802,6 +802,22 @@ def archive_html(archived, token):
                                 'delete these.</p>')
             + '</details>')
 
+def undiffed_count(pieces):
+    """Sent pieces whose final.md has never been through learn diff.
+
+    final.md is the loop's fuel, and the diff only burns it when the writer
+    remembers to ask. A sent piece counts as diffed once a proposal in
+    knowledge/proposals/ names its slug; until then it is waiting, and the
+    board says how many.
+    """
+    proposals = knowledge_dir()[0] / "proposals"
+    done = set()
+    if proposals.is_dir():
+        for f in proposals.glob("*-diff-*.md"):
+            done.add(f.name.rsplit("-diff-", 1)[1][:-3])
+    return sum(1 for p in pieces
+               if p["stage"] == "sent" and p["slug"] not in done)
+
 def board_page(pieces, pieces_dirs, prefix="familiar", archived=(), token=""):
     if not pieces:
         where = ", ".join(str(d) for d in pieces_dirs)
@@ -820,6 +836,9 @@ def board_page(pieces, pieces_dirs, prefix="familiar", archived=(), token=""):
         meta += f', <b>{waiting}</b> with a note from you'
     if stale:
         meta += f', <b>{stale}</b> resting'
+    undiffed = undiffed_count(pieces)
+    if undiffed:
+        meta += f', <b>{undiffed}</b> sent since the last diff'
     cols = []
     for key, label in STAGES:
         inc = [p for p in pieces if p["stage"] == key]

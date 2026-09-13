@@ -545,6 +545,12 @@ def cmd_decisions(args):
     return subprocess.call([sys.executable, str(HOME / "scripts" / "decisions.py"), *argv])
 
 
+def cmd_rework(args):
+    """Rework requests from the board: what is waiting, and handing a proposal back."""
+    import subprocess
+    return subprocess.call([sys.executable, str(HOME / "scripts" / "rework.py"), *args.rest])
+
+
 def cmd_log(args):
     """Handle log subcommands."""
     if args.log_command == "list":
@@ -1098,6 +1104,9 @@ def main():
     p_dec.add_argument("piece", nargs="?", help="the piece the answer belongs to")
     p_dec.add_argument("answer", nargs="?", help="your answer, in your words")
 
+    p_rw = sub.add_parser("rework", help="rework requests from the board, for the agent answering them")
+    p_rw.add_argument("rest", nargs=argparse.REMAINDER, help="open, propose or watch")
+
     p_log = sub.add_parser("log", help="manage build logs")
     p_log_sub = p_log.add_subparsers(dest="log_command")
     p_log_sub.add_parser("list", help="show watched projects")
@@ -1150,6 +1159,8 @@ def main():
         _finish(cmd_harvest(args))
     elif args.command == "decisions":
         _finish(cmd_decisions(args))
+    elif args.command == "rework":
+        _finish(cmd_rework(args))
     elif args.command == "log":
         _finish(cmd_log(args))
     elif args.command == "quip":

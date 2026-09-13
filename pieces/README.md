@@ -13,7 +13,9 @@ pieces/YYYY-MM-DD-slug/
 ├── draft.md                  # /draft output
 ├── edits/
 │   ├── dev-edit-report.md    # /dev-edit output
-│   └── line-edit-report.md   # /line-edit output
+│   ├── line-edit-report.md   # /line-edit output
+│   └── rework.md             # comments from the board, and the suggestions that answer them
+├── .versions/                # earlier versions of draft.md, kept by the board
 ├── cuts.md                   # what any stage cut, and whether it is reusable
 ├── options.md                # alternatives a stage offered, and which was picked
 ├── social.md                 # /social output (pool, picks, schedule, result)
@@ -23,7 +25,8 @@ pieces/YYYY-MM-DD-slug/
 
 `scripts/board.py` reads these folders and writes `.board/` beside them: a
 board of every piece by stage, and a page per piece for picking one back up.
-Both are generated and ignored by git.
+Both are generated and ignored by git. Run it with `--serve` and each piece's
+page can be worked on; AGENTS.md, "Commands", says where each change goes.
 
 Piece folders are ignored by git. This repo is the tool; the writing stays with
 you. Back the folder up the way you back up anything else you would mind losing.

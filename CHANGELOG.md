@@ -51,6 +51,20 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.38.0 (2026-09-13)
+
+- **How you want to be talked to now applies everywhere, not just in a stage.**
+  `knowledge/engagement.md` holds it: what kind of colleague you want, how long
+  a message should be, what to do when you correct a draft. `scripts/setup.sh`
+  writes it into your agent's own memory file, so a project Familiar has never
+  heard of reads it too.
+- **Your memory file stays yours.** The rule goes into a marked block and
+  nothing outside it is touched, so whatever else you keep in there is left
+  alone. Re-running updates the block in place, and `engagement.py --remove`
+  takes it back out.
+- **`doctor` says which agents have it**, and the rule stays off until you have
+  actually written one.
+
 ## 0.37.1 (2026-09-10)
 
 Bug fixes and updates.

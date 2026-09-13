@@ -255,6 +255,30 @@ def main():
 
     print()
 
+    # The one knowledge file that is not read by a stage. It is installed into
+    # the agent's own memory file instead, so it applies in projects Familiar
+    # knows nothing about - which means its state is "installed where", not
+    # "filled in", and doctor is the only place that difference shows.
+    from engagement import MEMORY_FILES, installed_in, read_rule  # noqa: E402
+    e_state, e_body, e_source, _ = read_rule(args.config)
+    if e_state == "ready":
+        where = [a for a, f in MEMORY_FILES.items() if installed_in(f) == "installed"]
+        if where:
+            print(f"  Engagement: installed for {', '.join(where)}")
+        else:
+            print("  Engagement: ready, not installed for any agent")
+            print("    scripts/setup.sh puts it in each agent's memory file.")
+    elif e_state == "off":
+        print("  Engagement: written, switched off")
+    elif e_state == "missing":
+        print(f"  Engagement: {MISSING}")
+    else:
+        print(f"  Engagement: {TEMPLATE}")
+        print("    engagement.md, under The rule. How you want an agent to talk to")
+        print("    you, in every project. Off until you write it.")
+
+    print()
+
     # REPORTED SEPARATELY FROM ITS FILE, because the file can be ready while
     # this is not. positioning.md counts as filled once its blanks are gone,
     # and `## Audience` is one section of it: a writer can have a complete

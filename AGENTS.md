@@ -364,6 +364,49 @@ says anything. A writer with the environment variable set in their shell and a
 second folder in their config gets both, which is the point: dropping one of
 them would take a piece off the board with nothing to say why.
 
+## The one knowledge file no stage reads
+
+`knowledge/engagement.md` says how the writer wants to be talked to. Every other
+knowledge file is read by a stage, which means it only applies while they are
+inside one - and how you want to be spoken to is not a thing that starts when a
+stage starts. A writer who has written it down once should not have to be in a
+Familiar command to get it.
+
+So it is installed rather than read. `scripts/setup.sh` writes it into each
+agent's own memory file, the one thing an agent reads before anything else:
+
+```
+Claude Code   ~/.claude/CLAUDE.md
+opencode      ~/.config/opencode/AGENTS.md
+Codex         ~/.codex/AGENTS.md
+Gemini CLI    ~/.gemini/GEMINI.md
+```
+
+Four rules hold it, and each one is about the fact that those files are the
+writer's and hold a great deal Familiar knows nothing about:
+
+- **Only a marked block is ever touched.** The rule goes between
+  `<!-- familiar:engagement start -->` and its end marker, spliced into whatever
+  is already there and written through a temp file and a rename. Re-running
+  replaces the block rather than adding a second one. `--remove` takes it out
+  and leaves the rest.
+- **Only `## The rule` is installed.** The rest of `engagement.md` explains what
+  the file is for, and an explanation in a memory file is read every session as
+  though it were an instruction.
+- **A template is off, and so is a bracket.** An unfilled placeholder installed
+  into a memory file is worse than no rule: every session afterwards reads the
+  bracket as something to do. The setting has to say `on` and the rule body has
+  to have no brackets left in it.
+- **A copy already there by hand is named, not silently doubled.** Pasting the
+  rule in yourself is the sensible first move and this installer is the second,
+  so the two meeting is the normal case. Two copies of one rule start
+  disagreeing the moment either is edited, so the install says so and asks for
+  the loose one to be taken out.
+
+`doctor` reports which agents have it, because "filled in" is not the useful
+state for this file - "installed where" is, and nothing else would show a rule
+that is written and reaching nobody.
+
 ## The one thing Familiar refuses
 
 Every other check reports. The writer accepts it, rejects it, or revises it, and
@@ -498,6 +541,8 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `knowledge/editor-report.md`: dev-edit taxonomy and report spec
 - `knowledge/examples/canonical.md`: annotated excerpts of the writer's published work
 - `knowledge/checkin.md`: whether the session-start check-in is on and its cadence; the offer that notices a project has gone quiet
+- `knowledge/engagement.md`: how you want an agent to talk to you, in every project; off in the template, installed into the agent's own memory file by `scripts/setup.sh`
+- `scripts/engagement.py`: that install; a marked block in the memory file, nothing outside it touched, `--check` to see where it landed
 - `knowledge/reflection.md`: whether reflection is on, its cadence, where the answers live, and the question bank
 - `knowledge/social-schedule.md`: channels, cadence, send times, slot shapes; the scaffold the social stage fills, plus the optional `## Scheduler` block publish reads
 - `knowledge/links.md`: where posts point and how clicks are tracked; publish builds every URL from it before counting characters

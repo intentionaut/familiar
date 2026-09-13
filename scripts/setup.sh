@@ -8,6 +8,12 @@
 #   Codex (OpenAI)   ~/.codex/commands/
 #   Gemini CLI       ~/.gemini/commands/
 #
+# It also installs your engagement rule into each agent's own memory file
+# (~/.claude/CLAUDE.md and its equivalents), so how you want to be talked to
+# applies in every project rather than only inside a Familiar stage. That rule
+# is knowledge/engagement.md and it is off until you fill it in. Nothing outside
+# a marked block in those files is touched. See scripts/engagement.py.
+#
 # Only agents you already have are installed for. An agent is taken to be
 # present when its own config folder exists; a folder Familiar has never seen
 # belongs to a tool you do not run, and creating one there would be putting
@@ -42,6 +48,33 @@ home_for() {
     codex)    echo "$HOME/.codex" ;;
     gemini)   echo "$HOME/.gemini" ;;
   esac
+}
+
+# The file each agent reads before anything else, which is where a rule about
+# how to talk to you has to live. Not the command folder: a command only runs
+# when it is called, and this has to apply to a session nobody called Familiar
+# from. Kept in step with MEMORY_FILES in scripts/engagement.py.
+memory_for() {
+  case "$1" in
+    claude)   echo "$HOME/.claude/CLAUDE.md" ;;
+    opencode) echo "$HOME/.config/opencode/AGENTS.md" ;;
+    codex)    echo "$HOME/.codex/AGENTS.md" ;;
+    gemini)   echo "$HOME/.gemini/GEMINI.md" ;;
+  esac
+}
+
+# Said once however many agents are installed. The reason it is off is the same
+# reason every time, and four copies of it reads as four problems.
+ENGAGEMENT_SAID=""
+install_engagement() {
+  agent="$1"
+  if [ -n "$ENGAGEMENT_SAID" ]; then
+    quiet="--quiet"
+  else
+    quiet=""
+  fi
+  python3 "$DIR/scripts/engagement.py" --install "$(memory_for "$agent")" $quiet || true
+  ENGAGEMENT_SAID="yes"
 }
 
 skipped=""
@@ -122,21 +155,25 @@ installed=""
 
 if wanted claude; then
   install_for "Claude Code" "$HOME/.claude/commands"
+  install_engagement claude
   installed="$installed claude"
 fi
 
 if wanted opencode; then
   install_for "opencode" "$HOME/.config/opencode/command"
+  install_engagement opencode
   installed="$installed opencode"
 fi
 
 if wanted codex; then
   install_for "Codex" "$HOME/.codex/commands"
+  install_engagement codex
   installed="$installed codex"
 fi
 
 if wanted gemini; then
   install_for "Gemini CLI" "$HOME/.gemini/commands"
+  install_engagement gemini
   installed="$installed gemini"
 fi
 

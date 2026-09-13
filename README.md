@@ -202,12 +202,20 @@ unresolved, the notes and outline folded away, then the draft.
 Pieces in more than one place? Pass `--pieces` once per folder and each card says
 where it came from.
 
-Add `--serve` and you can tidy as well as look. Archive moves a piece out of the
-way and can be undone; Delete removes the folder. Anything you have already sent
-keeps its `final.md` and cannot be deleted from the board, because that file is
-the record of a piece that exists in the world and is what the learn stage reads.
-The server binds to your own machine, mints a fresh token each run, and only ever
-touches pieces it just listed.
+Add `--serve` and you can work as well as look. A piece's page is the draft as a
+document: click into any paragraph and type, and it saves itself. Select any
+words to leave a comment, and send your comments to your agent when you are
+ready. Its suggestions come back beside the paragraph, marked up as changes, to
+accept, edit, reply to or reject. Earlier versions are kept, and if the draft
+changes in another editor while the page is open, saving stops rather than
+write over it.
+
+Archive moves a piece out of the way and can be undone; Delete removes the
+folder. Anything you have already sent keeps its `final.md` and cannot be
+deleted or edited from the board, because that file is the record of a piece
+that exists in the world and is what the learn stage reads. The server binds to
+your own machine, mints a fresh token each run, answers only requests addressed
+to it, and only ever touches pieces it just listed.
 
 ## Where the material comes from
 

@@ -166,6 +166,7 @@ The stages, for Familiar's own routing:
 | `harvest` | `prompts/harvest.md` | Cross-project pattern extraction: themes, growth signals, ready topics |
 | `inspire [text] [--url X]` | `prompts/inspire.md` | Clip a snippet, article, or quote for later; writes to inspirations/ |
 | `board` | `scripts/board.py` | Every piece in flight and what each needs; a command, so no gate |
+| `rework open` / `rework propose` / `rework watch` | `scripts/rework.py`, then `prompts/draft.md`, "Comments from the board" | Answer the comments the writer sent from the served board; suggestions only, never draft.md |
 
 ## Commands
 
@@ -180,6 +181,14 @@ what they have on, or needs catching up on a piece that has sat for a while.
 
 `--serve` adds Archive and Delete to each card, for the writer's hand only. A
 piece that has been sent cannot be deleted there. Never use them yourself.
+
+It also makes each piece's draft a document the writer types into and comments
+on. Answering the comments they send is your part: while they are on the board,
+run `familiar rework watch` in the background, and when it returns, run
+`familiar rework open`, suggest each paragraph per `prompts/draft.md`,
+"Comments from the board", and hand it back with `familiar rework propose`.
+Then watch again. Never accept or reject a suggestion yourself; those are the
+writer's.
 
 ## Offering a reflection
 

@@ -11,6 +11,22 @@ in their voice, not in model voice.
 
 **Scope:** if `$ARGUMENTS` names a section, heading or paragraph, draft that part only and leave everything else in `draft.md` untouched. Say which part you worked on. If `draft.md` already has content and no scope is given, ask before replacing it: replace, add to, or write a numbered variant beside it (`draft-2.md`).
 
+**Comments from the board.** When the writer works on the served board, they
+comment on words in the draft and send the comments to an agent, and each
+waits in `edits/rework.md`. `familiar rework open` lists each one with what you
+need: the paragraph as it stands (or the whole draft, for a comment on it), the
+words they selected, what they asked or their own wording, any edit-report
+finding they sent with it, and on a later round, what you suggested last and
+their reply. Answer each with the full replacement for that paragraph only,
+written by every rule in this stage: their voice, the house rules, nothing
+invented, a bracket where a fact is missing. Where they marked the text as
+their own wording, keep their words and change only what the house rules
+require. A finding means work it in, with the report's fix unless they said
+otherwise. Hand it back with `familiar rework propose <piece> <id> <file>`,
+adding `--note` for one line they should read first. Never edit `draft.md`
+yourself: they accept a suggestion on the board. If `open` says the words are
+no longer in the draft, suggest nothing and say so.
+
 ## If the writer brought this piece in
 
 `source.md` in the piece folder means the words came from outside Familiar and

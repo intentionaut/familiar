@@ -20,11 +20,11 @@ be asked, because the answer is the writer's and what to do with it is theirs.
 """
 import re
 import sys
-from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from board import last_context_entry  # noqa: E402
+from board_edit import Refused, record_answer  # noqa: E402
 from paths import pieces_dirs  # noqa: E402
 
 WAITING = ("waiting on the writer", "waiting on you", "blocked")
@@ -121,24 +121,13 @@ def cmd_answer(slug, answer):
         return 1
 
     piece = matches[0]
-    ctx = last_context_entry(piece)
-    gate = (ctx.get("Decision gate") or "").strip()
-    log = piece / "SESSION-CONTEXT.md"
-    stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-
-    entry = (
-        f"\n## {stamp}  decision  {piece.name}\n\n"
-        f"Status: answered, waiting on the writer to start the next stage\n"
-        f"Files: none\n"
-        f"What changed: the open gate was answered. Nothing else was touched and\n"
-        f"  no stage was run.\n"
-        f"Gate: {gate or '(none recorded)'}\n"
-        f"Answer: {answer}\n"
-        f"Decision gate: none, until the next stage sets one\n"
-        f"Next stage: {ctx.get('Next stage') or 'the writer decides'}\n"
-    )
-    with open(log, "a", encoding="utf-8") as f:
-        f.write(entry)
+    # One writer of this entry, shared with the board, so an answer given in
+    # the terminal and one given on the board read the same to learn.
+    try:
+        ctx = record_answer(piece, answer)
+    except Refused as exc:
+        print(exc)
+        return 1
     print(f"\n  Recorded against {piece.name}.")
     if ctx.get("Next stage"):
         print(f"  That piece was waiting on: {ctx['Next stage']}")

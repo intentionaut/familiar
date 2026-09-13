@@ -46,4 +46,5 @@ Two or three sentences on what the piece will do to a reader once the fixes land
 - Quote the draft; never paraphrase a flaw.
 - Specific fixes only: every issue gets an exact rewritten line.
 - Flag counts matter but impact ordering matters more; lead with what changes the piece most.
+- Number every finding in a heading of its own (`### 3a.`, `### 4.1`), quote the words it is about, and never reuse a number in a later look. The board shows each finding beside the paragraph it quotes, where the writer can send it to an agent.
 - The report goes to `edits/dev-edit-report.md` next to the draft. The writer works through it themselves: accept, reject, revise.

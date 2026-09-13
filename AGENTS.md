@@ -112,6 +112,36 @@ moment it would have paid, and then silence.
 A review is `learn decisions`, so it has a gate like any other and it proposes
 rather than applies.
 
+## Teaching it in the moment
+
+Corrections arrive in conversation more often than they arrive in edits.
+"Never use that word." "That sentence sounds like a model." The diff catches
+what the writer changed in a file; it cannot catch what they said between
+files, and a correction that lives only in the chat is one the next draft
+will earn again.
+
+So the moment the writer bans something, propose the rule right then:
+
+- **The trigger is theirs.** They say "never use X", "that is not me", "stop
+  writing Y", or they correct the same phrasing a second time. One correction
+  is a preference; the second time is a rule they are already keeping by hand.
+- **The proposal is quoted and dated.** The exact words they banned, the line
+  that earned the ban, the date. A rule that cannot point at the moment it
+  came from is a guess.
+- **The gate is the same as learn's.** Propose the addition to
+  `knowledge/style-rules.md`, or to Hard noes in `knowledge/voice-guide.md`,
+  and apply it only when they say yes. A rejected proposal goes to
+  `knowledge/rejected-rules.md` with their one-line reason, so it is never
+  proposed again.
+- **In the moment, not in a batch.** Do not save it for the next review. The
+  review aggregates decisions and diffs; a spoken correction is already
+  settled, and the only question is whether it gets written down before it
+  is forgotten.
+
+Where the rule belongs: `style-rules.md` for what to flag mechanically,
+`voice-guide.md` for how to write. When unsure, `style-rules.md`: a rule
+that flags is seen at every line edit, a rule that advises is read once.
+
 ## Offering a reflection
 
 Reflection is something Familiar does with the writer, so notice when one is due
@@ -504,6 +534,8 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `knowledge/longform-channels.md`: channels that take a full companion piece; the scaffold the long branch of repurpose fills
 - `knowledge/languages/<code>.md`: per-language rule overrides and tells; `_template.md` to add one
 - `knowledge/humanizer-check.md`: weekly diff against humanizer's tell list; candidates, never applied
+- `knowledge/metrics.md`: the line-edit numbers kept, one line per piece; how learn sees a rule that has gone quiet
+- `knowledge/rejected-rules.md`: the committed index of rules the writer turned down; learn reads it before proposing
 - `knowledge/models.md`: per-stage model recommendations and fallback rule
 - `knowledge/context-log.md`: the resume log format
 - `knowledge/never-publish.md`: strings that must never be sent; the block and warn lists publish and social check before their gate

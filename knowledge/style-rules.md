@@ -212,4 +212,3 @@ Fix: <exact rewritten line in the writer's voice>
 
 Then a summary table: total flags per category, reading ease score, grade level,
 and the three highest-impact fixes.
-

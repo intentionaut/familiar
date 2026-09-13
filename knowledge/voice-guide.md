@@ -53,7 +53,9 @@ The list the line edit will enforce without mercy. Add to it every time you
 correct the same thing twice.
 
 - [punctuation you never use]
-- [words and phrases that make you wince]
+- Words and phrases that make you wince: "tell the story" and "a
+  familiar moment". Both are AI tells; banned by Saielle, 2026-09-13.
 - [structures you avoid: correlatives, hedging filler, marketing rhythm]
 - [spellings]
 - [anything that would not be said aloud to a friend]
+

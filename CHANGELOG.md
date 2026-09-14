@@ -51,6 +51,21 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.40.0 (2026-09-14)
+
+The AI-tell list follows humanizer 3, strongest tells first.
+
+**What this gives you:**
+
+- **Fewer false flags.** The five strongest tells are flagged on sight. Weaker
+  ones, like a single dash or a passive sentence, are flagged only when other
+  tells share the passage, and the line edit says which.
+- **The current list.** Humanizer's twenty-five patterns and its word list,
+  credited and with examples, followed by Familiar's own tells.
+- **Every flag names its pattern**, so you can look it up and see why it counts.
+- **Your voice is protected.** The list now names what the line edit leaves
+  alone: an unusual detail, mixed feelings, a real aside.
+
 ## 0.39.0 (2026-09-13)
 
 The board can wear your publication's colours.

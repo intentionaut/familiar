@@ -79,22 +79,74 @@ positions you actually hold and let the number be what it is.
 
 ## Themes
 
-<!-- Copy the block per theme. Delete the bracketed prompts as you fill them. -->
+### T1. The four languages
 
-### T1. [short name, the way you would say it out loud]
+- **id:** `four-languages`
+- **Position:** Product leadership that is fluent in product, data, design,
+  and AI. The work moves between all four; it never camps in one.
+  `source: declared, 14 September 2026, from the intentionaut site`
+- **Written for:** `unknown`
+- **Job:** `unknown`
+- **Intersection:** product, data, design, AI `source: declared`
+- **Status:** building
+- **Evidence bar:** `unknown`
+- **Pieces shipped:** none yet
 
-- **id:** `[stable-slug-you-will-not-change]`
-- **Position:** [one sentence, in your words, that a piece could argue]
-  `source: declared`
-- **Written for:** [segment ids from positioning.md this theme is meant to
-  move. Two or three, not all of them] `source: declared`
-- **Job:** [thought-leadership | business-development] `source: declared`
-- **Intersection:** [two or more of design, product, data, AI, per positioning.md]
-  `source: declared`
-- **Status:** [building | owned | retiring]
-- **Evidence bar:** [what a piece on this has to stand on to be credible from
-  you rather than from anyone]
-- **Pieces shipped:** [slug, date. One line each, appended as they send]
+Coverage on this theme is read per language: a run of pieces in one language
+and silence in the other three is a gap for `harvest` to surface, the same way
+an untouched theme is.
+
+### T2. Hiring
+
+- **id:** `hiring`
+- **Position:** `unknown` (declared as a topic on
+  14 September 2026, one of the leadership themes for an age of change; the
+  position is yours to state)
+- **Written for:** `unknown`
+- **Job:** `unknown`
+- **Intersection:** `unknown`
+- **Status:** building
+- **Evidence bar:** `unknown`
+- **Pieces shipped:** none yet
+
+### T3. Org design
+
+- **id:** `org-design`
+- **Position:** `unknown` (declared as a topic on
+  14 September 2026, one of the leadership themes for an age of change; the
+  position is yours to state)
+- **Written for:** `unknown`
+- **Job:** `unknown`
+- **Intersection:** `unknown`
+- **Status:** building
+- **Evidence bar:** `unknown`
+- **Pieces shipped:** none yet
+
+### T4. Acceleration
+
+- **id:** `acceleration`
+- **Position:** `unknown` (declared as a topic on
+  14 September 2026, one of the leadership themes for an age of change; the
+  position is yours to state)
+- **Written for:** `unknown`
+- **Job:** `unknown`
+- **Intersection:** `unknown`
+- **Status:** building
+- **Evidence bar:** `unknown`
+- **Pieces shipped:** none yet
+
+### T5. Accountability
+
+- **id:** `accountability`
+- **Position:** `unknown` (declared as a topic on
+  14 September 2026, one of the leadership themes for an age of change; the
+  position is yours to state)
+- **Written for:** `unknown`
+- **Job:** `unknown`
+- **Intersection:** `unknown`
+- **Status:** building
+- **Evidence bar:** `unknown`
+- **Pieces shipped:** none yet
 
 ## Retired
 
@@ -113,3 +165,4 @@ empty if search is not something you work on; the themes above lose nothing.
   - Target queries: [one per line] `source: [declared | unknown]`
   - Already ranks for: [from Search Console, with the date you last looked]
     `source: [where it came from, with a date | unknown]`
+

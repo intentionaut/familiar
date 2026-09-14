@@ -93,9 +93,29 @@ a job for a segment you have not thought about.
 The long version is `voice-guide.md`. Three or four lines here for stages that
 only need the gist:
 
-- [warm / dry / direct / formal]
-- [what you never do]
-- [what you always do]
+- Dry and direct. `source: declared`
+- Never observer commentary: no writing about the work from outside it.
+  `source: declared`
+- Practitioner analysis, depth paired with applied skill. The position is
+  tech forward: the technical proof leads. Hiring, org design, acceleration
+  and accountability are part of that story, leadership for an age of change,
+  written through operating models and craft. `source: declared, corrected
+  14 September 2026`
+
+## Reference voices
+
+The writers you stop to read every week, declared so a stage knows the company
+a draft has to hold its own in. Tier 1 `source: declared, 14 September 2026`:
+
+- Benedict Evans
+- Charity Majors
+- Matt LeMay
+- Martin Eriksson
+- John Cutler
+
+They set the register bar, not the voice: the voice is `voice-guide.md`, and a
+stage imitates nobody. What each one sets the bar for is `unknown` until you
+say it; no stage fills it by guessing.
 
 ## Later, if you keep themes
 
@@ -113,3 +133,5 @@ next slot; it never decides how many slots there are. Until you set one, the
 cap is `unknown`, and no stage treats business development as unlimited: a
 stage proposing topics counts the recent business-development pieces and says
 so before offering another.
+
+

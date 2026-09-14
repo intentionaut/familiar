@@ -96,9 +96,11 @@ only need the gist:
 - Dry and direct. `source: declared`
 - Never observer commentary: no writing about the work from outside it.
   `source: declared`
-- Practitioner analysis, depth paired with applied skill. The technical proof
-  leads; the human angle enters through operating models and craft, and HR or
-  culture framing is never the opening. `source: declared`
+- Practitioner analysis, depth paired with applied skill. The position is
+  tech forward: the technical proof leads. Hiring, org design, acceleration
+  and accountability are part of that story, leadership for an age of change,
+  written through operating models and craft. `source: declared, corrected
+  14 September 2026`
 
 ## Reference voices
 
@@ -131,4 +133,5 @@ next slot; it never decides how many slots there are. Until you set one, the
 cap is `unknown`, and no stage treats business development as unlimited: a
 stage proposing topics counts the recent business-development pieces and says
 so before offering another.
+
 

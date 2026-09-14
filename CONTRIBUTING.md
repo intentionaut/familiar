@@ -58,18 +58,23 @@ would rather have a short file that is right than a long one that is guessed.
 
 ## 3. A pattern
 
-`knowledge/style-rules.md` lists AI tells. Additions are one pattern per pull
-request, with:
+`knowledge/style-rules.md` lists AI tells. Patterns 1 to 25 follow
+[humanizer](https://github.com/blader/humanizer), keep its numbering and its
+strength order, and change when humanizer does: `scripts/humanizer-check.py`
+reports the drift, and bringing the list back in step is one pull request per
+humanizer release.
+
+Anything beyond humanizer goes under "Familiar's own tells", one pattern per
+pull request, with:
 
 - the pattern, in plain words
 - one real before example (quote it) and the fix
 - why it is a tell rather than a style choice, in a sentence
-- if it overlaps a [humanizer](https://github.com/blader/humanizer) pattern,
-  say which, so the two lists can be kept in step
+- whether it acts on one sighting or is weak alone, and why
 
-Bulk imports are declined. The false-positive cost of a bloated list lands on
-every writer using it. A weekly check against humanizer already surfaces
-candidates in an issue; picking from that issue is a good first contribution.
+Bulk imports beyond humanizer are declined. The false-positive cost of a
+bloated list lands on every writer using it, which is also why weak patterns
+only count when other tells share the passage.
 
 ## 4. A style
 

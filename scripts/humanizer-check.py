@@ -26,9 +26,15 @@ def fetch():
         return r.read().decode("utf-8")
 
 def words_from(skill):
+    """The overused-word list. Humanizer 3 keeps it as the "Watch for" line of
+    its "Overused AI words" pattern; earlier versions labelled it "AI words:"."""
+    lines = re.findall(r"\*\*[^*]*AI words:\*\*\s*(.+)", skill)
+    m = re.search(r"^### \d+\. Overused AI words\s*\n+\*\*Watch for:\*\*\s*(.+)$", skill, re.M)
+    if m:
+        lines.append(m.group(1))
     out = []
-    for m in re.finditer(r"\*\*[^*]*AI words:\*\*\s*(.+)", skill):
-        for w in m.group(1).split(","):
+    for line in lines:
+        for w in line.split(","):
             w = re.sub(r"\(.*?\)", "", w).strip().strip(".").lower()
             if w:
                 out.append(w)
@@ -43,18 +49,22 @@ def norm(s):
 def main():
     quiet = "--quiet" in sys.argv
     skill = fetch()
-    version = re.search(r"version:\s*([0-9.]+)", skill)
+    version = re.search(r"version:\s*\"?([0-9.]+)", skill)
     version = version.group(1) if version else "unknown"
     ours = norm(RULES.read_text(encoding="utf-8"))
 
-    missing_words = [w for w in words_from(skill) if w.split("/")[0].strip() not in ours]
+    # Humanizer spells the American way and this house the British one.
+    missing_words = [w for w in words_from(skill)
+                     if w.split("/")[0].strip() not in ours
+                     and w.split("/")[0].strip().replace("iz", "is") not in ours]
 
     missing_patterns = []
     for num, title in patterns_from(skill):
         key = [t for t in norm(title).split() if len(t) > 3 and t not in
                ("with", "that", "from", "about", "when", "into", "left", "your")]
         hits = sum(1 for t in key if t in ours)
-        if not key or hits / len(key) < 0.5:
+        # A title made only of short words ("Not X but Y") is looked for whole.
+        if (not key and norm(title).strip() not in ours) or (key and hits / len(key) < 0.5):
             missing_patterns.append((num, title))
 
     today = datetime.date.today().isoformat()
@@ -62,8 +72,8 @@ def main():
         "# Humanizer check",
         "",
         f"Generated {today} against humanizer SKILL.md version {version}.",
-        "Candidates only. Nothing here is applied; adopt one at a time with a real",
-        "example, per CONTRIBUTING.md. Re-run: `scripts/humanizer-check.py`.",
+        "Candidates only. Nothing here is applied: bring style-rules.md back in step",
+        "with humanizer per CONTRIBUTING.md. Re-run: `scripts/humanizer-check.py`.",
         "",
         "## Overused words humanizer lists that style-rules.md does not mention",
         "",

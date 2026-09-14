@@ -32,7 +32,7 @@ and shows each beside the paragraph it quotes.
 ### <n>. <the issue, in a few words>
 
 [line N] "<quoted text>"
-Issue: <rule or pattern>
+Issue: <rule or pattern, with its number from style-rules.md>
 Why it matters: <one sentence>
 Fix: <exact rewritten line in the writer's voice>
 ```
@@ -54,7 +54,11 @@ Do not quietly firm up a hedge for them. Surface the tradeoff and let them decid
 ## Rules
 
 - Every flag gets a concrete rewritten line. Vague notes are useless.
-- Do not touch anything outside the checklist: structure and argument belong to dev-edit.- If a fragment or staccato list is doing deliberate work in their voice, leave it and note that you left it.
+- Do not touch anything outside the checklist: structure and argument belong to dev-edit.
+- Weigh each tell by its strength in style-rules.md. Patterns 1 to 5 are flagged on one
+  sighting; a pattern marked *weak alone* is flagged only when other tells share the
+  passage, and the flag names them.
+- If a fragment or staccato list is doing deliberate work in their voice, leave it and note that you left it.
 - False positives are worse than missed flags. When unsure whether something is an AI tell or their dry wit, flag it as UNCERTAIN with your reasoning.
 - A firm stance is not stridency. It is a position with a reason they can defend. When a hedge hides a real choice with tradeoffs, ask them which way they want to lean.
 

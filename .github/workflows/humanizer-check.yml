@@ -1,11 +1,9 @@
 name: Humanizer check
 
-# Weekly: compare Familiar's AI-tell list with blader/humanizer and open (or
+# Manual: compare Familiar's AI-tell list with blader/humanizer and open (or
 # update) one issue listing the candidates. Never edits style-rules.md.
 
 on:
-  schedule:
-    - cron: "17 6 * * 1"
   workflow_dispatch:
 
 permissions:

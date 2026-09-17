@@ -1,9 +1,10 @@
 # Rejected rules
 
-The record of rules the writer does not want. `knowledge/proposals/` is
-gitignored, so a proposal file can vanish on a fresh clone; this index is
-committed on purpose. Without it, `learn` will cheerfully propose again what
-was already turned down.
+The record of rules the writer does not want. A proposal file can be tidied
+away; this index is kept for good, in the writer's house beside
+`proposals/`. Without it, `learn` will cheerfully propose again what was
+already turned down. The copy in the Familiar repo is a blank template and
+stays empty: the repo is public, and a writer's reasons are theirs.
 
 One line per rejection, written at the gate the moment it happens:
 

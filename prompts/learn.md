@@ -167,9 +167,9 @@ in the proposal so the next `decisions` run knows where to start.
   has changed, and say what changed.
 - Every rejection at the gate is recorded in `knowledge/rejected-rules.md`
   the moment it happens: the rule, the date, and the writer's one-line reason
-  in their words. The proposal files stay gitignored; the index is committed,
-  because a rejection is the record of a rule the writer does not want, and a
-  fresh clone should know it.
+  in their words. It lives in the writer's house, never in the Familiar repo,
+  which is public: a rejection is the record of a rule the writer does not
+  want, and it is kept for good where the proposals are.
 
 ## Exit
 

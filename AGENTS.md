@@ -10,6 +10,43 @@ Tool-agnostic. Runs from Claude Code, opencode, Codex or Gemini CLI, installs
 as a plugin or a skill, and the `knowledge/` and `prompts/` markdown can be
 pasted into a claude.ai Project.
 
+## This repository is public
+
+Anyone can read every branch, commit message, pull request title and
+description here, and deleting them afterwards takes GitHub support. So the
+test for anything you push is whether a stranger could read it and learn
+nothing about the writer who uses this copy of Familiar.
+
+**What may open here:** changes to the tool that would serve any writer.
+Prompts, scripts, tests, docs, and blank templates under `knowledge/`.
+
+**What never opens here, in a file, a commit message or a PR:**
+
+- Anything the writer declared: their stubs, themes, positioning, voice,
+  audience, banned phrases, reference voices, or any other filled-in value.
+- Their words: drafts, approved copy, quotes from a conversation, the
+  angles they picked.
+- Names they would not publish: people they read or work with, employers,
+  clients, unannounced products, the publications they compare themselves to.
+- Anything in `pieces/`, `knowledge/private/` or `knowledge/proposals/`.
+
+**Where it goes instead:** the writer's house. Run `python3
+scripts/paths.py`; when it says "yours", write there. When you cannot reach
+the house (a session with only GitHub access, say), do not write it anywhere:
+give it to the writer in the conversation and say where it belongs.
+
+**A fix to the tool that a writer's material prompted** is written in general
+terms. "Tell the story" as an AI tell is fine; "banned by <writer> on
+<date>" is not. The PR describes the change, never the conversation.
+
+`scripts/public-check.py` refuses what it can catch, on every pull request
+and in the tests: a file under `knowledge/` that `knowledge/TEMPLATES` does not
+list, a template with a dated or attributed `source: declared`, and a private
+term from the writer's list in any added line, commit message, title or
+description. It is a backstop, not permission: a change it passes can still
+be wrong for this repo. A `public-ok` label skips the terms check, and only a
+person adds it.
+
 ## Pipeline
 
 ```
@@ -130,7 +167,8 @@ So the moment the writer bans something, propose the rule right then:
   came from is a guess.
 - **The gate is the same as learn's.** Propose the addition to
   `knowledge/style-rules.md`, or to Hard noes in `knowledge/voice-guide.md`,
-  and apply it only when they say yes. A rejected proposal goes to
+  in the writer's house and never this repo's templates, and apply it only
+  when they say yes. A rejected proposal goes to
   `knowledge/rejected-rules.md` with their one-line reason, so it is never
   proposed again.
 - **In the moment, not in a batch.** Do not save it for the next review. The
@@ -528,6 +566,8 @@ shortfall. If nothing is lost, it was carrying a verdict.
 ## Rules for agents
 
 - Resolve `knowledge/` before reading it. See "Where knowledge lives" above.
+- Write a writer's material only to their house, never to this public repo.
+  See "This repository is public" above.
 - Read the stage's prompt file and every knowledge file it lists before acting.
 - The house rules live in `knowledge/positioning.md` (language, spelling, dash
   policy, reading-ease target, whether pieces end on an invitation). Apply
@@ -569,7 +609,9 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `knowledge/languages/<code>.md`: per-language rule overrides and tells; `_template.md` to add one
 - `knowledge/humanizer-check.md`: weekly diff against humanizer's tell list; candidates, never applied
 - `knowledge/metrics.md`: the line-edit numbers kept, one line per piece; how learn sees a rule that has gone quiet
-- `knowledge/rejected-rules.md`: the committed index of rules the writer turned down; learn reads it before proposing
+- `knowledge/rejected-rules.md`: the index of rules the writer turned down, kept in their house; learn reads it before proposing
+- `knowledge/TEMPLATES`: every file this repo may ship under `knowledge/`; public-check refuses any other
+- `scripts/public-check.py`: refuses a writer's own material in this public repo; runs on every pull request
 - `knowledge/models.md`: per-stage model recommendations and fallback rule
 - `knowledge/board.md`: optional; the board's colours, fonts (installed or from Google Fonts), text size, and whether it stays light in dark mode
 - `knowledge/context-log.md`: the resume log format
@@ -584,6 +626,6 @@ shortfall. If nothing is lost, it was carrying a verdict.
 ## Maintenance
 
 When a real piece teaches you something about the voice, update
-`knowledge/voice-guide.md` and prune or add to `canonical.md`. The second time
-the writer makes the same edit by hand, encode it as a rule in
-`style-rules.md`.
+`voice-guide.md` and prune or add to `examples/canonical.md` in the writer's
+house. The second time the writer makes the same edit by hand, encode it as a
+rule in the house's `style-rules.md`. This repo's copies stay blank templates.

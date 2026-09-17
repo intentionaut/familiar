@@ -34,6 +34,14 @@ Follow the report spec in knowledge/editor-report.md exactly:
 - Quote the draft verbatim when flagging; never paraphrase a flaw.
 - Every flag gets a concrete fix, not advice ("consider tightening").
 - Order by impact, not by position in the text.
+- **Number every finding in a heading of its own**: `### 3a. <what is wrong>`
+  for a critical fix, `### 4.1 <what is wrong>` for a line-level one, and quote
+  the words it is about. Never reuse a number in a later look at the same
+  draft. The board shows each finding beside the paragraph it quotes, where the
+  writer can send it to an agent.
+- If `edits/rework.md` exists, read it first. A suggestion the writer accepted,
+  or a reply they gave, is their view of that passage; where you disagree
+  with it, say so rather than working around it.
 - If the piece is genuinely strong somewhere, say so once, specifically. No compliment sandwiches.
 - Judge against positioning.md: is AI centred when it shouldn't be? Is there evidence under the opinions? Does it end with an invitation, if the house wants one?
 

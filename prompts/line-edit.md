@@ -24,11 +24,15 @@ Sweep the entire draft against every rule in knowledge/style-rules.md:
 - Unsourced quotes, statistics, factual claims
 - Reading ease and grade level (report the numbers)
 
-For each finding output exactly:
+For each finding output exactly this, numbered in order. Never reuse a number
+in a later look at the same draft: the board finds findings by these headings
+and shows each beside the paragraph it quotes.
 
 ```
+### <n>. <the issue, in a few words>
+
 [line N] "<quoted text>"
-Issue: <rule or pattern>
+Issue: <rule or pattern, with its number from style-rules.md>
 Why it matters: <one sentence>
 Fix: <exact rewritten line in the writer's voice>
 ```
@@ -36,6 +40,8 @@ Fix: <exact rewritten line in the writer's voice>
 For hedged positions where they could take a firmer stance, use this instead:
 
 ```
+### <n>. <the hedge, in a few words>
+
 [line N] "<quoted text>"
 Issue: hedge → could be a firm position
 Why it matters: <one sentence on what a firmer stance changes>
@@ -49,6 +55,9 @@ Do not quietly firm up a hedge for them. Surface the tradeoff and let them decid
 
 - Every flag gets a concrete rewritten line. Vague notes are useless.
 - Do not touch anything outside the checklist: structure and argument belong to dev-edit.
+- Weigh each tell by its strength in style-rules.md. Patterns 1 to 5 are flagged on one
+  sighting; a pattern marked *weak alone* is flagged only when other tells share the
+  passage, and the flag names them.
 - If a fragment or staccato list is doing deliberate work in their voice, leave it and note that you left it.
 - False positives are worse than missed flags. When unsure whether something is an AI tell or their dry wit, flag it as UNCERTAIN with your reasoning.
 - A firm stance is not stridency. It is a position with a reason they can defend. When a hedge hides a real choice with tradeoffs, ask them which way they want to lean.

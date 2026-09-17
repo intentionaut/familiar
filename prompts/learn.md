@@ -113,10 +113,12 @@ half.
    `social.md`, a draft. Inline is where most blocks actually live, so a search
    that only reads `options.md` finds almost none of them. Add every `Answer:`
    line recorded by `familiar decisions`, which is the writer settling a gate in
-   their own words. Add every `Disposition: rejected` line from the line-edit
-   reports, with its reason: a rejected flag is the writer settling whether a
-   rule fits them, and a rule whose flags keep being rejected is a rule to
-   scope or retire. Say how many you found and over what period.
+   their own words, and every comment and reply in `edits/rework.md`: the
+   writer saying what should change, in their words, is the same kind of
+   evidence as a `Because`. Add every `Disposition: rejected` line from the
+   line-edit reports, with its reason: a rejected flag is the writer settling
+   whether a rule fits them, and a rule whose flags keep being rejected is a
+   rule to scope or retire. Say how many you found and over what period.
 2. Group by the reason, not by the stage. A title picked for being plainer and a
    passage picked for being more generous may be the same rule wearing two
    coats. Read the `Because` lines as a body of text and look for what recurs.

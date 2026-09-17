@@ -51,6 +51,60 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.40.1 (2026-09-17)
+
+Bug fixes and updates.
+
+## 0.40.0 (2026-09-14)
+
+The AI-tell list follows humanizer 3, strongest tells first.
+
+**What this gives you:**
+
+- **Fewer false flags.** The five strongest tells are flagged on sight. Weaker
+  ones, like a single dash or a passive sentence, are flagged only when other
+  tells share the passage, and the line edit says which.
+- **The current list.** Humanizer's twenty-five patterns and its word list,
+  credited and with examples, followed by Familiar's own tells.
+- **Every flag names its pattern**, so you can look it up and see why it counts.
+- **Your voice is protected.** The list now names what the line edit leaves
+  alone: an unusual detail, mixed feelings, a real aside.
+
+## 0.39.0 (2026-09-13)
+
+The board can wear your publication's colours.
+
+**What this gives you:**
+
+- **Your palette and type on the board.** Name your colours and fonts in
+  `board.md`, alongside the rest of your settings, and every page of the board
+  uses them.
+- **Any Google font, and the size you read at.** Name families under
+  `Google fonts:` and the board loads them; `Text size:` sets the draft's text.
+  Nothing is fetched unless you name a font.
+- **Light when you want it light.** `Scheme: light` keeps the board light even
+  when your computer is in dark mode.
+
+## 0.38.0 (2026-09-13)
+
+The board is somewhere to work on a piece, not only to find it.
+
+**What this gives you:**
+
+- **Write in the draft on the board.** Run the board with `--serve`, open a
+  piece, click into any paragraph and type. It saves itself, and earlier
+  versions are kept beside the piece.
+- **Comment the way you would in a shared document.** Select any words and say
+  what should change, or write your own version. Comments wait until you send
+  them to your agent, one at a time or all at once.
+- **Suggestions come back marked up.** Your agent's rewrite appears beside the
+  paragraph with the changes shown, to accept, edit, reply to or reject, as many
+  rounds as it takes.
+- **Edit reports sit beside the words they are about**, and one click sends a
+  finding to your agent.
+- **It will not write over another editor.** If the draft changes somewhere else
+  while the page is open, saving stops and what you typed is kept.
+
 ## 0.37.1 (2026-09-10)
 
 Bug fixes and updates.

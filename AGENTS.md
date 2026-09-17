@@ -350,6 +350,40 @@ the board: that file is the record of something that exists in the world and is
 what `learn diff` reads. Never archive or delete a piece on the writer's
 behalf.
 
+`--serve` also makes each piece's page a document to write in. Every paragraph
+is typed into where it sits and shows its markdown while the cursor is in it,
+so nothing is converted on the way back to the file, and the draft saves
+itself a moment after typing stops. The writer selects words to comment on
+them, or comments on the whole draft; comments wait in `edits/rework.md` until
+they send them to an agent, and the agent's suggestion comes back beside the
+paragraph, where they accept it, edit it and accept that, reply, or reject it.
+`scripts/board_edit.py` holds the rules each write follows:
+
+- **Only the writer changes `draft.md` from the board**, by typing or by
+  accepting a suggestion. A version of what is replaced is kept in
+  `.versions/` inside the piece folder: at most every ten minutes while typing,
+  every time for a suggestion. A save made against a version of the file that
+  has changed since (an edit in Obsidian, a stage running) is refused, never
+  merged. A sent piece's draft is never written, because `learn diff` reads it.
+- **An agent answers comments and never edits `draft.md`.** `familiar rework
+  open` lists what has been sent with everything needed to answer it, and
+  `familiar rework propose <piece> <id> <file>` hands a suggestion back. While
+  the writer is on the board, run `familiar rework watch` in the background,
+  answer what it reports, and start it again. Stop when the writer says so.
+- **A suggestion is written the way the draft stage writes**, per
+  `prompts/draft.md`, "Comments from the board": the replacement for that
+  paragraph only (or the whole draft, for a comment on it), in the writer's
+  voice, house rules applied, nothing invented.
+- **Nothing in `edits/rework.md` is removed.** A comment only gains rounds, and
+  a later round's text is the writer's reply to the last suggestion.
+- **Picks and answers go where they always did**: `Chosen` and `Because` under
+  the option set, and the answer in the context log in the writer's words.
+
+The board shows each edit-report finding beside the paragraph it quotes, so
+edit reports number every finding in a heading of its own, quote the words it
+is about, and never reuse a number. Never use any of these controls on the
+writer's behalf.
+
 ## Where knowledge lives
 
 **Every prompt says `knowledge/<file>.md`. That is a name, not a path.**
@@ -537,6 +571,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `knowledge/metrics.md`: the line-edit numbers kept, one line per piece; how learn sees a rule that has gone quiet
 - `knowledge/rejected-rules.md`: the committed index of rules the writer turned down; learn reads it before proposing
 - `knowledge/models.md`: per-stage model recommendations and fallback rule
+- `knowledge/board.md`: optional; the board's colours, fonts (installed or from Google Fonts), text size, and whether it stays light in dark mode
 - `knowledge/context-log.md`: the resume log format
 - `knowledge/never-publish.md`: strings that must never be sent; the block and warn lists publish and social check before their gate
 - `scripts/never-publish.py`: the check itself; exit 1 blocks, 0 is clean or warnings only

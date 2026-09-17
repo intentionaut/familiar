@@ -599,5 +599,42 @@ class Theme(unittest.TestCase):
         self.assertEqual({}, board.read_theme(ROOT / "knowledge" / "board.md"))
 
 
+class UndiffedCount(unittest.TestCase):
+    """A sent piece waits for learn diff until a proposal names it."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.proposals = Path(self.tmp.name) / "proposals"
+        self.proposals.mkdir()
+        # A house resolves only where positioning.md exists; without one the
+        # lookup falls through to the machine's real house.
+        (Path(self.tmp.name) / "positioning.md").write_text("# Positioning\n")
+        old = os.environ.get("FAMILIAR_KNOWLEDGE")
+        os.environ["FAMILIAR_KNOWLEDGE"] = self.tmp.name
+        self.addCleanup(lambda: os.environ.__setitem__("FAMILIAR_KNOWLEDGE", old)
+                        if old is not None else os.environ.pop("FAMILIAR_KNOWLEDGE", None))
+
+    def sent(self, *slugs):
+        return [{"stage": "sent", "slug": s} for s in slugs]
+
+    def test_a_proposal_under_the_short_slug_clears_the_dated_folder(self):
+        (self.proposals / "2026-09-03-diff-relaunch-note.md").write_text("x")
+        self.assertEqual(0, board.undiffed_count(self.sent("2026-09-01-relaunch-note")))
+
+    def test_a_proposal_under_the_folder_name_clears_it_too(self):
+        (self.proposals / "2026-09-03-diff-2026-09-01-relaunch-note.md").write_text("x")
+        self.assertEqual(0, board.undiffed_count(self.sent("2026-09-01-relaunch-note")))
+
+    def test_a_slug_with_diff_in_it_is_read_whole(self):
+        (self.proposals / "2026-09-03-diff-the-diff-tool.md").write_text("x")
+        self.assertEqual(0, board.undiffed_count(self.sent("2026-09-01-the-diff-tool")))
+
+    def test_a_proposal_for_another_piece_leaves_it_waiting(self):
+        (self.proposals / "2026-09-03-diff-relaunch.md").write_text("x")
+        pieces = self.sent("2026-09-01-relaunch-note") + [{"stage": "ready", "slug": "2026-09-02-other"}]
+        self.assertEqual(1, board.undiffed_count(pieces))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -89,7 +89,11 @@ proposal.
    as its example, and say which file it belongs in: `voice-guide.md` (how
    to write), `style-rules.md` (what to flag), or `examples/canonical.md`
    (a line from the final worth keeping as reference).
-4. Write `knowledge/proposals/YYYY-MM-DD-diff-<slug>.md`.
+4. **Watch for the change that contradicts the voice guide.** Same watch as
+   decisions mode keeps: it means the guide is out of date, or the writer has
+   changed. Surface it as a contradiction, not as a new rule, and let them
+   decide which is wrong.
+5. Write `knowledge/proposals/YYYY-MM-DD-diff-<slug>.md`.
 
 ### Gate
 
@@ -111,7 +115,10 @@ half.
    line recorded by `familiar decisions`, which is the writer settling a gate in
    their own words, and every comment and reply in `edits/rework.md`: the
    writer saying what should change, in their words, is the same kind of
-   evidence as a `Because`. Say how many you found and over what period.
+   evidence as a `Because`. Add every `Disposition: rejected` line from the
+   line-edit reports, with its reason: a rejected flag is the writer settling
+   whether a rule fits them, and a rule whose flags keep being rejected is a
+   rule to scope or retire. Say how many you found and over what period.
 2. Group by the reason, not by the stage. A title picked for being plainer and a
    passage picked for being more generous may be the same rule wearing two
    coats. Read the `Because` lines as a body of text and look for what recurs.
@@ -134,6 +141,12 @@ valuable thing this mode can find: it means the guide is out of date, or the
 writer has changed. Surface it as a contradiction, not as a new rule, and let
 them decide which is wrong.
 
+**Read the metrics log for rules that have gone quiet.**
+`knowledge/metrics.md` carries the per-rule tally from every line edit. A rule
+with zero flags across the last five pieces is no longer proving anything:
+propose retiring it, or scoping it to where it still fires, and say which.
+Retirement is a proposal like any other, accepted or rejected at the gate.
+
 ### Gate
 
 Stop. Same as the other modes: accept, reject or edit each rule, apply only what
@@ -149,6 +162,14 @@ in the proposal so the next `decisions` run knows where to start.
 - Do not touch `pieces/`. This stage reads there; it never writes there
   except to save a `final.md` the writer supplied.
 - If `knowledge/proposals/` does not exist, create it. It is gitignored.
+- Before proposing, read `knowledge/rejected-rules.md`. A rule on that index
+  was turned down once already. Do not propose it again unless the evidence
+  has changed, and say what changed.
+- Every rejection at the gate is recorded in `knowledge/rejected-rules.md`
+  the moment it happens: the rule, the date, and the writer's one-line reason
+  in their words. The proposal files stay gitignored; the index is committed,
+  because a rejection is the record of a rule the writer does not want, and a
+  fresh clone should know it.
 
 ## Exit
 

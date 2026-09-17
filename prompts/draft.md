@@ -110,11 +110,15 @@ date: YYYY-MM-DD
 ---
 ```
 
-After writing, run a quick self-check against knowledge/style-rules.md and clean
-up your own output before saving: em dashes, house spelling, banned words. That
-is tidying prose you just wrote, not editing the writer. Anything already in
-their words stays exactly as they wrote it, and every stage after this one
-surfaces its fixes rather than applying them.
+After writing, run the mechanical self-check against knowledge/style-rules.md
+before saving: every absolute rule, every banned word and phrase in the
+overused list, and the AI-tell patterns, against your own output line by line.
+Fix what it catches in your own prose before the writer ever sees the draft,
+and list what it caught: the rule, the line, the fix. That is tidying prose
+you just wrote, not editing the writer, and the list is how the writer knows
+the check ran rather than trusting that it did. Anything already in their
+words stays exactly as they wrote it, and every stage after this one surfaces
+its fixes rather than applying them.
 Report word count, reading ease, and list every [NEEDS ...] bracket left in.
 Then stop. They rewrite; the next stage is dev-edit only when they ask.
 

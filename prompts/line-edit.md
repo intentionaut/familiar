@@ -82,6 +82,20 @@ Write to `edits/line-edit-report.md`: findings, then the summary table from the
 spec (flags per category, reading ease, grade level, top three highest-impact fixes).
 They apply what they agree with. Nothing is auto-applied.
 
+Every finding in the report carries a `Disposition:` line, left for the writer
+to fill as they work through it: `accepted`, `rejected` or `revised`, and a
+rejection earns one line of why in their words. The report lives in the piece
+folder, so the record survives the session, and `learn decisions` reads
+exactly these lines. A rejected flag is evidence the rule is wrong for them;
+a flag that stays blank is one they never reached, which says nothing.
+
+Then append one line to the log in `knowledge/metrics.md`: the date, the
+piece, the word count, flags per 1000 words by category, reading ease, grade
+level, and the per-rule tally. Those numbers are already computed for the
+summary table; the log is what stops them being thrown away. It is the answer
+to "is it learning my voice", and it is how `learn` sees a rule that has gone
+quiet.
+
 Then ask whether to open the report and the draft, one line, yes or no. See
 AGENTS.md, "Opening the file at an edit stage". Open both on yes; drop it on no.
 

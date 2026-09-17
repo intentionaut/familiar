@@ -5,6 +5,8 @@ into a conversation. Replace `<PROJECT>` with the project name.
 
 There is no install. If you want the entries written automatically when a
 session ends or the context is compacted, run `familiar log add <project>`
+(and `familiar log global` once, so sessions you start outside a project folder
+are recorded too)
 instead, which wires a hook and records the project.
 
 **If the project is public, put the log somewhere else.** A log worth keeping

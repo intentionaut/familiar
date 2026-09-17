@@ -10,6 +10,8 @@ Usage:
   scripts/log.py                     every project, and which are covered
   scripts/log.py add <project>       install the hooks and record the project
   scripts/log.py add <project> --file NAME   when the log is not the default name
+  scripts/log.py global [--off]      the hooks in your user settings, so a
+                                     session started anywhere is recorded
 
 Reads `knowledge/build-logs.md` for the projects root and the watched list.
 Nothing is written to a project except its `.claude/settings.json`, and that is
@@ -282,6 +284,85 @@ def find_log(folder, watched):
     return None
 
 
+def cross_project_log(text=None):
+    """The cross-project log from the registry's Settings, or None."""
+    if text is None:
+        p = settings_path()
+        text = p.read_text(encoding="utf-8") if p.exists() else ""
+    m = re.search(r"^- Cross-project log:\s*(.+?)\s*$", text, re.M)
+    if not m or m.group(1).startswith("[") or m.group(1).lower() == "none":
+        return None
+    return pathlib.Path(m.group(1).strip("`")).expanduser()
+
+
+def main_checkout(folder):
+    """The main checkout a git worktree belongs to, or the folder itself."""
+    try:
+        r = subprocess.run(["git", "-C", str(folder), "rev-parse", "--path-format=absolute",
+                            "--git-common-dir"], capture_output=True, text=True, timeout=10)
+    except Exception:
+        return folder
+    common = pathlib.Path(r.stdout.strip()) if r.returncode == 0 else None
+    if common and common.name == ".git" and common.parent.resolve() != folder.resolve():
+        return common.parent.resolve()
+    return folder
+
+
+def project_for(path, root, watched):
+    """The logged project a path sits in: itself, a parent, or its main checkout.
+
+    Matching only the exact folder missed every session started in a
+    subfolder or a worktree, and those are where a lot of the work happens.
+    """
+    path = pathlib.Path(path).expanduser().resolve()
+    home = pathlib.Path.home().resolve()
+    for start in dict.fromkeys([path, main_checkout(path)]):
+        for cand in [start, *start.parents]:
+            if cand == home or cand == cand.parent:
+                break
+            if str(cand) in watched or (cand.parent == root.resolve() and find_log(cand, watched)):
+                return cand
+    return None
+
+
+def touched_projects(paths, root, watched):
+    """How often each logged project appears among the paths a session touched."""
+    counts = {}
+    for raw in paths:
+        folder = project_for(raw, root, watched) if pathlib.Path(raw).expanduser().exists() else None
+        if folder:
+            counts[folder] = counts.get(folder, 0) + 1
+    return counts
+
+
+def route(cwd, touched, root, watched, cross=None):
+    """Where a session's entry goes: (log path, reason) or (None, reason).
+
+    The session's own folder wins. A session started elsewhere (the home
+    folder, a vault) goes to the project it mostly worked in, when one clearly
+    dominates. Anything else goes to the cross-project log, the view from above.
+    """
+    folder = project_for(cwd, root, watched)
+    if folder:
+        name = watched.get(str(folder)) or find_log(folder, watched)
+        log = resolve_log(folder, name) if name else None
+        if log and log.exists():
+            return log, f"project {folder.name}"
+    counts = touched_projects(touched, root, watched)
+    total = sum(counts.values())
+    if counts:
+        top, n = max(counts.items(), key=lambda kv: kv[1])
+        if n >= 3 and n / total >= 0.6:
+            name = watched.get(str(top)) or find_log(top, watched)
+            log = resolve_log(top, name) if name else None
+            if log and log.exists():
+                return log, f"mostly {top.name} ({n} of {total} paths)"
+    if cross and cross.exists():
+        where = ", ".join(sorted(f.name for f in counts)) or "no logged project"
+        return cross, f"cross-project ({where})"
+    return None, "no project log and no cross-project log"
+
+
 def hooks_wired(folder):
     s = folder / ".claude" / "settings.json"
     try:
@@ -511,7 +592,9 @@ def cmd_move(args):
 def cmd_path(args):
     """Print where a project's log is. One resolver, for the hook to call."""
     root, watched, _reg = read_settings()
-    folder = project_folder(args[0] if args else ".", root)
+    target = args[0] if args else "."
+    folder = project_for(target, root, watched) if pathlib.Path(target).expanduser().is_dir() else None
+    folder = folder or project_folder(target, root)
     if folder is None:
         return 1
     name = watched.get(str(folder)) or find_log(folder, watched)
@@ -524,6 +607,46 @@ def cmd_path(args):
     return 0
 
 
+def cmd_global(args):
+    """Put the hooks in the user settings, or take them out.
+
+    Per-project hooks only hear sessions started inside that project. A session
+    started in the home folder, or a vault, was never recorded at all. The hook
+    runs once per session whichever settings file fired it.
+    """
+    sp = pathlib.Path.home() / ".claude" / "settings.json"
+    try:
+        data = json.loads(sp.read_text(encoding="utf-8")) if sp.exists() else {}
+    except Exception:
+        sys.exit(f"{sp} is not valid JSON. Fix it, then run this again.")
+    hooks = data.setdefault("hooks", {})
+    off = "--off" in args
+    for event in ("PreCompact", "SessionEnd"):
+        groups = hooks.setdefault(event, [])
+        for g in groups:
+            g["hooks"] = [h for h in g.get("hooks", [])
+                          if "build-log-entry.sh" not in h.get("command", "")]
+        groups[:] = [g for g in groups if g.get("hooks")]
+        if not off:
+            groups.append({"hooks": [{"type": "command", "command": str(HOOK), "timeout": 60}]})
+        if not groups:
+            del hooks[event]
+    if not hooks:
+        data.pop("hooks")
+    sp.parent.mkdir(parents=True, exist_ok=True)
+    sp.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    if off:
+        print(f"  Removed the build-log hooks from {sp}")
+    else:
+        print(f"  Build-log hooks added to {sp}")
+        print("  Sessions in a logged project go to its log; others to the one they")
+        print("  mostly worked in, or the cross-project log.")
+        if not cross_project_log():
+            print("  No cross-project log is set in build-logs.md, so sessions outside")
+            print("  a project are skipped until one is.")
+    return 0
+
+
 def main():
     args = sys.argv[1:]
     if args and args[0] == "add":
@@ -532,6 +655,8 @@ def main():
         return cmd_move(args[1:])
     if args and args[0] == "--path":
         return cmd_path(args[1:])
+    if args and args[0] == "global":
+        return cmd_global(args[1:])
     if args and args[0] not in ("list", ""):
         sys.exit(__doc__)
     cmd_list()

@@ -561,10 +561,14 @@ def cmd_log(args):
         return _run_log_py("move", args.project, args.dest)
     elif args.log_command == "entry":
         return cmd_log_entry(args)
+    elif args.log_command == "global":
+        return _run_log_py("global", *(["--off"] if getattr(args, "off", False) else []))
     else:
-        print("Usage: familiar log <list|add|entry>")
+        print("Usage: familiar log <list|add|global|move|entry>")
         print("  list                    show watched projects")
         print("  add <project-folder>    register a project and wire its log")
+        print("  global [--off]          hooks in your user settings, so a session")
+        print("                          started anywhere is recorded")
         print("  move <project> <to>     move the log out of the project")
         print("  entry <project-name>    scaffold a dated log entry")
         return 1
@@ -1116,6 +1120,9 @@ def main():
     p_log_move.add_argument("project", help="the project")
     p_log_move.add_argument("dest", help="destination folder or file")
 
+    p_log_global = p_log_sub.add_parser(
+        "global", help="hooks in your user settings, so a session started anywhere is recorded")
+    p_log_global.add_argument("--off", action="store_true", help="take them out again")
     p_log_entry = p_log_sub.add_parser("entry", help="scaffold a dated log entry")
     p_log_entry.add_argument("project", nargs="?", help="project name")
 

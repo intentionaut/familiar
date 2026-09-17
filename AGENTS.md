@@ -652,6 +652,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `knowledge/metrics.md`: the line-edit numbers kept, one line per piece; how learn sees a rule that has gone quiet
 - `knowledge/rejected-rules.md`: the index of rules the writer turned down, kept in their house; learn reads it before proposing
 - `knowledge/TEMPLATES`: every file this repo may ship under `knowledge/`; public-check refuses any other
+- `scripts/build_log_entry.py`: the automatic log entry: where it goes, what survives, and one entry per session
 - `scripts/question-check.py`: flags questions that break "Asking the writer"; run on prepared questions and decision gates
 - `scripts/public-check.py`: refuses a writer's own material in this public repo; runs on every pull request
 - `knowledge/models.md`: per-stage model recommendations and fallback rule

@@ -33,6 +33,13 @@ is just a second place to forget to write in.
 
 ## Watched
 
+**A session started outside a project is recorded too, once
+`familiar log global` puts the hooks in your user settings.** It goes to the
+project it mostly worked in, when one clearly dominates, and to the
+cross-project log below when the work was spread or belonged to no project.
+Without that, only sessions started inside a registered folder are heard, and
+for most people that is a minority of them.
+
 Projects where `familiar log add` has installed the hooks. One line each, the
 project folder then the name of its log file, both in backticks. The hook reads
 this to find the right file, so a log called anything at all is found.

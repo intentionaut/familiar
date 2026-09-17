@@ -42,6 +42,12 @@ last three entries. Take the two from two different sections of the bank (who,
 what, when, where, why).** If the obvious question is one that has been asked
 recently, take the next best one.
 
+Before the first, say in one line what the logs show this week held (what
+shipped, what was cut), so the writer answers about meaning, not recall. Each
+question asks for one named thing; reflection is the one place a question stays
+open rather than a pick, because options would put words in the writer's mouth
+about their own week. Otherwise AGENTS.md, "Asking the writer" applies.
+
 Ask them **one at a time**. Wait for the answer. Follow up once if an answer is
 vague or if there is something underneath it worth getting at. Do not
 interrogate. Two questions, a follow-up or two, done.

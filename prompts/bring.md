@@ -106,7 +106,9 @@ Same shape prompts/case-study.md writes, so the interview reads them without
 learning anything new. The intersection and candidate theses come from the
 spine; the evidence inventory is the claims audit, carried across with its
 statuses intact. Aim for 8 to 12 questions, each grounded in a specific passage,
-each one the prose genuinely cannot answer.
+each one the prose genuinely cannot answer, each passing AGENTS.md, "Asking the
+writer". Run `python3 scripts/question-check.py interview-questions.md` and
+rewrite what it flags.
 
 ## Rules
 
@@ -140,9 +142,11 @@ Save `spine.md`, `brief.md` and `interview-questions.md`. Report the word count
 of the source, how many claims came out `claimed` or `needs finding`, and how
 many sections wander.
 
-Then two questions, and stop.
+Then two questions, one at a time: ask the first, wait, then the second.
 
 1. > Is the argument I found the one you meant?
+   >
+   > **A.** Yes. **B.** Close, and I'll say what's off. **C.** No.
 
 2. > Do you want this challenged, or tidied?
    >

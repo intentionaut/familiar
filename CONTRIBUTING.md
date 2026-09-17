@@ -101,6 +101,9 @@ installs agent commands. Edit `knowledge/positioning.md` and
 - Plain language. If a sentence could appear on a SaaS landing page, cut it.
 - No em dashes in shipped prose.
 - Never a key, token or personal account id in any file.
+- Nothing of any writer's own: this repo is public. `knowledge/` ships blank
+  templates listed in `knowledge/TEMPLATES`, and `scripts/public-check.py`
+  runs on every pull request. See AGENTS.md, "This repository is public".
 - Prompts propose; the writer decides. A change that makes a stage apply
   something without confirmation will not be merged.
 

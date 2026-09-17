@@ -1,0 +1,36 @@
+name: Public check
+
+# This repo is public. Refuse a pull request that carries a writer's own
+# material: a file under knowledge/ that is not a blank template, a filled-in
+# answer, or a private term in the added lines, commit messages, title or
+# description. Commits made in GitHub's own interface skip local hooks, so this
+# is the check that always runs. See AGENTS.md, "This repository is public".
+#
+# The terms live in the FAMILIAR_PRIVATE_TERMS secret. The log names where a
+# term was found, never the term. A `public-ok` label skips the terms check
+# only, and a person has to add it.
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  public:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check the change is fit for a public repo
+        env:
+          FAMILIAR_PRIVATE_TERMS: ${{ secrets.FAMILIAR_PRIVATE_TERMS }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PUBLIC_OK: ${{ contains(github.event.pull_request.labels.*.name, 'public-ok') }}
+        run: python3 scripts/public-check.py --base "origin/${{ github.base_ref }}"

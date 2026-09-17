@@ -1,0 +1,32 @@
+# The blank templates this repo ships. Nothing else may live under knowledge/.
+# Adding a line here says: this file is a template any writer could use, with no one's answers in it.
+knowledge/board.md
+knowledge/build-logs.md
+knowledge/checkin.md
+knowledge/context-log.md
+knowledge/editor-report.md
+knowledge/examples/canonical.md
+knowledge/humanizer-check.md
+knowledge/languages/README.md
+knowledge/languages/_template.md
+knowledge/links.md
+knowledge/longform-channels.md
+knowledge/metrics.md
+knowledge/models.md
+knowledge/never-publish.md
+knowledge/patterns.md
+knowledge/positioning.md
+knowledge/reflection.md
+knowledge/rejected-rules.md
+knowledge/social-rules.md
+knowledge/social-schedule.md
+knowledge/style-rules.md
+knowledge/styles/README.md
+knowledge/styles/company-changelog.md
+knowledge/styles/internal-newsletter.md
+knowledge/styles/personal-essay.md
+knowledge/styles/research-digest.md
+knowledge/themes.md
+knowledge/updates.md
+knowledge/voice-guide.md
+knowledge/voice-review.md

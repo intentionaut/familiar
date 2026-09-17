@@ -56,9 +56,8 @@ fills by guessing.
       Reads: [where you actually see them, channel and evidence].
       source: declared
 
-The writer's standing positioning rules live here as defaults, stated once:
-the technical proof leads, the human angle enters through operating models
-and craft, and HR or culture framing is never the opening. A stage that
+The writer's standing positioning rules are stated once, as defaults, in the
+house's `positioning.md`, never in this repo. A stage that
 frames for an audience inherits these; the writer should never have to
 restake that ground per piece, per stub or per interview.
 

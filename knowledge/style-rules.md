@@ -97,6 +97,11 @@ the fix is a bracket, not an invention.
    "I should say plainly that...", "Here is the argument...", "Let me be clear".
    Remove the run-up and make the point. "Honestly" inside an ordinary sentence
    is fine; the tell is the standalone opener before a routine claim.
+   Two announcements of the same kind: "tell the story" ("tell the story of how
+   we got here", "the data tells the story"), which performs storytelling
+   instead of doing it, and "a familiar moment" (also "a familiar scene", "a
+   familiar feeling"), which declares a moment familiar instead of rendering
+   one the reader recognises. Open the scene or state the fact.
 5. **Arguing with no one.** "This isn't about...", "I'm not saying...", "To be
    clear", "Don't get me wrong", "Some might say... but", "A tempting approach
    would be", "You might think... but". An objection or an option that appears

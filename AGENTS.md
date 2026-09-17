@@ -118,6 +118,46 @@ it as a batch:
 - **Never answer one for them**, however obvious it looks. The gate exists
   because a stage found something only the writer can settle.
 
+## Asking the writer
+
+Every question costs the writer an answer, and a question the files could have
+answered costs them patience too. Every stage that asks anything (interview,
+case study, bring, reflect, a decision gate, a question asked while waiting on
+a build) runs each question through five tests before asking it.
+
+1. **Look it up first.** Read what the piece and the project already hold: the
+   brief, `interview-questions.md`, `spine.md`, `notes.md`, the context log,
+   the session digest and the build log. If they answer it, do not ask. Show
+   the fact with its file instead. Ask the writer to confirm it only when the
+   evidence is thin: one source, an inference, or anything a wrong answer would
+   carry into print.
+2. **One ask per question.** No "and why", no second question mark, no list.
+   Three things needed is three turns.
+3. **Judgement now, not memory then.** Ask what the writer thinks today about
+   what happened, not what they remember doing. A past moment is asked for only
+   when no file holds it, and then with the closest evidence beside it: "The
+   log has the rollback at 14:10 and nothing before it. What made you roll
+   back?"
+4. **Say what a complete answer looks like.** By default a pick: two to four
+   options written out in full, drawn from the files and the conversation, each
+   with what it buys and what it costs where there is a trade-off, and always
+   "or something else". One letter is a complete answer. Where a pick cannot
+   work, name the shape: yes or no, a number, one sentence.
+5. **The writer's words, not the system's.** No theme ids, stage names, file
+   names or internal labels in the question, and no verdict built into it.
+
+**At most three questions in one sitting.** After the third, stop, say what the
+answers settled, and offer to carry on. A decision gate in the context log
+carries one question, never a list; the next one waits its turn.
+
+**A question that fails gets rewritten, not softened.** `scripts/question-check.py`
+flags the mechanical failures (a compound question, a memory prompt, a vague
+opener, an internal id, no answer shape) in prepared question files and decision
+gates. Run it on anything you wrote before the writer sees it.
+
+**Record the answer word for word.** An answer is evidence, and a paraphrase of
+it is worth nothing to `learn`.
+
 ## Offering a voice review
 
 The decisions and diffs pile up. The review is the moment they become rules, and
@@ -569,6 +609,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - Write a writer's material only to their house, never to this public repo.
   See "This repository is public" above.
 - Read the stage's prompt file and every knowledge file it lists before acting.
+- Before asking the writer anything, apply "Asking the writer" above.
 - The house rules live in `knowledge/positioning.md` (language, spelling, dash
   policy, reading-ease target, whether pieces end on an invitation). Apply
   them; do not substitute your own defaults. If `Language:` is not English,
@@ -611,6 +652,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `knowledge/metrics.md`: the line-edit numbers kept, one line per piece; how learn sees a rule that has gone quiet
 - `knowledge/rejected-rules.md`: the index of rules the writer turned down, kept in their house; learn reads it before proposing
 - `knowledge/TEMPLATES`: every file this repo may ship under `knowledge/`; public-check refuses any other
+- `scripts/question-check.py`: flags questions that break "Asking the writer"; run on prepared questions and decision gates
 - `scripts/public-check.py`: refuses a writer's own material in this public repo; runs on every pull request
 - `knowledge/models.md`: per-stage model recommendations and fallback rule
 - `knowledge/board.md`: optional; the board's colours, fonts (installed or from Google Fonts), text size, and whether it stays light in dark mode

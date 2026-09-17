@@ -20,7 +20,7 @@ Files: <what was created or changed, relative paths>
 What changed: <two or three lines, facts only>
 Chosen: <what the writer picked, when a stage offered options. Omit if none.>
 Because: <their reason, in their words, one line. Required whenever Chosen is present.>
-Decision gate: <the exact question the writer needs to answer before the next stage>
+Decision gate: <the one question the writer needs to answer before the next stage, per AGENTS.md "Asking the writer": one ask, a pick where one fits>
 Next stage: <name, or "none until the writer decides">
 ```
 
@@ -29,7 +29,9 @@ Next stage: <name, or "none until the writer decides">
 - Terse. If it takes longer than a minute to read, it is too long.
 - Append only. Newest at the bottom.
 - The decision gate is the important line. It is what the next session reads
-  first.
+  first. It holds **one** question. If more are open, they go under the piece's
+  Open questions and the gate names the one that unblocks the most. A gate that
+  carries forward unanswered is rewritten as a pick the next time, not copied.
 - **`Chosen` never appears without `Because`.** The pick is bookkeeping; the
   reason is the evidence `learn decisions` reads. One line in the writer's own
   words beats three in yours. If they did not give a reason, ask for one before

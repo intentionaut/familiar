@@ -79,8 +79,9 @@ this list, add your own, delete the ones that do nothing for you. The stage will
 not repeat a question, or a close paraphrase, that appears in your last three
 entries.
 
-Every question here opens with who, what, when, where or why, and none of them
-carries a verdict for you to confirm. A question that already contains a
+Every question here opens with who, what, when, where or why, asks for one
+named thing (a person, a moment, a decision, a line), and carries no verdict
+for you to confirm. A question that already contains a
 judgement (what are you avoiding, what did you get wrong) is a review with a
 question mark on it. If a week went badly, the answer is where that gets said.
 
@@ -97,14 +98,14 @@ question mark on it. If a week went badly, the answer is where that gets said.
 ### What
 
 - What surprised you this week?
-- What are you noticing about how this is going?
+- What is one thing about how this is going that you would tell a friend?
 - What is true now that was not true a month ago?
 - What did you learn this week that changes what you build next?
 - What did you cut, and how does that decision look now?
-- What is on your mind about the project right now?
+- What is one decision about the project you have not made yet?
 - What did you write this week that you would stand behind in a year?
 - What did you read or hear this week that stayed with you?
-- What did the week show you about how you work?
+- What is one habit of yours the week made visible?
 - What did someone using this do that you did not expect?
 - What do you want to be true about this in three months?
 - What would you tell someone starting this from scratch?

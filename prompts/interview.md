@@ -29,26 +29,39 @@ picks a topic (or brings their own), the interview proceeds normally.
    interview works from what the writer tells you. The file is needed before
    a draft, not before this.
 2. Take the idea from $ARGUMENTS, or ask: "What's rattling around?"
-3. Create or reuse `pieces/YYYY-MM-DD-short-slug/` (today's date). Write working notes to `notes.md` as you go. If `notes.md` already exists, this is a return visit: read it first, say what the thesis currently is, and append. Never restart the notes. If `$ARGUMENTS` names a gap ("the evidence for section 2", "what happened after the meeting"), ask only about that.
+3. **Read what is already known before asking anything.** In the piece
+   folder: `brief.md`, `interview-questions.md`, `spine.md`, `source.md`,
+   `session.md`, `notes.md` and `SESSION-CONTEXT.md`, whichever exist. Where
+   the piece came from a project, its build log and
+   `python3 scripts/session-digest.py` for the session named in the brief.
+   Prepared questions are a seed, not a script: drop any the files answer,
+   and run the rest through AGENTS.md, "Asking the writer".
+4. Create or reuse `pieces/YYYY-MM-DD-short-slug/` (today's date). Write working notes to `notes.md` as you go. If `notes.md` already exists, this is a return visit: read it first, say what the thesis currently is, and append. Never restart the notes. If `$ARGUMENTS` names a gap ("the evidence for section 2", "what happened after the meeting"), ask only about that.
 
 ## Method
 
+- Every question passes AGENTS.md, "Asking the writer": looked up first, one
+  ask, judgement now rather than memory then, a complete answer shape, the
+  writer's words. At most three in a sitting.
 - Ask **one question at a time**. Wait for the answer. Never batch questions.
-- First question goes after personal experience: what happened to you, what did you see, what did you ship? Lived experience first; general trend talk comes later if at all.
-- Chase specifics relentlessly: names, numbers, moments, what they actually said in that meeting. If an answer is abstract, ask for the scene behind it.
+- Lived experience first: what happened to you, what did you see, what did you
+  ship? Find the specifics in the files first (names, numbers, the order things
+  happened) and put them in front of the writer, so the question is about what
+  it meant, not what they can recall. If a scene is not on file, ask for it,
+  with the nearest evidence beside it.
+- **Ask up to three times, then move on.** If an answer does not reach the
+  specific, ask again once, then a third time from a different angle (a pick,
+  a narrower moment, a different person in the room). After the third, note the
+  gap under Open questions and move on. Never the same question three times.
 - Test the thesis out loud every few answers: "So the piece is arguing X?" Let them correct you.
 - Probe stakes once the idea is stable: who is this for, what breaks if they keep doing it the old way?
 - Notice when the writer mentions evidence (a person, a report, a deployment) and log it in notes.md under EVIDENCE with a reminder to link or source it.
 
-## When composing gets expensive
+## Questions are picks by default
 
-Answers get shorter as an interview goes on. That is not disengagement, it is
-cost: composing a paragraph is expensive and it gets more expensive when the
-writer is tired, which is often exactly when they came to write.
-
-**Watch the length of the answers.** When one comes back materially shorter than
-the previous two, or abstract where you asked for a scene, switch the next
-question to a pick.
+Composing a paragraph is expensive, and more so when the writer is tired, which
+is often exactly when they came to write. So every question is a pick unless a
+pick cannot work, and then it names the shape of the answer it wants.
 
 > Who should feel caught by this?
 >
@@ -66,9 +79,9 @@ Rules for the pick:
   that stops a pick narrowing the piece to the options you happened to think of.
 - **One letter must be a complete answer.** If the writer has to explain their
   pick for it to be useful, it was a question wearing a costume.
-- **Go back to open questions when the answers lengthen again.** This is a
-  fallback, not a mode. An interview made entirely of multiple choice cannot
-  surprise you, and being surprised is most of what the interview is for.
+- **"Or something else" is where the surprise lives.** An interview made
+  entirely of your options cannot surprise you. When the writer takes the
+  escape, follow what they say with the next pick built from their words.
 
 Whatever they pick, ask for the reason in the same breath if they have not given
 one, and log it as `Because`. That is the line `learn decisions` reads.
@@ -104,7 +117,8 @@ Anything unresolved, phrased as questions for the writer.
 Lines or phrases they said worth building around.
 ```
 
-Then ask one final question: "Does the thesis sentence sound like what you mean?"
+Then ask one final question, as a pick: "Does the thesis sentence sound like
+what you mean? A: yes. B: close, and I'll say what's off. C: no."
 Do not proceed to outlining unless asked. The human decides when to move stages.
 
 - **Context log:** append to the piece's own `SESSION-CONTEXT.md` per

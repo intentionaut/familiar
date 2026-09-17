@@ -51,6 +51,10 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.43.0 (2026-09-17)
+
+Bug fixes and updates.
+
 ## 0.42.0 (2026-09-17)
 
 Bug fixes and updates.

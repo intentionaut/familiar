@@ -61,11 +61,14 @@ process.
   - Contradictions: if the human's notes disagree with an earlier entry or with
     each other, flag it. That's where a view is changing, and it's interview gold.
 - Draft **interview-questions.md**: an ordered list, one question per line, each
-  grounded in a specific log entry. Follow the interview stage's own rules:
-  chase specifics (names, numbers, the moment of realising); ask about the ten
-  minutes after a mistake, not "tell me more"; mark gaps that would need an
-  [ASK THE WRITER: …] versus [NEEDS SOURCE: …]. Aim for 8-12 questions; the live
-  interview will trim and reorder.
+  grounded in a specific log entry and each passing AGENTS.md, "Asking the
+  writer". Put the log's facts (names, numbers, the order things happened) into
+  the brief, not into questions: ask what the writer makes of them, not what
+  they remember. One ask per line, each with its answer shape, a pick where one
+  fits. Mark gaps that would need an [ASK THE WRITER: …] versus
+  [NEEDS SOURCE: …]. Aim for 8-12 questions; the live interview will trim and
+  reorder. Run `python3 scripts/question-check.py interview-questions.md` and
+  rewrite what it flags.
 
 ## Exit
 

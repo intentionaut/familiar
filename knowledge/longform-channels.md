@@ -7,20 +7,36 @@ that takes a longform companion piece. Short-form channels live in
 Leave this file as the template if you have no second longform channel. The
 long branch stops rather than guessing a form.
 
-## Channel: [name]
+## Channel: LinkedIn newsletter
 
-- **Job:** [what this channel's piece is FOR, in one sentence. Not "repurposing".
-  A real job, e.g. "the making-of, for people who will never read the main
-  letter".]
-- **Relationship to the main publication:** [companion / lagged mirror /
-  original. If companion, say what it carries that the main letter does not.]
-- **Audience:** [who reads it here, and how it differs from the main audience]
-- **Reader has read the source piece:** [yes / no / assume not]
-- **Length:** [words]
-- **Form:** [what shape the channel rewards]
-- **Publishing rhythm:** [how it relates to the main piece's ship date]
-- **CTA:** [the one action, and where it points]
-- **utm_source:** [unique per channel, per the funnel rule]
+- **Job:** Reach and discovery for the agent-organisation work among people in
+  AI and technology.
+- **Relationship to the main publication:** Companion. The LinkedIn issue is a
+  field note from the live build: one claim, one receipt, one failure or limit,
+  and one operating rule. Intentionaut holds the deeper synthesis. Never
+  cross-post an identical full article.
+- **Audience:** AI and technology readers discovering the work on LinkedIn,
+  rather than readers who already have a direct relationship with Intentionaut.
+- **Reader has read the source piece:** no
+- **Length:** 600 to 900 words
+- **Form:** A short, standalone field note with one claim, one receipt, one
+  failure or limit, and one operating rule.
+- **Publishing rhythm:** Fortnightly. Every two or three field notes become one
+  deeper Intentionaut essay that adds a model, framework or full case the
+  LinkedIn issues did not carry.
+- **CTA:** One destination per issue. Alternate between joining the Intentionaut
+  list and visiting the relevant authority page on intentionaut.com.
+- **utm_source:** linkedin_newsletter
+
+## The main publication and authority hub
+
+Intentionaut is the owned main publication. Its longer essays connect the
+experiments to product leadership, power, accountability and organisation
+design. Each synthesis must add a model, framework or full case rather than
+repeat the LinkedIn field notes.
+
+`intentionaut.com` is the authority hub for the body of work, its artefacts and
+cases, the author biography and the advisory route.
 
 ## The standalone rule
 

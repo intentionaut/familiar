@@ -11,8 +11,9 @@ out every piece's state from the piece folders and needs nothing from you.
 
 Board fields only: a piece's title, its state, what it needs next, when it last
 moved, what is in its way, and links to its files. Draft text, notes, source
-cards, edit reports and the context log stay in the piece folder and never
-reach a provider.
+cards, edit reports and the context log stay in the piece folder, and a
+provider's board fields never carry them. Copying a draft to your own workspace
+is a separate, opt-in setting, off until you turn it on.
 
 A provider never deletes or archives anything, and it never picks between two
 values that disagree. When a row has changed since Familiar read it, Familiar

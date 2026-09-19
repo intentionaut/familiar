@@ -23,7 +23,36 @@ Everything else on a row is carried through untouched.
 Only when a writer selects a provider that lives off the machine, and only board
 fields: the piece's title, its state, the next decision as the writer worded it in
 the context log, a last-activity time, and blocker counts. A bracket's text is the
-draft's, so blockers are counts. Draft text, notes and reports never leave.
+draft's, so blockers are counts.
+
+Draft text leaves only when the writer also turns on draft copy, a separate setting
+that is off by default. Notes, source cards, edit reports and the context log never
+leave.
+
+## Drafts and comments in Notion
+
+For a writer producing several longer pieces a week, the draft is readable where the
+board is. Three steps, built in this order:
+
+1. **Copy (one way).** At a stage exit the writer asked for, `draft.md` is copied to
+   the piece's own page in the writer's workspace. `draft.md` stays the only place
+   text changes, and an edit made to the copy is never written back. Blocks are
+   updated in place, so comment threads stay on unchanged paragraphs, and a changed
+   block with an open comment is marked outdated, never dropped. Familiar never
+   changes a page's sharing.
+2. **Comments back.** Open comments on the page become rework requests through the
+   path the board's comments already use. An agent answers with a suggestion; the
+   writer accepts it locally. Notion lists comments per block, so reading a page is
+   one call per block. The API can reply in an existing thread and cannot start one
+   on selected text, so a suggestion goes back as a reply in the same thread, and a
+   comment that cannot be threaded is posted on the page.
+3. **Text back, scoped only.** Whether edits in Notion can return to `draft.md`
+   without loss is scoped in #82, with a fidelity test on synthetic files before any
+   build. The result decides it.
+
+Requests follow Notion's documented limits: an average of 3 a second on most plans
+and 10 on Business and Enterprise, `Retry-After` on a 429, backoff with jitter, rich
+text split at 2,000 characters, and block lists split at 100.
 
 ## Decision: how a piece keeps one ID
 
@@ -65,4 +94,6 @@ Because:
    field mapping, create, update, read, unknown-property preservation, stale writes,
    rate limits, an unreachable Notion.
 3. `board` and `next` read through the selected provider.
-4. Reconciliation of existing pieces and stubs, with a plan before any write.
+4. Draft copy, then comments back.
+5. Reconciliation of existing pieces and stubs, with a plan before any write.
+6. The result of the #82 scoping, which decides whether text sync is built.

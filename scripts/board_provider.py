@@ -10,7 +10,8 @@ touched.
 A provider holds *board fields* only: what a piece is called, where it is, what
 it needs next, when it last moved, what blocks it. Draft text, notes, source
 cards, edit reports and the context log stay in the piece folder and never pass
-through a provider.
+through a board field. Copying a draft to a writer's own workspace is a separate,
+opt-in step, described in docs/plans/notion-board-provider.md.
 
 Two rules every provider follows:
 

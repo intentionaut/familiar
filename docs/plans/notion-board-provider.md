@@ -83,8 +83,8 @@ a stable ID exists to prevent.
 
 Recommended: B.
 
-Chosen:
-Because:
+Chosen: B
+Because: it exists from the first stage, survives a rename, and needs no other file. The owner's own reason is kept in their private log, not in this public repo.
 
 ## Order of work
 

@@ -51,6 +51,51 @@ class Filled(unittest.TestCase):
         self.assertEqual([], pc.check_filled({"knowledge/metrics.md": table.rsplit("| 2026", 1)[0]}))
 
 
+class Replaced(unittest.TestCase):
+    """A blank template that loses its placeholders has been filled in."""
+    LISTED = "knowledge/longform-channels.md\nknowledge/themes.md\n"
+    PH = ["- **Job:** [what this channel is for]", "- **Audience:** [who reads it]",
+          "- **Length:** [words]", "- **Form:** [what shape it rewards]"]
+
+    def test_placeholders_swapped_for_content_are_refused(self):
+        out = pc.check_replaced({"knowledge/longform-channels.md":
+                                 (self.PH, ["- **Job:** reach.", "- **Length:** 600 words."])},
+                                self.LISTED)
+        self.assertEqual(1, len(out))
+        self.assertIn("knowledge/longform-channels.md", out[0])
+
+    def test_a_reworded_placeholder_passes(self):
+        self.assertEqual([], pc.check_replaced({"knowledge/themes.md":
+                         (self.PH[:1], ["- **Job:** [one sentence on its job]"])}, self.LISTED))
+
+    def test_a_rewrite_that_keeps_placeholders_passes(self):
+        self.assertEqual([], pc.check_replaced({"knowledge/themes.md":
+                         (self.PH, ["- **Job:** [what it is for]", "Some new guidance."])}, self.LISTED))
+
+    def test_a_removal_with_nothing_added_passes(self):
+        self.assertEqual([], pc.check_replaced({"knowledge/themes.md": (self.PH, [])}, self.LISTED))
+
+    def test_a_link_is_not_a_placeholder(self):
+        links = ["See [the guide](docs/a.md)", "See [the rules](docs/b.md)", "See [the map](docs/c.md)"]
+        self.assertEqual([], pc.check_replaced({"knowledge/themes.md": (links, ["prose only"])},
+                                               self.LISTED))
+
+    def test_a_file_outside_the_manifest_or_not_markdown_is_left_to_other_checks(self):
+        self.assertEqual([], pc.check_replaced({"docs/plan.md": (self.PH, ["content"]),
+                                                "knowledge/TEMPLATES": (self.PH, ["x"])}, self.LISTED))
+
+    def test_a_diff_is_read_into_removed_and_added_lines(self):
+        diff = ("--- a/knowledge/themes.md\n+++ b/knowledge/themes.md\n"
+                "-[a]  \n-[bb]\n+content\n")
+        orig = pc.git
+        pc.git = lambda *a: "abc\n" if a[0] == "merge-base" else diff
+        try:
+            got = pc.removed_and_added("origin/main")
+        finally:
+            pc.git = orig
+        self.assertEqual((["[a]  ", "[bb]"], ["content"]), got["knowledge/themes.md"])
+
+
 class Terms(unittest.TestCase):
     def test_terms_come_from_the_secret_and_the_house_file(self):
         import tempfile

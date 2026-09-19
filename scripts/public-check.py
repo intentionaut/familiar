@@ -6,12 +6,16 @@ filled-in house lives somewhere private (see AGENTS.md, "This repository is
 public"). Commits made through GitHub's own interface skip every local hook,
 so this runs on each pull request as well as in the tests.
 
-Three checks:
+Four checks:
 
   templates  every file under knowledge/ is listed in knowledge/TEMPLATES.
              A new file is a conscious addition, never a side effect.
   filled     no template carries a writer's answers: no dated or attributed
              `source: declared`, no rows in the tables that start empty.
+  replaced   a change does not swap a template's placeholders for content. A
+             template line reads `[what goes here]`; a change that removes
+             three or more of those from a file and adds none has filled the
+             file in, even with nothing the other checks can name.
   terms      no added line, commit message, PR title or PR description names
              a private term. Terms come from FAMILIAR_PRIVATE_TERMS (an
              Actions secret) and from `private/public-terms.txt` in the
@@ -21,7 +25,7 @@ The terms are private too, so a public CI log names the place, never the term.
 
 Usage:
   public-check.py                     templates and filled only
-  public-check.py --base origin/main  all three, against that base
+  public-check.py --base origin/main  all four, against that base
 
 Exit 0 clean, 1 refused, 2 could not run.
 """
@@ -39,6 +43,9 @@ import paths  # noqa: E402
 MANIFEST = "knowledge/TEMPLATES"
 EMPTY_TABLES = ("knowledge/metrics.md", "knowledge/rejected-rules.md")
 FILLED = re.compile(r"source: declared`?\s*[,(]")
+# A template's own blank: `[the thing to say]`. A markdown link, `[text](url)`, is not one.
+PLACEHOLDER = re.compile(r"\[[^\]\n]{2,}\](?!\()")
+REPLACED_AT = 3  # placeholder lines removed, with none added, before a file counts as filled in
 IN_CI = bool(os.environ.get("GITHUB_ACTIONS"))
 
 
@@ -70,6 +77,28 @@ def check_filled(files):
             # A header and its separator are the template; anything after is data.
             if len(rows) > 2:
                 out.append(f"{path}:{rows[2]}: this table ships empty")
+    return out
+
+
+def check_replaced(changes, manifest):
+    """changes: {path: (removed_lines, added_lines)} for files changed against the base.
+
+    A template ships with placeholders. Taking several out and putting none back
+    is how a writer's own answers get into a blank file, so it is refused for a
+    listed template. One reworded placeholder, or a rewrite that keeps some, passes.
+    """
+    listed = {l.strip() for l in manifest.splitlines()
+              if l.strip() and not l.startswith("#")}
+    out = []
+    for path, (removed, added) in sorted(changes.items()):
+        if path not in listed or not path.endswith(".md"):
+            continue
+        gone = sum(1 for l in removed if PLACEHOLDER.search(l))
+        kept = sum(1 for l in added if PLACEHOLDER.search(l))
+        if gone >= REPLACED_AT and kept == 0 and any(l.strip() for l in added):
+            out.append(f"{path}: {gone} placeholder lines replaced with content and none "
+                       "put back. The repo ships blank templates only; the writer's "
+                       "answers belong in their house.")
     return out
 
 
@@ -119,6 +148,24 @@ def added_lines(base):
     return sources
 
 
+def removed_and_added(base):
+    """{path: (removed lines, added lines)} between the merge base and the working tree."""
+    fork = git("merge-base", base, "HEAD").strip()
+    changes, current = {}, None
+    for line in git("diff", "--unified=0", "--no-color", fork).splitlines():
+        if line.startswith("+++ "):
+            current = line[6:] if line.startswith("+++ b/") else None
+            if current:
+                changes.setdefault(current, ([], []))
+        elif line.startswith("--- "):
+            continue
+        elif current and line.startswith("-"):
+            changes[current][0].append(line[1:])
+        elif current and line.startswith("+"):
+            changes[current][1].append(line[1:])
+    return changes
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base")
@@ -136,6 +183,7 @@ def main():
 
     unchecked = False
     if args.base:
+        problems += check_replaced(removed_and_added(args.base), manifest)
         if os.environ.get("PUBLIC_OK") == "true":
             print("terms: skipped, the PR is labelled public-ok")
         else:

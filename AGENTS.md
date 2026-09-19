@@ -41,10 +41,10 @@ terms. "Tell the story" as an AI tell is fine; "banned by <writer> on
 
 `scripts/public-check.py` refuses what it can catch, on every pull request
 and in the tests: a file under `knowledge/` that `knowledge/TEMPLATES` does not
-list, a template with a dated or attributed `source: declared`, and a private
-term from the writer's list in any added line, commit message, title or
-description. It is a backstop, not permission: a change it passes can still
-be wrong for this repo. A `public-ok` label skips the terms check, and only a
+list, a template with a dated or attributed `source: declared`, a template
+whose placeholders a change swaps for content, and a private term from the
+writer's list in any added line, commit message, title or description. It is a backstop, not permission: a change it passes can still
+be wrong for this repo. A `public-ok` label skips the terms check only, and a
 person adds it.
 
 ## Pipeline

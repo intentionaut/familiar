@@ -16,7 +16,11 @@ failure this stage was split out to prevent.
 
 1. Read `knowledge/social-schedule.md` for channels, cadence, send times,
    character limits and the `## Scheduler` block.
-2. Read `knowledge/links.md` for the tracking convention and destinations.
+2. Read `knowledge/channels.md` for each channel's destination rule and
+   link placement. Every post must name a channel the registry declares
+   and exactly one destination; a post that names none, or two, stops the
+   run until the writer settles it. Approved copy does not change to fix
+   either.
 3. Read `knowledge/style-rules.md`. You will need it only if the writer edits
    something at the gate.
 
@@ -43,8 +47,9 @@ Read `scheduler:` in the `## Scheduler` block.
 
 In this order, per post. The order is the point.
 
-1. **Resolve the destination.** Turn "the piece" or "the index" into a real URL
-   from `knowledge/links.md`. If the piece has not published and its URL does
+1. **Resolve the destination.** Take the post's declared destination and
+   turn it into a real URL from `knowledge/links.md`, under the channel's
+   destination rule in `knowledge/channels.md`. If the piece has not published and its URL does
    not resolve yet, either point at the index or keep the placeholder and say
    the schedule cannot complete for that post. A URL that 404s is not a URL.
 2. **Append tracking parameters** per the convention. Source is the channel's

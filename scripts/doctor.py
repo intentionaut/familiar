@@ -316,6 +316,25 @@ def main():
         else:
             print("  Social schedule: template (fill in when you want posts)")
 
+    # Channels: the registry every routing stage reads. Quiet when nobody
+    # has declared channels, the same rule as the other setting-gated files.
+    try:
+        from channel_check import parse_registry, check  # noqa: E402
+        registry = parse_registry(cfg / "channels.md")
+        if registry:
+            problems, warnings = check(cfg)
+            word = "channel" if len(registry) == 1 else "channels"
+            print(f"  Channels: {len(registry)} {word} declared")
+            for prob in problems:
+                print(f"    problem: {prob}")
+            for warn in warnings:
+                print(f"    warning: {warn}")
+        else:
+            print("  Channels: template (declare where your pieces appear "
+                  "in knowledge/channels.md)")
+    except Exception as e:  # never let the report die on the channels block
+        print(f"  Channels: could not be checked ({e})")
+
     # Reflection
     refl = cfg / "reflection.md"
     text = refl.read_text() if refl.is_file() else ""

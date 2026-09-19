@@ -77,8 +77,9 @@ sent mid-flow, the session that felt like a piece, the clip saved with
   edited in place, only triaged or retired.
 - Triage is a proposal, not a promotion. When asked (or during `harvest`),
   each untriaged stub gets a mapping: the theme it serves, the audience or
-  audiences it serves, the surface that fits, and the evidence it would
-  need. A stub that fits no audience goes to `knowledge/proposals/` as a
+  audiences it serves, the channel that fits, named by its id in
+  `knowledge/channels.md`, the one destination the piece would send its
+  readers to, and the evidence it would need. A stub that fits no audience goes to `knowledge/proposals/` as a
   candidate audience or is retired with a reason, and the writer decides
   both.
 - The board counts untriaged stubs the way it counts open questions: a pile

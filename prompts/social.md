@@ -35,8 +35,10 @@ field, say so and offer `finalise` first. The writer may override.
 
 1. Read AGENTS.md, knowledge/style-rules.md, knowledge/social-rules.md,
    knowledge/voice-guide.md, knowledge/positioning.md,
-   knowledge/social-schedule.md, knowledge/examples/canonical.md.
-   Internalise the voice before writing.
+   knowledge/social-schedule.md, knowledge/channels.md,
+   knowledge/examples/canonical.md. Internalise the voice before writing.
+   Every channel you write for must be declared in channels.md; an
+   undeclared channel is unknown, so stop and say so.
 2. If `social-schedule.md` is still the unfilled template (bracketed
    placeholders in the Channels or Cadence tables), stop and ask the writer to
    fill in channels, cadence and times first. Do not guess a cadence.
@@ -73,10 +75,12 @@ must stand alone.
 For each candidate:
 
 ```
-### C<n> · [<channel tags>] · <shape>
+### C<n> · [<channel ids>] · <shape>
 <the full post text; for a multi-channel candidate, the long text, then
  "--- <short channel>:" and the rewrite; for a thread, number the posts 1/ 2/ 3/>
 
+channel: <the channel id from channels.md>
+destination: <the one place this post's CTA sends the reader>
 link: [the piece's URL if known, else [ADD POST URL]]
 chars: <count per channel>
 viewpoint: <the one thing this post says, in a sentence. If it needs an "and",
@@ -88,6 +92,9 @@ Rules for every candidate:
 
 - Built from something the source actually says. No new claims, no invented
   quotes or numbers.
+- One post, one destination. A candidate that wants to send the reader to
+  two places is two candidates. Identical copy never goes to two channels:
+  the channel's relationships in channels.md say what companion means.
 - voice-guide.md exactly. No AI tells, no hype vocabulary, no résumé drops.
 - Every post on a short channel makes sense to someone who has not read the
   piece. Only the tease may lead with the publication.

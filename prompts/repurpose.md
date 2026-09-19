@@ -60,10 +60,11 @@ field, say so and offer `finalise` first. The writer may override.
 ## Setup
 
 1. Read knowledge/positioning.md and knowledge/voice-guide.md.
-2. Read knowledge/longform-channels.md and find the channel named in
-   `$ARGUMENTS`. It gives the channel's job, form, length, audience and CTA.
-   If the file is still the unfilled template, or the channel is not in it,
-   stop and ask the writer to fill it in. Do not guess a form.
+2. Read knowledge/channels.md and find the channel named in `$ARGUMENTS`,
+   by its id. Its block gives the channel's job, form, length, audience,
+   cadence, source material and destination rule. If the file is still the
+   unfilled template, or the channel is not in it, stop and ask the writer
+   to declare the channel. Do not guess a form.
 3. Take the source piece from `$ARGUMENTS`, or the newest `pieces/*/` with a
    finished draft.
 4. Read, in this order, and note which exist:
@@ -110,7 +111,7 @@ Which piece, which channel, and the channel's job in one line.
 
 ## The standalone rule
 This channel's reader has not read the source piece. Restate the constraint
-from longform-channels.md so every later stage sees it.
+from the channel's block in channels.md so every later stage sees it.
 
 ## What happened (sourced)
 The six things above, each with verbatim quotes and file paths. Mark each

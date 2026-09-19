@@ -195,7 +195,15 @@ class TheOneTimeAsk(unittest.TestCase):
         lower = flog.log_destination(Path("/x/cv-coach"), "L.md", "~/v/{project}")
         upper = flog.log_destination(Path("/x/cv-coach"), "L.md", "~/v/{Project}")
         self.assertIn("/v/cv-coach/", lower)
-        self.assertIn("/v/CvCoach/", upper)
+        self.assertIn("/v/Cv-Coach/", upper)
+
+    def test_project_token_keeps_the_folder_spelling(self):
+        """Separators and existing capitals survive; only word starts change."""
+        for name, want in [("field-notes", "Field-Notes"), ("notes_2", "Notes_2"),
+                           ("widget", "Widget"), ("Garden", "Garden"),
+                           ("myApp", "MyApp")]:
+            got = flog.log_destination(Path("/x") / name, "L.md", "~/v/{Project}")
+            self.assertIn(f"/v/{want}/", got)
 
 
 class ThingsThatShouldNotNeedAsking(unittest.TestCase):

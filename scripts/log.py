@@ -97,7 +97,10 @@ def log_destination(folder, name, home):
     """
     if home is None or home.strip().lower() == "in the project":
         return name
-    slot = (home.replace("{Project}", folder.name.replace("-", " ").title().replace(" ", ""))
+    # {Project} capitalises each word and keeps the separators, so cv-coach
+    # becomes Cv-Coach beside the folders a person already made by hand.
+    title = re.sub(r"(^|[-_ .])([a-z])", lambda m: m.group(1) + m.group(2).upper(), folder.name)
+    slot = (home.replace("{Project}", title)
                 .replace(PROJECT_TOKEN, folder.name))
     return str(pathlib.Path(slot) / name)
 

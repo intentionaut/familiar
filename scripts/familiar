@@ -551,6 +551,49 @@ def cmd_rework(args):
     return subprocess.call([sys.executable, str(HOME / "scripts" / "rework.py"), *args.rest])
 
 
+def cmd_board(args):
+    """Show the board, or bring one piece's row up to date after a stage exit."""
+    import board_provider as bp
+    import board_sync
+    dirs = pieces_dirs()
+    if args.action == "sync":
+        if not args.piece:
+            print("Name the piece to sync: familiar board sync <piece>", file=sys.stderr)
+            return 1
+        status, message = board_sync.sync_piece(dirs, args.piece)
+        print(message)
+        return 1 if status == "failed" else 0
+    try:
+        provider = bp.resolve_provider(dirs)
+        if isinstance(provider, bp.LocalProvider):
+            argv = ["--serve", "--open"] if args.edit else ["--open"]
+            return subprocess.call([sys.executable, str(HOME / "scripts" / "board.py"), *argv])
+        if args.edit:
+            print("This board lives in Notion. Edit it there.")
+            return 0
+        print(board_sync.show_board(provider))
+        return 0
+    except bp.BoardError as e:
+        print(e, file=sys.stderr)
+        return 2
+
+
+def cmd_next(args):
+    """Where a piece is and what it needs next. Names it; starts nothing."""
+    import board_provider as bp
+    import board_sync
+    dirs = pieces_dirs()
+    try:
+        provider = bp.resolve_provider(dirs)
+        here = None if args.piece else board_sync.piece_here(dirs, Path.cwd())
+        code, text = board_sync.next_text(provider, args.piece, here)
+    except bp.BoardError as e:
+        print(e, file=sys.stderr)
+        return 2
+    print(text)
+    return code
+
+
 def cmd_log(args):
     """Handle log subcommands."""
     if args.log_command == "list":
@@ -1108,6 +1151,14 @@ def main():
     p_dec.add_argument("piece", nargs="?", help="the piece the answer belongs to")
     p_dec.add_argument("answer", nargs="?", help="your answer, in your words")
 
+    p_board = sub.add_parser("board", help="what you have in flight; sync a piece's row after a stage exit")
+    p_board.add_argument("action", nargs="?", choices=["sync"], help="sync: bring one piece's row up to date")
+    p_board.add_argument("piece", nargs="?", help="with sync: the piece, by folder name or part of it")
+    p_board.add_argument("--edit", action="store_true", help="edit pieces on the built-in board")
+
+    p_next = sub.add_parser("next", help="where a piece is and what it needs next")
+    p_next.add_argument("piece", nargs="?", help="the piece (default: the one you are in, or the only open one)")
+
     p_rw = sub.add_parser("rework", help="rework requests from the board, for the agent answering them")
     p_rw.add_argument("rest", nargs=argparse.REMAINDER, help="open, propose or watch")
 
@@ -1168,6 +1219,10 @@ def main():
         _finish(cmd_decisions(args))
     elif args.command == "rework":
         _finish(cmd_rework(args))
+    elif args.command == "board":
+        _finish(cmd_board(args))
+    elif args.command == "next":
+        _finish(cmd_next(args))
     elif args.command == "log":
         _finish(cmd_log(args))
     elif args.command == "quip":

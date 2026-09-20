@@ -193,21 +193,26 @@ class LocalProvider(BoardProvider):
         self.stale_days = stale_days
         self.now = now
 
-    def read_all(self):
+    def item_for(self, folder):
+        """One piece as a board item. Reads the folder and writes nothing."""
         import datetime
         import board
         now = self.now if self.now is not None else datetime.datetime.now().timestamp()
+        folder = Path(folder)
+        p = board.gather(folder, now, self.stale_days, "")
+        return BoardItem(
+            # The piece's ID file; the folder name until it has one.
+            id=read_piece_id(folder) or p["slug"], title=p["title"], state=p["stage"],
+            next_decision=p["action"], last_activity=p["ts"], blockers=_blockers(p),
+            extra={"slug": p["slug"]})
+
+    def read_all(self):
         items = []
         for d in self.dirs:
             for folder in sorted((f for f in d.iterdir()
                                   if f.is_dir() and not f.name.startswith(".")),
                                  key=lambda f: f.name, reverse=True):
-                p = board.gather(folder, now, self.stale_days, "")
-                items.append(BoardItem(
-                    # The piece's ID file; the folder name until it has one.
-                    id=read_piece_id(folder) or p["slug"], title=p["title"], state=p["stage"],
-                    next_decision=p["action"], last_activity=p["ts"],
-                    blockers=_blockers(p)))
+                items.append(self.item_for(folder))
         return items
 
 

@@ -39,6 +39,9 @@ to use another name, add a line such as `- Property state: Stage`.
 | links | Links | rich text |
 | piece_id | Piece ID | rich text |
 
+After a stage, `familiar board sync <piece>` brings that piece's row up to date.
+A failed sync prints one line and never stops the stage.
+
 Share the database with your Notion integration, and put its token in
 `FAMILIAR_NOTION_TOKEN` in your environment. Properties other than these are
 left as they are.

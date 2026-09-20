@@ -1,6 +1,7 @@
 # The blank templates this repo ships. Nothing else may live under knowledge/.
 # Adding a line here says: this file is a template any writer could use, with no one's answers in it.
 knowledge/board.md
+knowledge/board-provider.md
 knowledge/build-logs.md
 knowledge/channels.md
 knowledge/checkin.md

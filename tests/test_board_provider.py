@@ -138,11 +138,6 @@ class Setting(unittest.TestCase):
             p = bp.resolve_provider([], self.house(text))
             self.assertIsInstance(p, bp.LocalProvider, text)
 
-    def test_notion_says_it_is_not_in_this_version(self):
-        with self.assertRaises(bp.BoardError) as cm:
-            bp.resolve_provider([], self.house("- Provider: notion\n"))
-        self.assertIn("not in this version", str(cm.exception))
-        self.assertIn(bp.SETTINGS_FILE, cm.exception.next_step)
 
     def test_a_value_that_is_no_provider_names_the_ones_that_are(self):
         with self.assertRaises(bp.BoardError) as cm:

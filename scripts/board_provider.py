@@ -30,6 +30,7 @@ Usage:
 """
 import re
 import sys
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Mapping, Optional, Sequence
@@ -39,6 +40,7 @@ sys.path.insert(0, str(HERE))
 import paths  # noqa: E402
 
 SETTINGS_FILE = "board-provider.md"
+ID_FILE = ".piece-id"
 PROVIDERS = ("local", "notion")
 
 # The only fields a provider reads or writes. Anything else on a row is the
@@ -120,6 +122,62 @@ class BoardProvider:
                 f"A change may name {', '.join(BOARD_FIELDS)}.")
 
 
+def read_piece_id(folder):
+    """A piece's stable ID, or "" when it has none yet."""
+    f = Path(folder) / ID_FILE
+    return f.read_text(encoding="utf-8").strip() if f.is_file() else ""
+
+
+def ensure_piece_id(folder):
+    """The piece's ID, creating the file when there is none.
+
+    A piece keeps one ID for its whole life, in a small file beside its other
+    files, so it survives a renamed folder and exists from the first stage. An
+    existing file is never rewritten. This adds one new file and touches nothing
+    the writer wrote.
+    """
+    existing = read_piece_id(folder)
+    if existing:
+        return existing
+    new = uuid.uuid4().hex[:12]
+    (Path(folder) / ID_FILE).write_text(new + "\n", encoding="utf-8")
+    return new
+
+
+def duplicate_ids(items):
+    """{id: [titles]} for any ID more than one piece carries, as a copied folder does."""
+    seen = {}
+    for i in items:
+        seen.setdefault(i.id, []).append(i.title)
+    return {k: v for k, v in seen.items() if len(v) > 1}
+
+
+def push(provider, item, tolerance=1.0):
+    """Bring one row up to date with a piece. Returns "created", "updated" or "unchanged".
+
+    Reads the row first and writes against the version it read, so a row that
+    changed in between raises BoardConflict and is left as it is.
+    """
+    row = provider.read(item.id)
+    if row is None:
+        provider.create(item)
+        return "created"
+    changes = {}
+    for f in BOARD_FIELDS:
+        new, old = getattr(item, f), getattr(row, f)
+        if f == "last_activity":
+            if abs(new - old) >= tolerance:
+                changes[f] = new
+        else:
+            same = (tuple(new) == tuple(old)) if isinstance(new, (tuple, list)) else new == old
+            if not same:
+                changes[f] = new
+    if not changes:
+        return "unchanged"
+    provider.update(item.id, changes, row.version)
+    return "updated"
+
+
 class LocalProvider(BoardProvider):
     """The built-in board: state worked out from the piece folders.
 
@@ -146,8 +204,8 @@ class LocalProvider(BoardProvider):
                                  key=lambda f: f.name, reverse=True):
                 p = board.gather(folder, now, self.stale_days, "")
                 items.append(BoardItem(
-                    # Interim: the folder name. The stable-ID decision replaces it.
-                    id=p["slug"], title=p["title"], state=p["stage"],
+                    # The piece's ID file; the folder name until it has one.
+                    id=read_piece_id(folder) or p["slug"], title=p["title"], state=p["stage"],
                     next_decision=p["action"], last_activity=p["ts"],
                     blockers=_blockers(p)))
         return items
@@ -178,7 +236,7 @@ def read_setting(knowledge, fname=SETTINGS_FILE):
     return m.group(1).strip().lower()
 
 
-def resolve_provider(pieces_dirs, knowledge=None):
+def resolve_provider(pieces_dirs, knowledge=None, env=None, transport=None):
     """The provider the writer's house selects; the built-in board when it selects none."""
     if knowledge is None:
         knowledge, _ = paths.knowledge_dir()
@@ -186,8 +244,8 @@ def resolve_provider(pieces_dirs, knowledge=None):
     if chosen in (None, "local"):
         return LocalProvider(pieces_dirs)
     if chosen == "notion":
-        raise BoardError("The Notion board provider is not in this version of Familiar.",
-                         f"Set Provider to local in {SETTINGS_FILE}, or update Familiar.")
+        import notion_board
+        return notion_board.build(knowledge, env=env, transport=transport)
     raise BoardError(f'"{chosen}" is not a board provider.',
                      f"{SETTINGS_FILE} may name {' or '.join(PROVIDERS)}.")
 

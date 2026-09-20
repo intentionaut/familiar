@@ -160,8 +160,9 @@ class FakePages(tn.FakeNotion):
             lst = self.kids[parent]
             for m in made:
                 lst.remove(m)
-            pos = data["position"]
-            at = 0 if pos["type"] == "start" else lst.index(pos["after_block"]["id"]) + 1
+            pos = data.get("position", {"type": "end"})
+            at = {"start": 0, "end": len(lst)}.get(pos["type"]) if pos["type"] != "after_block" \
+                else lst.index(pos["after_block"]["id"]) + 1
             lst[at:at] = made
             return 200, {}, {"results": [self.blocks[m] for m in made], "has_more": False}
         if method == "PATCH":

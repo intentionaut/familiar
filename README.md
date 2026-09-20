@@ -1,5 +1,7 @@
 # Familiar
 
+[![License: AGPL v3 or later](https://img.shields.io/badge/License-AGPL_v3_or_later-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+
 Familiar studies the work you are doing and writes about it when there is
 enough to write from, in your voice, from things you actually said and did.
 
@@ -9,7 +11,7 @@ Then it interviews you one question at a time, drafts from your own published
 pieces, and hands back an editor's report instead of a rewrite. Nothing is
 invented: anything it cannot source becomes a visible bracket for you to fill.
 
-Plain markdown prompts, MIT, nothing leaves your machine.
+Plain markdown prompts, AGPL-3.0-or-later, nothing leaves your machine.
 
 ```
 /plugin marketplace add intentionaut/familiar
@@ -443,6 +445,20 @@ and I could not reconstruct a single one.
 The stages are shaped by how good editors actually work: interview first, propose
 structures rather than pick one, report rather than rewrite, and run the boring
 mechanical pass last.
+
+## Licence
+
+Familiar is licensed under the GNU Affero General Public License v3.0 or later
+(AGPL-3.0-or-later). If you modify Familiar and make it available over a
+network, you must make the corresponding source available under the same
+licence.
+
+Commercial licences are available for organisations that cannot use the AGPL.
+Contact [hello@intentionaut.com](mailto:hello@intentionaut.com).
+
+Releases published before this change remain available under the MIT licence
+that applied to them. The AGPL applies to future releases from this change
+forward.
 
 ## The letter
 

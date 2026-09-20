@@ -689,3 +689,7 @@ When a real piece teaches you something about the voice, update
 `voice-guide.md` and prune or add to `examples/canonical.md` in the writer's
 house. The second time the writer makes the same edit by hand, encode it as a
 rule in the house's `style-rules.md`. This repo's copies stay blank templates.
+
+
+## Preflight before building
+Before any structural build - a board, pipeline, template set, workflow - show me the shape first, in one message: the object types, the decision it supports, one real example, what's deliberately left out, and what "done" looks like. Build only after my explicit yes. If I'm reacting to a finished thing to explain the category, the process failed, not me.

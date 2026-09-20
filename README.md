@@ -210,6 +210,11 @@ instead, choose it in `knowledge/board-provider.md` in your house. Then
 piece's row up to date after a stage. Only board fields go to Notion: title,
 state, what the piece needs next, when it last moved, and what is in its way.
 
+With draft copy on, `familiar push <piece>` copies the draft to the piece's Notion
+page, where you can read and edit it, and `familiar pull <piece>` brings your
+edits back into `draft.md`. The two take turns: nothing goes ahead when both sides
+changed, and what is replaced is kept in `.versions/` first.
+
 Pieces in more than one place? Pass `--pieces` once per folder and each card says
 where it came from.
 

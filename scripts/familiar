@@ -578,6 +578,15 @@ def cmd_board(args):
         return 2
 
 
+def cmd_push_pull(args):
+    """Copy a draft to its Notion page, or bring the page's text back into draft.md."""
+    import notion_draft
+    fn = notion_draft.push if args.command == "push" else notion_draft.pull
+    status, message = fn(pieces_dirs(), args.piece, check=args.check, force=args.force)
+    print(message)
+    return 1 if status == "failed" else 0
+
+
 def cmd_next(args):
     """Where a piece is and what it needs next. Names it; starts nothing."""
     import board_provider as bp
@@ -1156,6 +1165,14 @@ def main():
     p_board.add_argument("piece", nargs="?", help="with sync: the piece, by folder name or part of it")
     p_board.add_argument("--edit", action="store_true", help="edit pieces on the built-in board")
 
+    for name, what in (("push", "copy a draft to its Notion page"),
+                       ("pull", "bring the Notion page's text back into draft.md")):
+        p_pp = sub.add_parser(name, help=what)
+        p_pp.add_argument("piece", help="the piece, by folder name or part of it")
+        p_pp.add_argument("--check", action="store_true", help="say what it would do, and change nothing")
+        p_pp.add_argument("--force", action="store_true",
+                          help="when both sides changed: this side wins, and what it replaces is kept in .versions/")
+
     p_next = sub.add_parser("next", help="where a piece is and what it needs next")
     p_next.add_argument("piece", nargs="?", help="the piece (default: the one you are in, or the only open one)")
 
@@ -1223,6 +1240,8 @@ def main():
         _finish(cmd_board(args))
     elif args.command == "next":
         _finish(cmd_next(args))
+    elif args.command in ("push", "pull"):
+        _finish(cmd_push_pull(args))
     elif args.command == "log":
         _finish(cmd_log(args))
     elif args.command == "quip":

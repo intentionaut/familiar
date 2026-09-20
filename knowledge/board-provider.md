@@ -62,3 +62,15 @@ the piece's Notion page, and `familiar pull <piece>` brings the page's text back
 - Formatting with no markdown form (underline, colour) is dropped on a pull, and
   the pull says how much. A block with no draft form (a toggle, a callout, a
   column) stops the pull and is named.
+
+## Checking a board before you rely on it
+
+```sh
+python3 scripts/notion_check.py --database <ID or URL>            # read only
+python3 scripts/notion_check.py --database <ID or URL> --write    # one test row, a real round trip
+```
+
+The first checks the token, the connection and the seven properties, and writes
+nothing. The second adds one test row and runs a real copy, edit and return on it,
+then says what Notion changed. Point `--write` at a scratch database. It never
+deletes; remove the test row yourself.

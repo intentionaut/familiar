@@ -47,6 +47,34 @@ Share the database with your Notion integration, and put its token in
 `FAMILIAR_NOTION_TOKEN` in your environment. Properties other than these are
 left as they are.
 
+## The wider schema map
+
+Beyond the seven board fields, `scripts/notion_schema.py` maps a wider set of
+per-piece fields onto the rest of your Notion schema: content type, audience,
+channel, theme, priority, owner, next action, decision gate, blocker, source
+URL, related project, last-worked date, target date and publication URL, the
+same way. It reads the schema once, writes only the fields that changed, and
+leaves everything else on the row alone. It shares the database and token
+above; to point it at a different database, add `- Schema database:` and
+`- Schema data source:`. To rename a mapped property, add a line such as
+`- Field owner: Assignee`.
+
+Two fields carry a piece's place in the pipeline. `body_state` writes
+Familiar's own five stages (thinking, writing, editing, ready, sent) as-is.
+`lifecycle` writes your own Notion status property, translated through an
+explicit table you configure, one line per stage, naming the option it maps
+to:
+
+    - Lifecycle thinking: [your option for "thinking"]
+    - Lifecycle writing: [your option for "writing"]
+    - Lifecycle editing: [your option for "editing"]
+    - Lifecycle ready: [your option for "ready"]
+    - Lifecycle sent: [your option for "sent"]
+
+Every stage needs a line, and no two stages may name the same option. A
+stage with no configured option is refused, never guessed, and Familiar never
+creates, renames or deletes a Notion property to make one fit.
+
 ## Draft copy
 
 Off unless you turn it on. When on, `familiar push <piece>` copies `draft.md` to

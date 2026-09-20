@@ -631,6 +631,11 @@ shortfall. If nothing is lost, it was carrying a verdict.
   touched, what changed, the decision gate for the writer, and next stage.
   One log per piece, inside the piece folder. Append, never replace. Read it on
   resume to pick work back up.
+- **Board sync:** when `knowledge/board-provider.md` in the writer's house names
+  a provider, run `familiar board sync <piece>` after the context log entry. It
+  prints one line. A failure is reported in that line and never blocks the stage
+  or repeats. With no provider set it does nothing, so a stage never needs to
+  check first.
 
 ## File map
 
@@ -657,6 +662,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `scripts/public-check.py`: refuses a writer's own material in this public repo; runs on every pull request
 - `knowledge/models.md`: per-stage model recommendations and fallback rule
 - `knowledge/board-provider.md`: which provider supplies the board's state; unset means the built-in board
+- `scripts/board_sync.py`: `familiar board`, `familiar board sync <piece>` and `familiar next`, reading and writing through the provider; a sync never blocks a stage, and `next` names and starts nothing
 - `scripts/notion_board.py`: the Notion provider behind that boundary; board fields only, never a delete or an archive
 - `scripts/board_provider.py`: the provider boundary `board` and `next` read through; the built-in board is the default provider
 - `knowledge/board.md`: optional; the board's colours, fonts (installed or from Google Fonts), text size, and whether it stays light in dark mode

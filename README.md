@@ -136,6 +136,7 @@ learn ingest <path> teach it your voice from what you have published
                     (a folder, a platform export, or a URL)
 reflect             two questions about how the work is going
 board               what you have in flight, and what each piece needs
+next                where a piece is and what it needs next
 ```
 
 Each piece lives in its own folder under `pieces/`. Every stage can be run
@@ -191,13 +192,23 @@ false positives for every writer using it.
 ## See what you have in flight
 
 ```sh
-scripts/board.py --open
+familiar board          # open it
+familiar board --edit   # work on pieces from the board
+familiar next [piece]   # where a piece is and what it needs next
 ```
+
+`scripts/board.py --open` still works and does the same thing.
 
 A static board, a column per state of the writing, a card per piece with its
 title, date, the first thing it says, and the next thing it needs. Click a card
 for the whole piece on one page: what it is waiting on, which brackets are still
 unresolved, the notes and outline folded away, then the draft.
+
+The built-in board is maintained and not extended. To keep the board in Notion
+instead, choose it in `knowledge/board-provider.md` in your house. Then
+`familiar board` prints that board, and `familiar board sync <piece>` brings one
+piece's row up to date after a stage. Only board fields go to Notion: title,
+state, what the piece needs next, when it last moved, and what is in its way.
 
 Pieces in more than one place? Pass `--pieces` once per folder and each card says
 where it came from.

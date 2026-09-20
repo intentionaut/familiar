@@ -8,6 +8,7 @@ out every piece's state from the piece folders and needs nothing from you.
 - Provider: [local / notion]
 - Notion database: [database ID or URL]
 - Notion data source: [only when the database has more than one]
+- Draft copy: [on / off]
 
 ## What a provider holds
 
@@ -45,3 +46,19 @@ A failed sync prints one line and never stops the stage.
 Share the database with your Notion integration, and put its token in
 `FAMILIAR_NOTION_TOKEN` in your environment. Properties other than these are
 left as they are.
+
+## Draft copy
+
+Off unless you turn it on. When on, `familiar push <piece>` copies `draft.md` to
+the piece's Notion page, and `familiar pull <piece>` brings the page's text back.
+
+- Only one side changes the text at a time. A push or a pull goes ahead when
+  exactly one side has changed since the two last agreed. When both have,
+  nothing changes and you are asked which stands.
+- Before `draft.md` is replaced its text is kept in `.versions/`. Before the page
+  is replaced its text is kept there too.
+- Front matter stays in `draft.md`. A pull replaces the body only.
+- A sent piece's draft is never written. Its copy in Notion is a record.
+- Formatting with no markdown form (underline, colour) is dropped on a pull, and
+  the pull says how much. A block with no draft form (a toggle, a callout, a
+  column) stops the pull and is named.

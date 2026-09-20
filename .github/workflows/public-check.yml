@@ -2,7 +2,7 @@ name: Public check
 
 # This repo is public. Refuse a pull request that carries a writer's own
 # material: a file under knowledge/ that is not a blank template, a filled-in
-# answer, or a private term in the added lines, commit messages, title or
+# answer, a template whose placeholders were replaced with content, or a private term in the added lines, commit messages, title or
 # description. Commits made in GitHub's own interface skip local hooks, so this
 # is the check that always runs. See AGENTS.md, "This repository is public".
 #

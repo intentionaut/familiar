@@ -657,6 +657,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `scripts/public-check.py`: refuses a writer's own material in this public repo; runs on every pull request
 - `knowledge/models.md`: per-stage model recommendations and fallback rule
 - `knowledge/board-provider.md`: which provider supplies the board's state; unset means the built-in board
+- `scripts/notion_board.py`: the Notion provider behind that boundary; board fields only, never a delete or an archive
 - `scripts/board_provider.py`: the provider boundary `board` and `next` read through; the built-in board is the default provider
 - `knowledge/board.md`: optional; the board's colours, fonts (installed or from Google Fonts), text size, and whether it stays light in dark mode
 - `knowledge/context-log.md`: the resume log format

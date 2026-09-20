@@ -692,4 +692,4 @@ rule in the house's `style-rules.md`. This repo's copies stay blank templates.
 
 
 ## Preflight before building
-Before any structural build — a board, pipeline, template set, workflow — show me the shape first, in one message: the object types, the decision it supports, one real example, what's deliberately left out, and what "done" looks like. Build only after my explicit yes. If I'm reacting to a finished thing to explain the category, the process failed, not me.
+Before any structural build - a board, pipeline, template set, workflow - show me the shape first, in one message: the object types, the decision it supports, one real example, what's deliberately left out, and what "done" looks like. Build only after my explicit yes. If I'm reacting to a finished thing to explain the category, the process failed, not me.

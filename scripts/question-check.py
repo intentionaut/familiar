@@ -29,6 +29,8 @@ stripped first). Flags, by name:
 
   hard-to-read     Flesch reading ease of the visible text (each prompt, and the opening) is under 60
   jargon           an internal word (receipt, steelman, mechanism...) is visible
+  files-talk       the visible text reports what the writer's files do not hold
+  second-ask       the answer shape asks for a second thing ("one real week, and what changed")
   no-way-out       a prompt gives no way out ("rough is fine", "pass")
   no-switch        the opening does not name the "gentler" and "push me" switch
   no-listening     a prompt does not start from what the writer said, labelled a guess
@@ -42,10 +44,12 @@ stripped first). Flags, by name:
   no-comment       the hidden comment lacks move, receipt or level
   wrong-length     the answer length asked does not match the setting
   no-gentle-doubt  companion: prompt 3 is not the gentle doubt question
+  critic-at-companion  companion: prompt 3 puts a critic on the table instead of restating the writer's own idea
   no-fair-critic   fireside and deep dive: prompt 3's guess carries no imagined thoughtful person's case, or its question does not ask for a reaction
   no-mind-change   fireside and deep dive: prompt 3 does not ask what would change their mind
   no-tension       deep dive: no live tension marker pointing at the writer's own files
   tension-quote    deep dive: the tension marker quotes text instead of pointing at a file
+  tension-in-text  deep dive: the tension is bracketed as missing, and the writer can still read one
   no-observable    deep dive: nothing asks for something observable with a date or number
   not-fireside-format  --warm was given but no prompt is in the fireside format
 
@@ -203,14 +207,39 @@ PRAISE = re.compile(
     r"game-?changing|revolutionary|groundbreaking|love (that|this|it)|good question|you'?re right)\b", re.I)
 ACCUSING = re.compile(
     r"(against you|you'?re wrong|you are wrong|you failed|why didn'?t you|why did you not|you should have|you missed|your mistake)", re.I)
+CRITIC = re.compile(
+    r"\ba (thoughtful|fair|reasonable) (person|critic|colleague|reader)\b"
+    r"|\bsomeone (thoughtful|fair|reasonable)\b[^.?]*\b(might|would|could) say\b", re.I)
 IMAGINED = re.compile(
     r"\b(picture|imagine|suppose)\b[^.?]*\b(person|colleague|reader|friend|critic|someone)\b"
-    r"|\ba (thoughtful|fair|reasonable) (person|critic|colleague|reader)\b"
-    r"|\bsomeone (thoughtful|fair|reasonable)\b[^.?]*\b(might|would|could) say\b", re.I)
+    r"|" + CRITIC.pattern, re.I)
+# The guess restates the idea and the evidence in hand. An inventory of what the
+# files do not hold is the tool describing its own problem to the writer.
+FILES_TALK = re.compile(
+    r"\bno (dates?|numbers?|names?|examples?)\b[^.?!]{0,50}\b(yet|in (them|the files|your files|your notes))\b"
+    r"|\b(nothing|no example|not much|little)\b[^.?!]{0,40}\bto (work from|go on)\b"
+    r"|\byour (notes|files|brief|log|records?)\b[^.?!]{0,60}\b(nothing else|only that|just that|one line)\b"
+    r"|\bthat('s| is) all (they|it) (say|says)\b"
+    r"|\ball (you have|you've) (saved|got)\b", re.I)
+# A tension named in what the writer reads, for the case where the marker says
+# there are no two statements to name.
+TENSION_TEXT = re.compile(
+    r"\btwo things (you|in your)\b|\bsits? (oddly|awkwardly)\b|\byou('ve| have) said both\b"
+    r"|\bI (also )?notice you say\b|\byou also say\b", re.I)
 POSITION = re.compile(r"\b(my (own )?(position|view|take)|I lean|I suspect|I'd guess|I would guess)\b", re.I)
-REACTION = re.compile(r"\b(react\w*|make of (it|that|this)|think of (it|that|this)|land\w*|sit with you)\b", re.I)
+REACTION = re.compile(
+    r"\b(react\w*|make of (it|that|this)|think of (it|that|this)|land\w*|sit with you"
+    r"|how much of (that|this)|your (read|take) on (that|this)|(that|this) holds?)\b", re.I)
 VERDICT = re.compile(r"\bI (think|believe|doubt|say) (that )?(you|this|it|the)\b|\bthe (real )?problem (is|with)\b", re.I)
-INVITE = re.compile(r"\b(if you('d| would)? (like|want|wish)|if it helps|only if|whenever you|happy to|we could)\b", re.I)
+# An invitation, not an instruction. Written as two wide tests rather than a list
+# of accepted phrasings: a fixed list made every script offer things in the same
+# two ways, which is its own failure. A follow-up is an invitation unless it
+# offers nothing at all, or reads as a bare order.
+OFFER = re.compile(
+    r"\b(if|when|whenever|any ?time|only|up to you|feel free|no need|happy|glad|ready|open|available"
+    r"|fancy|room|more (here|on this)|worth (hearing|a look)|second read|no pressure|your call"
+    r"|in your own time|spare|sometime)\b", re.I)
+MODAL = re.compile(r"\b(would|could|can|might|may)\b", re.I)
 OBSERVABLE = re.compile(r"\b(date|dated|number|how many|how much|by when)\b|\d", re.I)
 GUESS = re.compile(r"\b(guess|as i understand|i might be wrong|tell me if)\b", re.I)
 
@@ -296,6 +325,15 @@ def reading_ease(text):
     return 206.835 - 1.015 * (len(words) / sentences) - 84.6 * (syll / len(words))
 
 
+def is_invitation(text):
+    """A held follow-up offers something rather than ordering it.
+
+    "Explain a Monday now" offers nothing. Everything that holds a condition, a
+    permission or a modal passes, however it is worded.
+    """
+    return bool(OFFER.search(text) or MODAL.search(text))
+
+
 def _norm(text):
     return " ".join(re.findall(r"[a-z']+", text.lower()))
 
@@ -363,6 +401,8 @@ def warm_flags(text, engagement):
         held = [(k, v) for k, v in fields.items() if k.startswith("held")]
         if m := JARGON.search(vis):
             out.append((n, "jargon", m.group(0)))
+        if m := FILES_TALK.search(vis):
+            out.append((n, "files-talk", m.group(0)))
         if not WAY_OUT.search(how):
             out.append((n, "no-way-out", how[:80]))
         first_label = next(iter(fields), "")
@@ -378,7 +418,7 @@ def warm_flags(text, engagement):
         if not lo <= len(held) <= hi:
             out.append((n, "follow-ups", f"{len(held)} held follow-ups"))
         for k, v in held:
-            if not INVITE.search(v):
+            if not is_invitation(v):
                 out.append((n, "not-invitation", v[:80]))
         if n == blocks[0][0] and not POSITION.search(hearing):
             out.append((n, "no-position", "prompt 1 needs a labelled position of the interviewer's own to react to"))
@@ -401,6 +441,8 @@ def warm_flags(text, engagement):
         if engagement == "companion":
             if GENTLE_DOUBT not in " ".join(q3.lower().split()):
                 out.append((n3, "no-gentle-doubt", q3[:80]))
+            if CRITIC.search(hear3):
+                out.append((n3, "critic-at-companion", "the gentlest setting puts no critic on the table"))
         else:
             if not IMAGINED.search(hear3 + " " + q3):
                 out.append((n3, "no-fair-critic", "the guess should carry an imagined thoughtful person's case"))
@@ -410,11 +452,19 @@ def warm_flags(text, engagement):
                 out.append((n3, "no-mind-change", how3[:80]))
         if engagement == "deep dive":
             hidden_all = " ".join(h for _, h in parsed)
-            tm = re.search(r"tension:\s*live\b([^|>]*)", hidden_all, re.I)
-            if not tm or not (re.search(r"\b[\w./-]+\.md\b", tm.group(1)) or "NEEDS SOURCE" in hidden_all):
+            tm = re.search(r"tension:([^|>]*)", hidden_all, re.I)
+            marker = tm.group(1) if tm else ""
+            # Either it is live and names the file, or it says the two statements
+            # are missing. An apostrophe is not a quotation, so only quote marks
+            # count against it.
+            live = re.search(r"\blive\b", marker, re.I) and re.search(r"\b[\w./-]+\.md\b", marker)
+            missing = "NEEDS SOURCE" in marker
+            if not (live or missing):
                 out.append((n3, "no-tension", "needs `tension: live` with the file it comes from"))
-            elif re.search(r"[\"'“”]", tm.group(1)):
+            elif live and re.search(r"[\"“”]", marker):
                 out.append((n3, "tension-quote", "the marker points at a file; it never quotes"))
+            elif missing and TENSION_TEXT.search(hear3):
+                out.append((n3, "tension-in-text", "bracketed as missing, so it stays out of what the writer reads"))
             asked = [re.sub(r"\b\d+ to \d+ (seconds|minutes)", "", v) for f, _ in parsed
                      for k, v in f.items() if k.startswith(("question", "how to answer"))]
             if not any(OBSERVABLE.search(v) for v in asked):
@@ -422,14 +472,25 @@ def warm_flags(text, engagement):
     return out
 
 
-def warm_question(block):
-    """The text flags_for should see for one fireside prompt: the question only.
+def fireside_flags(line, block):
+    """Mechanical flags for one fireside prompt: the question and its answer shape.
 
-    The guess and the held follow-ups are separate fields and are not asks. The
-    "How to answer" line is the answer shape, so it is joined to the question.
+    The guess and the held follow-ups are separate fields and are not asks. Two
+    differences from any other question. The "How to answer" line is the answer
+    shape, so `shape` never applies. And a second ask hidden in that line ("one
+    real week, and what changed") is reported as `second-ask` rather than
+    `compound`, because the question itself is fine and the shape is what needs
+    rewriting.
     """
     fields, _ = parse_block(block)
-    return _field(fields, "question") + " " + _field(fields, "how to answer")
+    question, how = _field(fields, "question"), _field(fields, "how to answer")
+    joined = question + " " + how
+    out = [(line, f, joined) for f in flags_for(joined) if f not in ("shape", "compound")]
+    if asks(question) > 1:
+        out.append((line, "compound", question))
+    elif asks(how + "?") > 1:
+        out.append((line, "second-ask", how))
+    return out
 
 
 def check(path, every=False, prepared=False, warm=False, engagement=None, knowledge_dir=None):
@@ -444,7 +505,7 @@ def check(path, every=False, prepared=False, warm=False, engagement=None, knowle
     else:
         items = question_items(text)
     if fireside:
-        found = [(n, f, warm_question(b)) for n, b in items for f in flags_for(warm_question(b)) if f != "shape"]
+        found = [f for n, b in items for f in fireside_flags(n, b)]
     else:
         found = [(n, f, q) for n, q in items for f in flags_for(q)]
     if prepared and Path(path).name != "SESSION-CONTEXT.md":

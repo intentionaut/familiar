@@ -139,32 +139,31 @@ still your judgement.
 
 ## Fireside scripts
 
-A fireside script is a prepared set (above) written to read like a warm
-conversation. It draws out what the writer thinks and how they react, and it
-stays on the writer's side. Use it when a set is written ahead of the sitting.
-It changes nothing in the live interview: one question at a time, "ask up to
-three times" on one question, and the cap of three prompts all stay as they are.
+A fireside script is a prepared set (above) written as a warm conversation: it
+listens first, asks one thing, says how to answer, and holds two follow-ups
+back. Use it whenever a set is written ahead of the sitting. Nothing in the
+live interview changes: one question at a time, "ask up to three times" on one
+question, and the cap of three prompts.
 
 **The setting.** `Interview engagement` in the house's `positioning.md`
 (House rules) takes `companion`, `fireside` or `deep dive`. Unset, or still
-the shipped bracketed placeholder, means fireside. `--engagement` on
-`scripts/question-check.py` overrides it for one run.
+the shipped bracketed placeholder, means fireside. `--engagement` overrides it
+for one run.
 
-| Setting | Challenge in prompt 3 | Answer length asked |
+| Setting | Prompt 3 | Answer length asked |
 |---|---|---|
-| companion | "Is there anything that would make you doubt this, even a little?" | 30 to 60 seconds |
-| fireside (default) | What a thoughtful person who disagrees would say, then what would change the writer's mind | 1 to 2 minutes |
-| deep dive | Adds a tension between two things the writer said (live, never invented), and something observable with a date or number | 2 to 3 minutes |
+| companion | The gentle doubt question | 30 to 60 seconds |
+| fireside (default) | A thoughtful person's case against it, then what would change the writer's mind | 1 to 2 minutes |
+| deep dive | That, plus a live tension between two things the writer has said | 2 to 3 minutes |
 
-Every setting keeps a challenge to the premise, so the set still passes the
-three jobs above. Even the deepest setting is on the writer's side.
+Every setting keeps a challenge to the premise, so the three jobs above are
+covered; even the deepest is on the writer's side.
 
-**Changing it mid-sitting.** The writer can say "gentler" or "push me". The
-next question moves one step along companion, fireside, deep dive, and stops
-at either end (gentler at companion, or push me at deep dive, changes
-nothing; say so in a line). Log each change as one line in `notes.md`, such as
-`Engagement: fireside to companion, at the writer's word`. Name the switch
-in the opening of every script so the writer knows it is there.
+**Changing it mid-sitting.** "Gentler" or "push me" moves the next question
+one step along companion, fireside, deep dive, and stops at either end (when
+it changes nothing, say so in a line). Log each change as one line in
+`notes.md`, such as `Engagement: fireside to companion, at the writer's word`.
+Every script's opening names the switch.
 
 **The arc.** Three prompts, in this order:
 
@@ -173,46 +172,47 @@ in the opening of every script so the writer knows it is there.
    follow the value.
 2. **One real case.** A single story, number or artifact from the writer's
    own files. Move: the specific case.
-3. **The fair critic.** The challenge to the premise. Put the opposing case
+3. **The fair critic.** The challenge to the premise. The opposing case goes
    on the table first, in the guess field, voiced by an imagined thoughtful
-   person and never as your verdict ("Someone thoughtful might say ... I don't
-   think that's the whole story, but I'd like to hear it from you"). The
-   question then asks for the writer's reaction, and the answer shape asks
-   what would change their mind. A reaction needs something to react to, so
-   never ask the writer to build the opposing view from a blank page. Move:
-   the strongest opposing case. At deep dive it also carries a tension between
-   two things the writer said, and asks what they would tell a friend to do
-   on Monday. Companion is the exception: prompt 3 stays the gentle doubt
-   question.
+   person and never as your verdict; the question asks for the writer's
+   reaction, and the answer shape asks what would change their mind. A
+   reaction needs something to react to, so never ask the writer to build the
+   opposing case from a blank page. Move: the strongest opposing case.
 
 **The shape of a prompt.** Visible to the writer, in this order:
 
-- **What I'm hearing (my guess):** the idea restated in the writer's own
-  words, labelled as your guess so they can correct it. In prompt 1 it also
-  carries one labelled position of your own ("My own position: ..."), so the
-  writer has something to react to. In prompt 3 it carries the imagined
-  thoughtful person's case, in one or two sentences.
-- **Question:** one question, one ask.
+- **What I'm hearing (my guess):** the idea in the writer's own words,
+  labelled as your guess so they can correct it, with any evidence you already
+  hold beside it and its date or number. Nothing else: no fact the idea and
+  the files do not carry, and never a report of what the files lack ("your
+  notes hold one line and nothing else" is your problem, not theirs). Prompt 1
+  adds one labelled thought of your own ("My own position: ..."), so there is
+  something to react to. Prompt 3 carries the critic's case in a sentence or
+  two.
+- **Question:** one ask. It may rest on what the writer said. It may not rest
+  on your position, and it may not settle its own answer: "Which of those four
+  made the product worse?" has decided something the writer has not.
 - **How to answer:** the length for the setting, the kind of example wanted,
-  and a way out ("rough is fine", "you can pass").
-- **Held, how it works:** a follow-up toward how the thing works. Held back
+  and a way out ("rough is fine", "you can pass"). It describes one answer, so
+  the example hangs off it: "one real week, with a date if you have one",
+  never "one real week, and what changed".
+- **Held, how it works:** a follow-up toward how the thing works, held back
   until the writer wants it, phrased as an invitation.
 - **Held, another angle:** a second follow-up from a different angle, also an
   invitation. Fireside and deep dive carry both; companion carries one or two.
 
-Write the follow-ups for each prompt's own question. A follow-up that fits
-prompt 1 rarely fits prompt 3, and one that repeats another prompt's, its
-sibling's or its own question is not a follow-up. Copying the example's
-follow-ups onto a new idea is the failure this rule is here to stop.
+Each follow-up is written for its own prompt's question; one that repeats
+another prompt's, its sibling's or its own question is not a follow-up. Reuse
+the opening line as it stands and write everything below it fresh, down to the
+wording of the invitations, since "if you'd like" is not the only way to offer
+something. Copying the example's lines onto a new idea is what these rules
+stop.
 
 Hidden from the writer, in a comment on the line below:
 `<!-- move: ... | job: ... | receipt: story, number or artifact | level: 1 to 3 -->`.
-Move names the technique. Job says which of the three jobs above the prompt
-does (buried lede, bigger context, challenge the premise). Level is how hard
-the ask is at this setting, 1 gentlest. At deep dive, prompt 3's comment also
-carries `tension: live, <file the two statements come from>`, and no quoted
-words. If no two statements exist yet, bracket it as `[NEEDS SOURCE: ...]`
-and leave the tension out of the visible text.
+Move names the technique, job says which of the three jobs above the prompt
+does (buried lede, bigger context, challenge the premise), and level is how
+hard the ask is at this setting, 1 gentlest.
 
 **What warm means here.** Listening, fairness and permission. It does not
 mean praise.
@@ -220,9 +220,6 @@ mean praise.
 - Plain words. Aim for reading ease of 60 or more on what the writer sees.
   Internal terms (receipt, premise, mechanism, steelman, falsifier and the
   like) stay in the comment.
-- Start from what the writer said, or your labelled guess, before any
-  challenge.
-- Give the opposing case to an imagined person. Never "I think you are wrong".
 - No praise or hype, and no accusing phrasing ("why didn't you", "against
   you").
 - Names, episodes and numbers come from the writer's files, or are bracketed
@@ -241,36 +238,46 @@ A relaxed set of three questions, at your pace. Say "gentler" or "push me" at an
    **Question:** Where does the work show up now, if it isn't in the meeting?
    **How to answer:** About 1 to 2 minutes. Name a place, a person or a tool. Rough is fine, and you can pass.
    **Held, how it works:** If you'd like, walk me through what a Monday looks like now.
-   **Held, another angle:** If it helps, say who misses the meeting most.
+   **Held, another angle:** Say who misses the meeting most, if that is easy to name.
    <!-- move: follow the value | job: buried lede, bigger context (why now, who benefits) | receipt: artifact | level: 1 -->
-2. **What I'm hearing (my guess):** One team tried it and it worked, and you think trust was the reason.
+2. **What I'm hearing (my guess):** What would convince a reader is one team that did this, not the case for it. I would guess you have one in mind.
    **Question:** Which one week shows the change best?
    **How to answer:** About 1 to 2 minutes. Give one real week, with a date or a number if you have one. Rough is fine, or pass.
-   **Held, how it works:** If you'd like, say what the team did that week in place of the meeting.
+   **Held, how it works:** There is more here if you want it: what the team did that week in place of the meeting.
    **Held, another angle:** If it helps, say what a newcomer would have seen that week.
    <!-- move: the specific case | job: one real case | receipt: story | level: 2 -->
 3. **What I'm hearing (my guess):** Someone thoughtful might say the meeting is where trust gets built, and a written update cannot do that. I don't think that's the whole story, but I'd like to hear it from you.
    **Question:** What is your reaction to that?
    **How to answer:** About 1 to 2 minutes. Then say what would change your mind. Short is fine, and you can pass.
-   **Held, how it works:** If you'd like, say how you would tell whether that person had a point.
+   **Held, how it works:** Whenever you want it: how you would tell whether that person had a point.
    **Held, another angle:** If it helps, say what you would tell a friend to try on Monday.
    <!-- move: the strongest opposing case | job: challenge the premise | receipt: number | level: 3 -->
 ```
 
-At companion, prompt 3's question is the gentle doubt question and the length
-is 30 to 60 seconds. At deep dive, prompt 3 adds the tension and something
-observable, and asks for 2 to 3 minutes.
+**Companion.** 30 to 60 seconds, and no critic on the table: nobody argues
+with the writer at the gentlest setting, so prompt 3's guess restates their
+own idea and its question is "Is there anything that would make you doubt
+this, even a little?"
+
+**Deep dive.** 2 to 3 minutes; prompt 2's answer shape asks for something
+observable with a date or a number; and prompt 3's guess adds a tension after
+the critic's case, two things the writer has said set side by side with
+curiosity rather than as a contradiction to answer for: "You have said the
+team keeps track of the work without the meeting, and that something went when
+it did. I don't think those two have to disagree." Both halves are the writer's
+own words; your reading of a log entry is not one of them, and a tension you
+had to construct is invented. What they would tell a friend to do on Monday is
+the second held follow-up, not a second ask in the answer shape. The comment
+carries `tension: live, <file the two statements come from>`, naming the file
+and quoting nothing from it; with no two such statements, write
+`tension: [NEEDS SOURCE: ...]` and keep the tension out of the visible text.
 
 Before the writer sees the script, run
 `python3 scripts/question-check.py --warm interview-questions.md` (add
-`--engagement <setting>` to override the house). It runs every check
-`--prepared` runs, and flags by name: `hard-to-read`, `jargon`, `no-way-out`,
-`no-switch`, `no-listening`, `no-position`, `verdict-voice`, `praise`, `accusing`,
-`follow-ups`, `not-invitation`, `repeated-follow-up`, `no-comment`, `wrong-length`,
-`no-gentle-doubt`, `no-fair-critic`, `no-mind-change`, `no-tension`,
-`tension-quote` and `no-observable`. Reading ease is computed on the visible
-text only. The receipt marker may sit in the comment or on its own
-`Receipt:` line. Rewrite what it flags; do not soften it.
+`--engagement <setting>` to override the house). It runs the `--prepared`
+checks too, names each flag, computes reading ease on the visible text only,
+and takes the receipt marker in the comment or on its own `Receipt:` line.
+Rewrite what it flags; do not soften it.
 
 ## Exit
 

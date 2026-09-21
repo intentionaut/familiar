@@ -163,6 +163,7 @@ HEAR3 = ("Someone thoughtful might say the meeting is where trust gets built, an
 Q3_FIRESIDE = "What is your reaction to that?"
 Q3_DOUBT = "Is there anything that would make you doubt this, even a little?"
 HEAR3_DOUBT = "You think the meeting mostly served the manager, and the team can do without it."
+HEAR2 = "One team tried it and it worked, and you think trust was the reason."
 
 
 def warm_set(engagement="fireside"):
@@ -187,7 +188,7 @@ def warm_set(engagement="fireside"):
         f"   **How to answer:** About {length}. Name a place, a person or a tool. Rough is fine, and you can pass.\n"
         + h1 +
         "   <!-- move: follow the value | job: buried lede, bigger context (why now, who benefits) | receipt: artifact | level: 1 -->\n"
-        "2. **What I'm hearing (my guess):** One team tried it and it worked, and you think trust was the reason.\n"
+        f"2. **What I'm hearing (my guess):** {HEAR2}\n"
         "   **Question:** Which one week shows the change best?\n"
         f"   **How to answer:** About {length}. Give one real week, with a date or a number if you have one. Rough is fine, or pass.\n"
         + h2 +
@@ -350,6 +351,51 @@ class Fireside(unittest.TestCase):
         s = warm_set().replace("If you'd like, walk me through what a Monday looks like now.", "Explain a Monday now.", 1)
         self.assertIn("not-invitation", self.flags(s))
 
+    def test_a_bare_question_is_not_an_invitation(self):
+        s = warm_set().replace("If you'd like, walk me through what a Monday looks like now.",
+                               "What does a Monday look like now.", 1)
+        self.assertIn("not-invitation", self.flags(s))
+
+    def test_an_invitation_can_be_worded_any_way(self):
+        # The check stops an instruction. It does not make every script offer
+        # things in the same two phrases, which is what made scripts read alike.
+        for line in ("There is more here if you want it: what a Monday looks like now.",
+                     "Whenever you want it: what a Monday looks like now.",
+                     "Say what a Monday looks like now, if that is easy.",
+                     "No need to take this one: what a Monday looks like now.",
+                     "We can go into what a Monday looks like now.",
+                     "Ready when you are: what a Monday looks like now.",
+                     "Glad to hear what a Monday looks like now.",
+                     "Open any time: what a Monday looks like now.",
+                     "A second read, if you fancy it: what a Monday looks like now.",
+                     "Happy to go further into what a Monday looks like now.",
+                     "Up to you whether we go into what a Monday looks like now."):
+            s = warm_set().replace("If you'd like, walk me through what a Monday looks like now.", line, 1)
+            self.assertNotIn("not-invitation", self.flags(s), line)
+
+    def test_the_guess_never_reports_what_the_files_lack(self):
+        for line in ("Your notes hold that one line and nothing else.",
+                     "There are no dates or numbers in them yet.",
+                     "All you have saved is one link with a title.",
+                     "You ran four of these last year. That is all they say about them.",
+                     "I have no example to work from yet."):
+            self.assertIn("files-talk", self.flags(warm_set().replace(HEAR2, line)), line)
+
+    def test_evidence_the_files_do_hold_is_not_files_talk(self):
+        held = "Your build log for 4 November has 31 flags gone, and the build down from 9 minutes to 6."
+        self.assertEqual([], self.flags(warm_set().replace(HEAR2, held)))
+
+    def test_a_second_ask_in_the_answer_shape(self):
+        s = warm_set().replace("Give one real week, with a date or a number if you have one.",
+                               "Give one real week, and what changed that week.")
+        self.assertIn("second-ask", self.flags(s))
+        self.assertNotIn("compound", self.flags(s))
+
+    def test_two_questions_in_the_question_are_still_compound(self):
+        s = warm_set().replace("Which one week shows the change best?",
+                               "Which one week shows the change best? Who noticed?")
+        self.assertIn("compound", self.flags(s))
+
     def test_the_hidden_comment_carries_move_receipt_and_level(self):
         for word in ("move", "level"):
             self.assertIn("no-comment", self.flags(warm_set().replace(f"{word}:", "x:", 1)), word)
@@ -363,6 +409,12 @@ class Fireside(unittest.TestCase):
         s = warm_set("companion").replace(Q3_DOUBT, "What would a critic say?")
         self.assertIn("no-gentle-doubt", self.flags(s, "companion"))
 
+    def test_companion_puts_no_critic_on_the_table(self):
+        self.assertNotIn("critic-at-companion", self.flags(warm_set("companion"), "companion"))
+        s = warm_set("companion").replace(
+            HEAR3_DOUBT, "Someone thoughtful might say the meeting is where trust gets built. " + HEAR3_DOUBT)
+        self.assertIn("critic-at-companion", self.flags(s, "companion"))
+
     def test_fireside_asks_what_would_change_their_mind(self):
         self.assertIn("no-mind-change", self.flags(warm_set().replace("Then say what would change your mind. ", "")))
 
@@ -375,6 +427,22 @@ class Fireside(unittest.TestCase):
         self.assertIn("tension-quote", self.flags(quoted, "deep dive"))
         unsourced = s.replace("tension: live, notes.md lines 4 and 9", "tension: live, between two things you said")
         self.assertIn("no-tension", self.flags(unsourced, "deep dive"))
+        # an apostrophe in the file note is not a quotation
+        apostrophe = s.replace("notes.md lines 4 and 9", "notes.md, the writer's own two lines")
+        self.assertEqual([], self.flags(apostrophe, "deep dive"))
+
+    def test_the_tension_may_be_bracketed_as_missing(self):
+        bracketed = warm_set("deep dive").replace(
+            TENSION, " | tension: [NEEDS SOURCE: two statements to set side by side]")
+        self.assertEqual([], self.flags(bracketed, "deep dive"))
+        # and then the writer must not be able to read a tension anyway
+        visible = bracketed.replace(HEAR3, HEAR3 + " Two things in your notes sit oddly together for me.")
+        self.assertIn("tension-in-text", self.flags(visible, "deep dive"))
+
+    def test_a_bracket_elsewhere_does_not_stand_in_for_the_marker(self):
+        s = warm_set("deep dive").replace(TENSION, "")
+        s = s.replace("receipt: artifact", "receipt: artifact | note: [NEEDS SOURCE: a number]")
+        self.assertIn("no-tension", self.flags(s, "deep dive"))
 
     def test_deep_dive_asks_for_something_observable(self):
         s = warm_set("deep dive").replace(Q3_DEEP_TAIL, "")

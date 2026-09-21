@@ -24,6 +24,32 @@ prompts speaks in anyone's voice. The prompts name each move by what it does.
 - Ezra Klein: the strongest opposing case, put fairly.
 - Kara Swisher: what you would tell a friend to do on Monday.
 
+## What the scripts kept getting wrong
+
+The prompt was written against generated scripts, at all three settings, on
+invented ideas that differ in kind (a technical claim, a workplace idea, a
+personal-experience piece, a contrarian take, a half-formed hunch, and one
+where the files hold almost nothing). Five failures came back often enough to
+be worth a rule, and each rule in "Fireside scripts" that looks fussy is one
+of them:
+
+- The guess turned into an inventory when the files were thin ("your notes
+  hold that one line and nothing else"), which tells the writer about the
+  tool's problem rather than their idea. `files-talk` now flags it.
+- Companion argued back anyway, putting a critic on the table before the
+  gentle doubt question. `critic-at-companion` now flags it.
+- Deep dive stacked the asks: something observable, what would change your
+  mind, and what you would tell a friend to do on Monday, all in one answer
+  shape. The observable moved to prompt 2 and the friend became a held
+  follow-up.
+- Deep dive built a tension out of the writer's idea versus a log entry, which
+  reads as a catch rather than a question. Both halves have to be the writer's
+  own words, and a bracketed tension stays out of what they read.
+- Questions carried the interviewer's position as settled ("which of those
+  four made the product worse?"), and every follow-up in every script opened
+  "if you'd like" or "if it helps". The invitation check was widened so the
+  wording can vary.
+
 ## Where the setting lives
 
 `- Interview engagement:` in the House rules of the house's `positioning.md`.

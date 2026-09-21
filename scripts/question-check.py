@@ -22,17 +22,48 @@ checked as a whole (see prompts/interview.md, "Prepared question sets"):
   no-lede       no prompt hunts the buried lede
   no-context    no prompt interrogates the bigger context
 
+With --warm (which implies --prepared), a set written in the fireside format
+(see prompts/interview.md, "Fireside scripts") is also checked for warmth and
+plain language, on the VISIBLE text only (hidden <!-- --> comments are
+stripped first). Flags, by name:
+
+  hard-to-read     Flesch reading ease of the visible text (each prompt, and the opening) is under 60
+  jargon           an internal word (receipt, steelman, mechanism...) is visible
+  no-way-out       a prompt gives no way out ("rough is fine", "pass")
+  no-switch        the opening does not name the "gentler" and "push me" switch
+  no-listening     a prompt does not start from what the writer said, labelled a guess
+  verdict-voice    the opposing case is the interviewer's verdict, not an imagined person's
+  praise           a praise or hype word
+  accusing         an accusing phrase
+  follow-ups       the wrong number of held follow-ups for the setting
+  not-invitation   a held follow-up that is not an invitation
+  no-comment       the hidden comment lacks move, receipt or level
+  wrong-length     the answer length asked does not match the setting
+  no-gentle-doubt  companion: prompt 3 is not the gentle doubt question
+  no-fair-critic   fireside and deep dive: prompt 3 has no imagined thoughtful person
+  no-mind-change   fireside and deep dive: prompt 3 does not ask what would change their mind
+  no-tension       deep dive: no live tension marker pointing at the writer's own files
+  tension-quote    deep dive: the tension marker quotes text instead of pointing at a file
+  no-observable    deep dive: nothing asks for something observable with a date or number
+  not-fireside-format  --warm was given but no prompt is in the fireside format
+
+--engagement picks the setting; without it the house's `Interview engagement`
+line in positioning.md is used, and unset means fireside. `Receipt:` may be a
+line of its own or live in the hidden comment as `receipt: story`.
+
 The cap of three is for a prepared set. It is not the live "ask up to three
 times" follow-up rule, which counts re-asks of one question.
 
 Usage:
   question-check.py <file> [<file> ...]
   question-check.py --prepared interview-questions.md
+  question-check.py --warm [--engagement companion|fireside|"deep dive"] interview-questions.md
   question-check.py --all SESSION-CONTEXT.md   every gate, not just the latest
 
 Exit 0 clean, 1 flagged, 2 could not run.
 """
 import argparse
+import importlib.util
 import re
 import sys
 from pathlib import Path
@@ -147,15 +178,259 @@ def set_flags(items):
     return out
 
 
-def check(path, every=False, prepared=False):
+# ---------------------------------------------------------------------------
+# Fireside scripts: warmth and plain language (prompts/interview.md)
+# ---------------------------------------------------------------------------
+
+ENGAGEMENTS = ("companion", "fireside", "deep dive")
+DEFAULT_ENGAGEMENT = "fireside"
+READING_EASE_TARGET = 60  # knowledge/style-rules.md: Flesch 60+
+ENGAGEMENT_LABEL = "Interview engagement"
+LENGTH = {"companion": "30 to 60 seconds", "fireside": "1 to 2 minutes", "deep dive": "2 to 3 minutes"}
+GENTLE_DOUBT = "is there anything that would make you doubt this, even a little?"
+
+COMMENT = re.compile(r"<!--.*?-->", re.S)
+FIELD = re.compile(r"^\s*(?:\d+[.)]\s+)?\*\*([^*]+?):\*\*\s*(.*)$")
+BLOCK_START = re.compile(r"^\s*\d+[.)]\s+\*\*What I.m hearing")
+JARGON = re.compile(
+    r"\b(commodit\w*|steelman\w*|falsif\w*|receipts?|mechanisms?|plumbing|premise|lede|paradigm|stakeholders?"
+    r"|epistemic|leverag\w*|framework)\b", re.I)
+WAY_OUT = re.compile(r"\b(rough is fine|pass|skip|no need|not sure is fine|short is fine|fine to (say|stop|skip))\b", re.I)
+PRAISE = re.compile(
+    r"\b(great|brilliant|fascinating|amazing|incredible|excellent|wonderful|insightful|smart|powerful|"
+    r"game-?changing|revolutionary|groundbreaking|love (that|this|it)|good question|you'?re right)\b", re.I)
+ACCUSING = re.compile(
+    r"(against you|you'?re wrong|you are wrong|you failed|why didn'?t you|why did you not|you should have|you missed|your mistake)", re.I)
+IMAGINED = re.compile(
+    r"\b(picture|imagine|suppose)\b[^.?]*\b(person|colleague|reader|friend|critic|someone)\b"
+    r"|\ba (thoughtful|fair|reasonable) (person|critic|colleague|reader)\b", re.I)
+VERDICT = re.compile(r"\bI (think|believe|doubt|say) (that )?(you|this|it|the)\b|\bthe (real )?problem (is|with)\b", re.I)
+INVITE = re.compile(r"\b(if you('d| would)? (like|want|wish)|if it helps|only if|whenever you|happy to|we could)\b", re.I)
+OBSERVABLE = re.compile(r"\b(date|dated|number|how many|how much|by when)\b|\d", re.I)
+GUESS = re.compile(r"\b(guess|as i understand|i might be wrong|tell me if)\b", re.I)
+
+
+def _load_paths():
+    spec = importlib.util.spec_from_file_location("familiar_paths", Path(__file__).with_name("paths.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def normalise_engagement(value):
+    v = re.sub(r"[\s_-]+", " ", (value or "").strip().lower())
+    if v not in ENGAGEMENTS:
+        raise ValueError(f"unknown engagement {value!r}; use one of: companion, fireside, deep dive")
+    return v
+
+
+def house_engagement(knowledge_dir=None):
+    """The house's `- Interview engagement:` value from positioning.md, or None.
+
+    Unset, absent or still the shipped bracketed placeholder is None, the same
+    convention notion_board.read_field uses: a value that starts with `[` is unset.
+    """
+    kdir = Path(knowledge_dir) if knowledge_dir else _load_paths().knowledge_dir()[0]
+    f = kdir / "positioning.md"
+    if not f.is_file():
+        return None
+    m = re.search(rf"^- {re.escape(ENGAGEMENT_LABEL)}:[ \t]*(.*?)[ \t]*$", f.read_text(encoding="utf-8"), re.M)
+    if not m or not m.group(1) or m.group(1).startswith("["):
+        return None
+    return normalise_engagement(m.group(1))
+
+
+def resolve_engagement(override=None, knowledge_dir=None):
+    """Per-run override, then the house, then fireside."""
+    if override:
+        return normalise_engagement(override)
+    return house_engagement(knowledge_dir) or DEFAULT_ENGAGEMENT
+
+
+def step_engagement(current, request):
+    """Move one step for "gentler" or "push me"; stop at the ends. Returns (new, changed).
+
+    The caller logs one line in notes.md when changed is True.
+    """
+    i = ENGAGEMENTS.index(normalise_engagement(current))
+    r = re.sub(r"\s+", " ", request.strip().lower())
+    if r == "gentler":
+        j = max(0, i - 1)
+    elif r == "push me":
+        j = min(len(ENGAGEMENTS) - 1, i + 1)
+    else:
+        raise ValueError(f"unknown request {request!r}; use 'gentler' or 'push me'")
+    return ENGAGEMENTS[j], j != i
+
+
+def count_syllables(word):
+    """Heuristic English syllable count: vowel groups, less a silent final e, at least one."""
+    w = re.sub(r"[^a-z]", "", word.lower())
+    if not w:
+        return 0
+    n = len(re.findall(r"[aeiouy]+", w))
+    if w.endswith("e") and not w.endswith(("le", "ee", "ye")) and n > 1:
+        n -= 1
+    elif re.search(r"[^aeiouy]ed$", w) and not re.search(r"[td]ed$", w) and n > 1:
+        n -= 1
+    return max(1, n)
+
+
+def reading_ease(text):
+    """Flesch reading ease: 206.835 - 1.015 * (words / sentences) - 84.6 * (syllables / words).
+
+    Words are runs of letters (apostrophes kept). A sentence ends at . ! or ?
+    (or the end of the text); syllables come from count_syllables. Higher is
+    easier; knowledge/style-rules.md asks for 60 or more. Empty text scores 100.
+    """
+    words = re.findall(r"[A-Za-z]+(?:'[A-Za-z]+)*", text)
+    if not words:
+        return 100.0
+    sentences = max(1, len([s for s in re.split(r"[.!?]+(?:\s+|$)", text.strip()) if re.search(r"[A-Za-z]", s)]))
+    syll = sum(count_syllables(w) for w in words)
+    return 206.835 - 1.015 * (len(words) / sentences) - 84.6 * (syll / len(words))
+
+
+def strip_hidden(text):
+    return COMMENT.sub("", text)
+
+
+def warm_blocks(text):
+    """(opening, [(line, block_text)]) for a set in the fireside format."""
+    lines = text.splitlines()
+    starts = [i for i, l in enumerate(lines) if BLOCK_START.match(l)]
+    if not starts:
+        return text, []
+    opening = "\n".join(lines[:starts[0]])
+    blocks = []
+    for k, s in enumerate(starts):
+        end = starts[k + 1] if k + 1 < len(starts) else len(lines)
+        chunk = []
+        for l in lines[s:end]:
+            if l.startswith("#") or (chunk and not l.strip()):
+                break
+            chunk.append(l)
+        blocks.append((s + 1, "\n".join(chunk)))
+    return opening, blocks
+
+
+def parse_block(block):
+    """Visible fields by lowercased label, plus the hidden comment text."""
+    hidden = " ".join(COMMENT.findall(block))
+    fields = {}
+    for l in strip_hidden(block).splitlines():
+        m = FIELD.match(l)
+        if m:
+            fields[m.group(1).strip().lower()] = m.group(2).strip()
+    return fields, hidden
+
+
+def _field(fields, prefix):
+    return next((v for k, v in fields.items() if k.startswith(prefix)), "")
+
+
+def warm_flags(text, engagement):
+    """Warmth and plain-language flags for a fireside-format set: [(line, flag, detail)]."""
+    engagement = normalise_engagement(engagement)
+    opening, blocks = warm_blocks(text)
+    out = []
+    parsed = [parse_block(b) for _, b in blocks]
+    vis_opening = strip_hidden(opening)
+    if not (re.search(r"\bgentler\b", vis_opening, re.I) and re.search(r"\bpush me\b", vis_opening, re.I)):
+        out.append((1, "no-switch", "opening does not name 'gentler' and 'push me'"))
+    # Reading ease is scored on the visible text only, per prompt and for the
+    # opening, so one dense question cannot hide behind easy ones.
+    scored = [(1, "the opening", vis_opening)]
+    scored += [(n, f"prompt at line {n}", " ".join(f.values())) for (n, _), (f, _) in zip(blocks, parsed)]
+    for n, label, body in scored:
+        if not body.strip():
+            continue
+        score = reading_ease(re.sub(r"\[[^\]]*\]", "", body))
+        if score < READING_EASE_TARGET:
+            out.append((n, "hard-to-read", f"{label}: reading ease {score:.1f}, target {READING_EASE_TARGET}+"))
+    for (n, _), (fields, hidden) in zip(blocks, parsed):
+        vis = " ".join(fields.values())
+        hearing, question, how = _field(fields, "what i"), _field(fields, "question"), _field(fields, "how to answer")
+        held = [(k, v) for k, v in fields.items() if k.startswith("held")]
+        if m := JARGON.search(vis):
+            out.append((n, "jargon", m.group(0)))
+        if not WAY_OUT.search(how):
+            out.append((n, "no-way-out", how[:80]))
+        first_label = next(iter(fields), "")
+        if not hearing or not first_label.startswith("what i") or not GUESS.search(first_label + " " + hearing):
+            out.append((n, "no-listening", "starts without a labelled guess at what the writer said"))
+        if m := PRAISE.search(vis):
+            out.append((n, "praise", m.group(0)))
+        if m := ACCUSING.search(vis):
+            out.append((n, "accusing", m.group(0)))
+        if VERDICT.search(question):
+            out.append((n, "verdict-voice", question[:80]))
+        lo, hi = (1, 2) if engagement == "companion" else (2, 2)
+        if not lo <= len(held) <= hi:
+            out.append((n, "follow-ups", f"{len(held)} held follow-ups"))
+        for k, v in held:
+            if not INVITE.search(v):
+                out.append((n, "not-invitation", v[:80]))
+        if not all(re.search(rf"\b{w}\s*:", hidden, re.I) for w in ("move", "receipt", "level")):
+            out.append((n, "no-comment", "hidden comment needs move, receipt and level"))
+        if not re.search(rf"(?<!\d){LENGTH[engagement]}", how):
+            out.append((n, "wrong-length", f"{engagement} asks for {LENGTH[engagement]}"))
+    if len(blocks) >= 3:
+        n3, (f3, h3) = blocks[2][0], parsed[2]
+        q3, how3 = _field(f3, "question"), _field(f3, "how to answer")
+        if engagement == "companion":
+            if GENTLE_DOUBT not in " ".join(q3.lower().split()):
+                out.append((n3, "no-gentle-doubt", q3[:80]))
+        else:
+            if not IMAGINED.search(q3):
+                out.append((n3, "no-fair-critic", q3[:80]))
+            if not re.search(r"change your mind", how3, re.I):
+                out.append((n3, "no-mind-change", how3[:80]))
+        if engagement == "deep dive":
+            hidden_all = " ".join(h for _, h in parsed)
+            tm = re.search(r"tension:\s*live\b([^|>]*)", hidden_all, re.I)
+            if not tm or not (re.search(r"\b[\w./-]+\.md\b", tm.group(1)) or "NEEDS SOURCE" in hidden_all):
+                out.append((n3, "no-tension", "needs `tension: live` with the file it comes from"))
+            elif re.search(r"[\"'“”]", tm.group(1)):
+                out.append((n3, "tension-quote", "the marker points at a file; it never quotes"))
+            asked = [re.sub(r"\b\d+ to \d+ (seconds|minutes)", "", v) for f, _ in parsed
+                     for k, v in f.items() if k.startswith(("question", "how to answer"))]
+            if not any(OBSERVABLE.search(v) for v in asked):
+                out.append((n3, "no-observable", "ask for something observable with a date or number"))
+    return out
+
+
+def warm_question(block):
+    """The text flags_for should see for one fireside prompt: the question only.
+
+    The guess and the held follow-ups are separate fields and are not asks. The
+    "How to answer" line is the answer shape, so it is joined to the question.
+    """
+    fields, _ = parse_block(block)
+    return _field(fields, "question") + " " + _field(fields, "how to answer")
+
+
+def check(path, every=False, prepared=False, warm=False, engagement=None, knowledge_dir=None):
     text = Path(path).read_text()
+    fireside = False
+    if warm:
+        prepared = True
     if Path(path).name == "SESSION-CONTEXT.md":
         items = gates(text, every)
+    elif warm_blocks(text)[1]:
+        items, fireside = warm_blocks(text)[1], True
     else:
         items = question_items(text)
-    found = [(n, f, q) for n, q in items for f in flags_for(q)]
+    if fireside:
+        found = [(n, f, warm_question(b)) for n, b in items for f in flags_for(warm_question(b)) if f != "shape"]
+    else:
+        found = [(n, f, q) for n, q in items for f in flags_for(q)]
     if prepared and Path(path).name != "SESSION-CONTEXT.md":
         found += set_flags(items)
+    if warm and fireside:
+        found += warm_flags(text, resolve_engagement(engagement, knowledge_dir))
+    elif warm and Path(path).name != "SESSION-CONTEXT.md":
+        found.append((1, "not-fireside-format", "no prompt starts with **What I'm hearing (my guess):**"))
     return found
 
 
@@ -165,13 +440,17 @@ def main():
     ap.add_argument("--all", action="store_true", help="every decision gate, not only the latest")
     ap.add_argument("--prepared", action="store_true",
                     help="also check the file as a prepared set: at most three prompts, a receipt in each, a premise challenge")
+    ap.add_argument("--warm", action="store_true",
+                    help="implies --prepared; also check a fireside-format set for warmth and plain language")
+    ap.add_argument("--engagement", help="companion, fireside or deep dive; default is the house setting, else fireside")
+    ap.add_argument("--house", help="knowledge folder to read the engagement setting from (default: resolved like paths.py)")
     a = ap.parse_args()
     total = 0
     for f in a.files:
         try:
-            found = check(f, a.all, a.prepared)
-        except OSError as e:
-            print(f"question-check could not read {f}: {e}", file=sys.stderr)
+            found = check(f, a.all, a.prepared, a.warm, a.engagement, a.house)
+        except (OSError, ValueError) as e:
+            print(f"question-check could not run on {f}: {e}", file=sys.stderr)
             return 2
         for n, flag, q in found:
             print(f"{f}:{n}: {flag}: {q.splitlines()[0][:100]}")

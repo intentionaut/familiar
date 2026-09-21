@@ -23,6 +23,8 @@ These are the mechanical choices the line edit enforces. Set them once.
 - Spelling: [British / American / other]
 - Em dashes: [never / sparingly / fine]
 - Reading ease target: [e.g. Flesch 60+, grade level about 8]
+- Interview engagement: [companion, fireside or deep dive. Left unset, the
+  interview uses fireside. Overridden for one run with `--engagement`]
 - Pieces end with: [an invitation to reply / a question / nothing in particular]
 - Anything else that is non-negotiable: [e.g. sentence-case headings, no exclamation marks]
 

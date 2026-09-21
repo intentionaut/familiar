@@ -137,6 +137,126 @@ rewrite what it flags. It checks the count, a receipt per prompt, and the
 lede, context and challenge markers. Whether a prompt really finds the lede is
 still your judgement.
 
+## Fireside scripts
+
+A fireside script is a prepared set (above) written to read like a warm
+conversation. It draws out what the writer thinks and how they react, and it
+stays on the writer's side. Use it when a set is written ahead of the sitting.
+It changes nothing in the live interview: one question at a time, "ask up to
+three times" on one question, and the cap of three prompts all stay as they are.
+
+**The setting.** `Interview engagement` in the house's `positioning.md`
+(House rules) takes `companion`, `fireside` or `deep dive`. Unset, or still
+the shipped bracketed placeholder, means fireside. `--engagement` on
+`scripts/question-check.py` overrides it for one run.
+
+| Setting | Challenge in prompt 3 | Answer length asked |
+|---|---|---|
+| companion | "Is there anything that would make you doubt this, even a little?" | 30 to 60 seconds |
+| fireside (default) | What a thoughtful person who disagrees would say, then what would change the writer's mind | 1 to 2 minutes |
+| deep dive | Adds a tension between two things the writer said (live, never invented), and something observable with a date or number | 2 to 3 minutes |
+
+Every setting keeps a challenge to the premise, so the set still passes the
+three jobs above. Even the deepest setting is on the writer's side.
+
+**Changing it mid-sitting.** The writer can say "gentler" or "push me". The
+next question moves one step along companion, fireside, deep dive, and stops
+at either end (gentler at companion, or push me at deep dive, changes
+nothing; say so in a line). Log each change as one line in `notes.md`, such as
+`Engagement: fireside to companion, at the writer's word`. Name the switch
+in the opening of every script so the writer knows it is there.
+
+**The arc.** Three prompts, in this order:
+
+1. **Where the hard part goes.** The bigger context: why now, who carries the
+   cost, who benefits. This is also where the buried lede is hunted. Move:
+   follow the value.
+2. **One real case.** A single story, number or artifact from the writer's
+   own files. Move: the specific case.
+3. **The fair critic.** The challenge to the premise, voiced by an imagined
+   thoughtful person, never as your verdict. Move: the strongest opposing
+   case. At deep dive it also carries a tension between two things the writer
+   said, and asks what they would tell a friend to do on Monday.
+
+**The shape of a prompt.** Visible to the writer, in this order:
+
+- **What I'm hearing (my guess):** the idea restated in the writer's own
+  words, labelled as your guess so they can correct it.
+- **Question:** one question, one ask.
+- **How to answer:** the length for the setting, the kind of example wanted,
+  and a way out ("rough is fine", "you can pass").
+- **Held, how it works:** a follow-up toward how the thing works. Held back
+  until the writer wants it, phrased as an invitation.
+- **Held, another angle:** a second follow-up from a different angle, also an
+  invitation. Fireside and deep dive carry both; companion carries one or two.
+
+Hidden from the writer, in a comment on the line below:
+`<!-- move: ... | job: ... | receipt: story, number or artifact | level: 1 to 3 -->`.
+Move names the technique. Job says which of the three jobs above the prompt
+does (buried lede, bigger context, challenge the premise). Level is how hard
+the ask is at this setting, 1 gentlest. At deep dive, prompt 3's comment also
+carries `tension: live, <file the two statements come from>`, and no quoted
+words. If no two statements exist yet, bracket it as `[NEEDS SOURCE: ...]`
+and leave the tension out of the visible text.
+
+**What warm means here.** Listening, fairness and permission. It does not
+mean praise.
+
+- Plain words. Aim for reading ease of 60 or more on what the writer sees.
+  Internal terms (receipt, premise, mechanism, steelman, falsifier and the
+  like) stay in the comment.
+- Start from what the writer said, or your labelled guess, before any
+  challenge.
+- Give the opposing case to an imagined person. Never "I think you are wrong".
+- No praise or hype, and no accusing phrasing ("why didn't you", "against
+  you").
+- Names, episodes and numbers come from the writer's files, or are bracketed
+  as missing. A quote from a real person needs a source line; anything else is
+  labelled as a position being constructed.
+- No draft comes out of the answers. Log them verbatim in `notes.md`, reactions
+  included, under Spark candidates.
+
+**A worked example, with invented material.** The idea: small teams that drop
+the weekly status meeting. Setting: fireside.
+
+```
+A relaxed set of three questions, at your pace. Say "gentler" or "push me" at any point and I will move the next question one step.
+
+1. **What I'm hearing (my guess):** Small teams that drop the weekly status meeting keep track of the work. They lose the habit of looking busy together.
+   **Question:** Where does the work show up now, if it isn't in the meeting?
+   **How to answer:** About 1 to 2 minutes. Name a place, a person or a tool. Rough is fine, and you can pass.
+   **Held, how it works:** If you'd like, walk me through a Monday now.
+   **Held, another angle:** If it helps, say who misses the meeting most.
+   <!-- move: follow the value | job: buried lede, bigger context (why now, who benefits) | receipt: artifact | level: 1 -->
+2. **What I'm hearing (my guess):** One team tried it and it worked, and you think trust was the reason.
+   **Question:** Which one week shows the change best?
+   **How to answer:** About 1 to 2 minutes. Give one real week, with a date or a number if you have one. Rough is fine, or pass.
+   **Held, how it works:** If you'd like, walk me through a Monday now.
+   **Held, another angle:** If it helps, say who misses the meeting most.
+   <!-- move: the specific case | job: one real case | receipt: story | level: 2 -->
+3. **What I'm hearing (my guess):** You think the meeting mostly served the manager, and the team can do without it.
+   **Question:** Picture a thoughtful person who disagrees. What is the best thing they would say?
+   **How to answer:** About 1 to 2 minutes. Then say what would change your mind. Short is fine, and you can pass.
+   **Held, how it works:** If you'd like, walk me through a Monday now.
+   **Held, another angle:** If it helps, say who misses the meeting most.
+   <!-- move: the strongest opposing case | job: challenge the premise | receipt: number | level: 3 -->
+```
+
+At companion, prompt 3's question is the gentle doubt question and the length
+is 30 to 60 seconds. At deep dive, prompt 3 adds the tension and something
+observable, and asks for 2 to 3 minutes.
+
+Before the writer sees the script, run
+`python3 scripts/question-check.py --warm interview-questions.md` (add
+`--engagement <setting>` to override the house). It runs every check
+`--prepared` runs, and flags by name: `hard-to-read`, `jargon`, `no-way-out`,
+`no-switch`, `no-listening`, `verdict-voice`, `praise`, `accusing`,
+`follow-ups`, `not-invitation`, `no-comment`, `wrong-length`,
+`no-gentle-doubt`, `no-fair-critic`, `no-mind-change`, `no-tension`,
+`tension-quote` and `no-observable`. Reading ease is computed on the visible
+text only. The receipt marker may sit in the comment or on its own
+`Receipt:` line. Rewrite what it flags; do not soften it.
+
 ## Exit
 
 When you have enough, stop interviewing and summarise in notes.md:

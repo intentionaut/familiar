@@ -669,6 +669,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `knowledge/board-provider.md`: which provider supplies the board's state; unset means the built-in board
 - `scripts/notion_check.py`: checks a real Notion board (read only), or with `--write` runs one real round trip on a single test row and reports what Notion changed; never deletes
 - `scripts/notion_draft.py`: `familiar push` and `familiar pull`, a draft copied to a Notion page and back; one side changes at a time, and what is replaced is kept first
+- `scripts/notion_surface.py`: opt-in `Editing surface: notion`; the page body is the working draft, a tagged `working.md` is made before a stage and sent back through the guard on exit; two changed bodies are never merged
 - `scripts/notion_blocks.py`: a draft's markdown to Notion blocks and back; content with no form on the other side is refused and named
 - `scripts/board_sync.py`: `familiar board`, `familiar board sync <piece>` and `familiar next`, reading and writing through the provider; a sync never blocks a stage, and `next` names and starts nothing
 - `scripts/notion_board.py`: the Notion provider behind that boundary; board fields only, never a delete or an archive

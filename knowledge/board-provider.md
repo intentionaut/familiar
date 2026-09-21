@@ -9,6 +9,7 @@ out every piece's state from the piece folders and needs nothing from you.
 - Notion database: [database ID or URL]
 - Notion data source: [only when the database has more than one]
 - Draft copy: [on / off]
+- Editing surface: [notion / off]
 
 ## What a provider holds
 
@@ -90,6 +91,23 @@ the piece's Notion page, and `familiar pull <piece>` brings the page's text back
 - Formatting with no markdown form (underline, colour) is dropped on a pull, and
   the pull says how much. A block with no draft form (a toggle, a callout, a
   column) stops the pull and is named.
+
+## Editing surface
+
+Off unless you write `- Editing surface: notion`. When on, the Notion page body
+is your working draft. Before a writing stage Familiar reads the page and writes
+a working copy, `working.md`, in the piece folder, tagged with the page ID and
+the digest both sides last agreed on. When the stage ends, its changes go back
+to the page as an exact set of block edits, and only if the page is still what
+the stage read. `draft.md` is not touched.
+
+- Two changed bodies are never merged. If the page and the working copy both
+  changed, nothing is written and you are asked which stands.
+- Only what the converter carries is used. A toggle, callout, column or other
+  block with no draft form stops the stage, and the first one is named.
+- If an earlier write did not finish, the stage stops and says so. Finishing it
+  would overwrite any edit you made in Notion since, so look at the page first.
+- A sent piece is never changed.
 
 ## Checking a board before you rely on it
 

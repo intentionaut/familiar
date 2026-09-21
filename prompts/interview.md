@@ -173,15 +173,25 @@ in the opening of every script so the writer knows it is there.
    follow the value.
 2. **One real case.** A single story, number or artifact from the writer's
    own files. Move: the specific case.
-3. **The fair critic.** The challenge to the premise, voiced by an imagined
-   thoughtful person, never as your verdict. Move: the strongest opposing
-   case. At deep dive it also carries a tension between two things the writer
-   said, and asks what they would tell a friend to do on Monday.
+3. **The fair critic.** The challenge to the premise. Put the opposing case
+   on the table first, in the guess field, voiced by an imagined thoughtful
+   person and never as your verdict ("Someone thoughtful might say ... I don't
+   think that's the whole story, but I'd like to hear it from you"). The
+   question then asks for the writer's reaction, and the answer shape asks
+   what would change their mind. A reaction needs something to react to, so
+   never ask the writer to build the opposing view from a blank page. Move:
+   the strongest opposing case. At deep dive it also carries a tension between
+   two things the writer said, and asks what they would tell a friend to do
+   on Monday. Companion is the exception: prompt 3 stays the gentle doubt
+   question.
 
 **The shape of a prompt.** Visible to the writer, in this order:
 
 - **What I'm hearing (my guess):** the idea restated in the writer's own
-  words, labelled as your guess so they can correct it.
+  words, labelled as your guess so they can correct it. In prompt 1 it also
+  carries one labelled position of your own ("My own position: ..."), so the
+  writer has something to react to. In prompt 3 it carries the imagined
+  thoughtful person's case, in one or two sentences.
 - **Question:** one question, one ask.
 - **How to answer:** the length for the setting, the kind of example wanted,
   and a way out ("rough is fine", "you can pass").
@@ -189,6 +199,11 @@ in the opening of every script so the writer knows it is there.
   until the writer wants it, phrased as an invitation.
 - **Held, another angle:** a second follow-up from a different angle, also an
   invitation. Fireside and deep dive carry both; companion carries one or two.
+
+Write the follow-ups for each prompt's own question. A follow-up that fits
+prompt 1 rarely fits prompt 3, and one that repeats another prompt's, its
+sibling's or its own question is not a follow-up. Copying the example's
+follow-ups onto a new idea is the failure this rule is here to stop.
 
 Hidden from the writer, in a comment on the line below:
 `<!-- move: ... | job: ... | receipt: story, number or artifact | level: 1 to 3 -->`.
@@ -222,23 +237,23 @@ the weekly status meeting. Setting: fireside.
 ```
 A relaxed set of three questions, at your pace. Say "gentler" or "push me" at any point and I will move the next question one step.
 
-1. **What I'm hearing (my guess):** Small teams that drop the weekly status meeting keep track of the work. They lose the habit of looking busy together.
+1. **What I'm hearing (my guess):** Small teams that drop the weekly status meeting keep track of the work. They lose the habit of looking busy together. My own position: the meeting was mostly for the people in it.
    **Question:** Where does the work show up now, if it isn't in the meeting?
    **How to answer:** About 1 to 2 minutes. Name a place, a person or a tool. Rough is fine, and you can pass.
-   **Held, how it works:** If you'd like, walk me through a Monday now.
+   **Held, how it works:** If you'd like, walk me through what a Monday looks like now.
    **Held, another angle:** If it helps, say who misses the meeting most.
    <!-- move: follow the value | job: buried lede, bigger context (why now, who benefits) | receipt: artifact | level: 1 -->
 2. **What I'm hearing (my guess):** One team tried it and it worked, and you think trust was the reason.
    **Question:** Which one week shows the change best?
    **How to answer:** About 1 to 2 minutes. Give one real week, with a date or a number if you have one. Rough is fine, or pass.
-   **Held, how it works:** If you'd like, walk me through a Monday now.
-   **Held, another angle:** If it helps, say who misses the meeting most.
+   **Held, how it works:** If you'd like, say what the team did that week in place of the meeting.
+   **Held, another angle:** If it helps, say what a newcomer would have seen that week.
    <!-- move: the specific case | job: one real case | receipt: story | level: 2 -->
-3. **What I'm hearing (my guess):** You think the meeting mostly served the manager, and the team can do without it.
-   **Question:** Picture a thoughtful person who disagrees. What is the best thing they would say?
+3. **What I'm hearing (my guess):** Someone thoughtful might say the meeting is where trust gets built, and a written update cannot do that. I don't think that's the whole story, but I'd like to hear it from you.
+   **Question:** What is your reaction to that?
    **How to answer:** About 1 to 2 minutes. Then say what would change your mind. Short is fine, and you can pass.
-   **Held, how it works:** If you'd like, walk me through a Monday now.
-   **Held, another angle:** If it helps, say who misses the meeting most.
+   **Held, how it works:** If you'd like, say how you would tell whether that person had a point.
+   **Held, another angle:** If it helps, say what you would tell a friend to try on Monday.
    <!-- move: the strongest opposing case | job: challenge the premise | receipt: number | level: 3 -->
 ```
 
@@ -250,8 +265,8 @@ Before the writer sees the script, run
 `python3 scripts/question-check.py --warm interview-questions.md` (add
 `--engagement <setting>` to override the house). It runs every check
 `--prepared` runs, and flags by name: `hard-to-read`, `jargon`, `no-way-out`,
-`no-switch`, `no-listening`, `verdict-voice`, `praise`, `accusing`,
-`follow-ups`, `not-invitation`, `no-comment`, `wrong-length`,
+`no-switch`, `no-listening`, `no-position`, `verdict-voice`, `praise`, `accusing`,
+`follow-ups`, `not-invitation`, `repeated-follow-up`, `no-comment`, `wrong-length`,
 `no-gentle-doubt`, `no-fair-critic`, `no-mind-change`, `no-tension`,
 `tension-quote` and `no-observable`. Reading ease is computed on the visible
 text only. The receipt marker may sit in the comment or on its own

@@ -149,12 +149,20 @@ OPENING = ('A relaxed set of three questions, at your pace. Say "gentler" or "pu
            'at any point and I will move the next question one step.')
 
 LENGTHS = {"companion": "30 to 60 seconds", "fireside": "1 to 2 minutes", "deep dive": "2 to 3 minutes"}
-ONE_HELD = "   **Held, how it works:** If you'd like, walk me through a Monday now.\n"
-TWO_HELD = ONE_HELD + "   **Held, another angle:** If it helps, say who misses the meeting most.\n"
+H1 = "   **Held, how it works:** If you'd like, walk me through what a Monday looks like now.\n"
+A1 = "   **Held, another angle:** If it helps, say who misses the meeting most.\n"
+H2 = "   **Held, how it works:** If you'd like, say what the team did that week in place of the meeting.\n"
+A2 = "   **Held, another angle:** If it helps, say what a newcomer would have seen that week.\n"
+H3 = "   **Held, how it works:** If you'd like, say how you would tell whether that person had a point.\n"
+A3 = "   **Held, another angle:** If it helps, say what you would tell a friend to try on Monday.\n"
+H3_DOUBT = "   **Held, how it works:** If you'd like, say what you would look at to check.\n"
 Q3_DEEP_TAIL = " Add anything you could see by a date."
 TENSION = " | tension: live, notes.md lines 4 and 9"
-Q3_FIRESIDE = "Picture a thoughtful person who disagrees. What is the best thing they would say?"
+HEAR3 = ("Someone thoughtful might say the meeting is where trust gets built, and a written update cannot do that. "
+         "I don't think that's the whole story, but I'd like to hear it from you.")
+Q3_FIRESIDE = "What is your reaction to that?"
 Q3_DOUBT = "Is there anything that would make you doubt this, even a little?"
+HEAR3_DOUBT = "You think the meeting mostly served the manager, and the team can do without it."
 
 
 def warm_set(engagement="fireside"):
@@ -162,32 +170,32 @@ def warm_set(engagement="fireside"):
     length = LENGTHS[engagement]
     marker3 = "move: the strongest opposing case | job: challenge the premise | receipt: number | level: 3"
     if engagement == "companion":
-        q3, how3 = Q3_DOUBT, f"About {length}. A word or two is fine, and you can pass."
-        held, held3 = ONE_HELD, ONE_HELD
+        hear3, q3, how3 = HEAR3_DOUBT, Q3_DOUBT, f"About {length}. A word or two is fine, and you can pass."
+        h1, h2, h3 = H1, H2, H3_DOUBT
     else:
-        q3 = Q3_FIRESIDE
+        hear3, q3 = HEAR3, Q3_FIRESIDE
         how3 = f"About {length}. Then say what would change your mind. Short is fine, and you can pass."
-        held = held3 = TWO_HELD
+        h1, h2, h3 = H1 + A1, H2 + A2, H3 + A3
     if engagement == "deep dive":
         marker3 += TENSION
         how3 = f"About {length}. Then say what would change your mind.{Q3_DEEP_TAIL} Pass if you like."
     return (
         "# Interview questions\n\n" + OPENING + "\n\n"
         "1. **What I'm hearing (my guess):** Small teams that drop the weekly status meeting keep track of the work. "
-        "They lose the habit of looking busy together.\n"
+        "They lose the habit of looking busy together. My own position: the meeting was mostly for the people in it.\n"
         "   **Question:** Where does the work show up now, if it isn't in the meeting?\n"
         f"   **How to answer:** About {length}. Name a place, a person or a tool. Rough is fine, and you can pass.\n"
-        + held +
+        + h1 +
         "   <!-- move: follow the value | job: buried lede, bigger context (why now, who benefits) | receipt: artifact | level: 1 -->\n"
         "2. **What I'm hearing (my guess):** One team tried it and it worked, and you think trust was the reason.\n"
         "   **Question:** Which one week shows the change best?\n"
         f"   **How to answer:** About {length}. Give one real week, with a date or a number if you have one. Rough is fine, or pass.\n"
-        + held +
+        + h2 +
         "   <!-- move: the specific case | job: one real case | receipt: story | level: 2 -->\n"
-        "3. **What I'm hearing (my guess):** You think the meeting mostly served the manager, and the team can do without it.\n"
+        f"3. **What I'm hearing (my guess):** {hear3}\n"
         f"   **Question:** {q3}\n"
         f"   **How to answer:** {how3}\n"
-        + held3 +
+        + h3 +
         f"   <!-- {marker3} -->\n")
 
 
@@ -282,10 +290,45 @@ class Fireside(unittest.TestCase):
         self.assertIn("not-fireside-format", self.flags("1. Which matters more today?\n   A. Speed. B. Cost.\n"))
 
     def test_verdict_voice(self):
-        s = warm_set().replace(Q3_FIRESIDE, "I think you are wrong here. What is the best thing you can say?")
+        s = warm_set().replace(HEAR3, "I think you are wrong here, and the meeting matters.")
         self.assertIn("verdict-voice", self.flags(s))
+        # a case with no imagined person behind it
+        s = warm_set().replace(HEAR3, "The meeting is where trust gets built. I'd like to hear it from you.")
+        self.assertIn("no-fair-critic", self.flags(s))
+        # the question must ask for a reaction, not a blank-page essay
         s = warm_set().replace(Q3_FIRESIDE, "What is the best case against the meeting going?")
         self.assertIn("no-fair-critic", self.flags(s))
+
+    def test_prompt_three_puts_the_opposing_case_on_the_table_first(self):
+        s = warm_set()
+        self.assertIn("Someone thoughtful might say", s)
+        self.assertIn("I don't think that's the whole story", s)
+        self.assertNotIn("Picture a thoughtful person", s)
+
+    def test_prompt_one_carries_a_position_of_its_own(self):
+        s = warm_set().replace(" My own position: the meeting was mostly for the people in it.", "")
+        self.assertIn("no-position", self.flags(s))
+
+    def test_repeated_follow_ups(self):
+        # identical to another prompt's
+        s = warm_set().replace(H2, H1, 1)
+        self.assertIn("repeated-follow-up", self.flags(s))
+        # repeats its own prompt's question
+        s = warm_set().replace("say what the team did that week in place of the meeting.",
+                               "say which one week shows the change best.")
+        self.assertIn("repeated-follow-up", self.flags(s))
+        # two identical follow-ups in one prompt
+        s = warm_set().replace(A1, H1.replace("how it works", "another angle"), 1)
+        self.assertIn("repeated-follow-up", self.flags(s))
+
+    def test_the_worked_example_has_no_repeated_follow_ups(self):
+        text = (ROOT / "prompts" / "interview.md").read_text()
+        block = text.split("```\n")[1]
+        d = tempfile.TemporaryDirectory()
+        self.addCleanup(d.cleanup)
+        p = Path(d.name) / "interview-questions.md"
+        p.write_text(block)
+        self.assertEqual([], qc.check(p, warm=True, engagement="fireside"))
 
     def test_praise_and_hype(self):
         for word in ("great", "brilliant", "fascinating", "game-changing"):
@@ -298,13 +341,13 @@ class Fireside(unittest.TestCase):
             self.assertIn("accusing", self.flags(s), phrase)
 
     def test_follow_up_counts(self):
-        self.assertIn("follow-ups", self.flags(warm_set().replace(TWO_HELD, ONE_HELD, 1), "fireside"))
-        self.assertNotIn("follow-ups", self.flags(warm_set("companion").replace(ONE_HELD, TWO_HELD), "companion"))
-        three = warm_set().replace(TWO_HELD, TWO_HELD + "   **Held, a third:** If you'd like, say more.\n", 1)
+        self.assertIn("follow-ups", self.flags(warm_set().replace(A1, "", 1), "fireside"))
+        self.assertNotIn("follow-ups", self.flags(warm_set("companion").replace(H1, H1 + A1), "companion"))
+        three = warm_set().replace(A1, A1 + "   **Held, a third:** If you'd like, say more about the newest hire.\n", 1)
         self.assertIn("follow-ups", self.flags(three))
 
     def test_follow_ups_are_invitations(self):
-        s = warm_set().replace("If you'd like, walk me through a Monday now.", "Explain a Monday now.", 1)
+        s = warm_set().replace("If you'd like, walk me through what a Monday looks like now.", "Explain a Monday now.", 1)
         self.assertIn("not-invitation", self.flags(s))
 
     def test_the_hidden_comment_carries_move_receipt_and_level(self):

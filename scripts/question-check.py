@@ -37,10 +37,12 @@ stripped first). Flags, by name:
   accusing         an accusing phrase
   follow-ups       the wrong number of held follow-ups for the setting
   not-invitation   a held follow-up that is not an invitation
+  repeated-follow-up  a held follow-up identical to another prompt's (or its own sibling's), or one that repeats its own question
+  no-position      prompt 1's guess carries no labelled position of the interviewer's own
   no-comment       the hidden comment lacks move, receipt or level
   wrong-length     the answer length asked does not match the setting
   no-gentle-doubt  companion: prompt 3 is not the gentle doubt question
-  no-fair-critic   fireside and deep dive: prompt 3 has no imagined thoughtful person
+  no-fair-critic   fireside and deep dive: prompt 3's guess carries no imagined thoughtful person's case, or its question does not ask for a reaction
   no-mind-change   fireside and deep dive: prompt 3 does not ask what would change their mind
   no-tension       deep dive: no live tension marker pointing at the writer's own files
   tension-quote    deep dive: the tension marker quotes text instead of pointing at a file
@@ -203,7 +205,10 @@ ACCUSING = re.compile(
     r"(against you|you'?re wrong|you are wrong|you failed|why didn'?t you|why did you not|you should have|you missed|your mistake)", re.I)
 IMAGINED = re.compile(
     r"\b(picture|imagine|suppose)\b[^.?]*\b(person|colleague|reader|friend|critic|someone)\b"
-    r"|\ba (thoughtful|fair|reasonable) (person|critic|colleague|reader)\b", re.I)
+    r"|\ba (thoughtful|fair|reasonable) (person|critic|colleague|reader)\b"
+    r"|\bsomeone (thoughtful|fair|reasonable)\b[^.?]*\b(might|would|could) say\b", re.I)
+POSITION = re.compile(r"\b(my (own )?(position|view|take)|I lean|I suspect|I'd guess|I would guess)\b", re.I)
+REACTION = re.compile(r"\b(react\w*|make of (it|that|this)|think of (it|that|this)|land\w*|sit with you)\b", re.I)
 VERDICT = re.compile(r"\bI (think|believe|doubt|say) (that )?(you|this|it|the)\b|\bthe (real )?problem (is|with)\b", re.I)
 INVITE = re.compile(r"\b(if you('d| would)? (like|want|wish)|if it helps|only if|whenever you|happy to|we could)\b", re.I)
 OBSERVABLE = re.compile(r"\b(date|dated|number|how many|how much|by when)\b|\d", re.I)
@@ -291,6 +296,10 @@ def reading_ease(text):
     return 206.835 - 1.015 * (len(words) / sentences) - 84.6 * (syll / len(words))
 
 
+def _norm(text):
+    return " ".join(re.findall(r"[a-z']+", text.lower()))
+
+
 def strip_hidden(text):
     return COMMENT.sub("", text)
 
@@ -363,14 +372,24 @@ def warm_flags(text, engagement):
             out.append((n, "praise", m.group(0)))
         if m := ACCUSING.search(vis):
             out.append((n, "accusing", m.group(0)))
-        if VERDICT.search(question):
-            out.append((n, "verdict-voice", question[:80]))
+        if VERDICT.search(hearing + " " + question):
+            out.append((n, "verdict-voice", (hearing + " " + question)[:80]))
         lo, hi = (1, 2) if engagement == "companion" else (2, 2)
         if not lo <= len(held) <= hi:
             out.append((n, "follow-ups", f"{len(held)} held follow-ups"))
         for k, v in held:
             if not INVITE.search(v):
                 out.append((n, "not-invitation", v[:80]))
+        if n == blocks[0][0] and not POSITION.search(hearing):
+            out.append((n, "no-position", "prompt 1 needs a labelled position of the interviewer's own to react to"))
+        for k, v in held:
+            key = _norm(v)
+            others = [_norm(ov) for (on, _), (of, _) in zip(blocks, parsed) if on != n
+                      for ok, ov in of.items() if ok.startswith("held")]
+            same_prompt = [_norm(ov) for ok, ov in held if ok != k]
+            qn = _norm(question)
+            if key in others or key in same_prompt or (qn and (qn in key or key in qn)):
+                out.append((n, "repeated-follow-up", v[:80]))
         if not all(re.search(rf"\b{w}\s*:", hidden, re.I) for w in ("move", "receipt", "level")):
             out.append((n, "no-comment", "hidden comment needs move, receipt and level"))
         if not re.search(rf"(?<!\d){LENGTH[engagement]}", how):
@@ -378,12 +397,15 @@ def warm_flags(text, engagement):
     if len(blocks) >= 3:
         n3, (f3, h3) = blocks[2][0], parsed[2]
         q3, how3 = _field(f3, "question"), _field(f3, "how to answer")
+        hear3 = _field(f3, "what i")
         if engagement == "companion":
             if GENTLE_DOUBT not in " ".join(q3.lower().split()):
                 out.append((n3, "no-gentle-doubt", q3[:80]))
         else:
-            if not IMAGINED.search(q3):
-                out.append((n3, "no-fair-critic", q3[:80]))
+            if not IMAGINED.search(hear3 + " " + q3):
+                out.append((n3, "no-fair-critic", "the guess should carry an imagined thoughtful person's case"))
+            elif not REACTION.search(q3):
+                out.append((n3, "no-fair-critic", "the question should ask for the writer's reaction to that case"))
             if not re.search(r"change your mind", how3, re.I):
                 out.append((n3, "no-mind-change", how3[:80]))
         if engagement == "deep dive":

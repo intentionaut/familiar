@@ -72,8 +72,10 @@ process.
   names and episodes go in the brief, not in a question. Write the set in the
   format prompts/interview.md, "Fireside scripts", defines: an opening that
   names the "gentler" and "push me" switch, then per prompt what you are
-  hearing (labelled as your guess), one question, how to answer, two held
-  follow-ups, and a hidden comment with move, job, receipt and level. Use the
+  hearing (labelled as your guess; prompt 1 adds a position of your own,
+  prompt 3 the imagined critic's case, to react to), one question, how to
+  answer, two held follow-ups written for that prompt's own question, and a
+  hidden comment with move, job, receipt and level. Use the
   house's `Interview engagement` setting (unset means fireside). Run
   `python3 scripts/question-check.py --warm interview-questions.md` and
   rewrite what it flags. It runs the `--prepared` checks too, and accepts the

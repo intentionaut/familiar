@@ -214,7 +214,9 @@ Every script's opening names the switch.
 3. **The fair critic.** The challenge to the premise, voiced as the objection
    this reader brings: what they are tired of reading, or the reason they
    would put the piece down. Their objection, fairly put, never a general
-   devil's advocate and never your verdict. The question asks for the writer's
+   devil's advocate and never your verdict. Where their fatigue is not
+   declared, an imagined thoughtful person voices it instead; do not invent a
+   fatigue for a reader who has not named one. The question asks for the writer's
    reaction, and the answer shape asks what would change their mind. A
    reaction needs something to react to, so never ask the writer to build the
    objection from a blank page. Move: the strongest opposing case.

@@ -3,6 +3,7 @@ and passes the ones it asks for. Both directions, because a check that flags
 good questions gets ignored. Examples are invented; no writer's material here.
 """
 import importlib.util
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -145,31 +146,65 @@ class PreparedSets(unittest.TestCase):
         self.assertEqual([], qc.check(p))
 
 
-OPENING = ('A relaxed set of three questions, at your pace. Say "gentler" or "push me" '
-           'at any point and I will move the next question one step.')
+FIRESIDE_SECTION = re.compile(r"^## Fireside scripts\n.*?(?=^## Exit)", re.S | re.M)
+
+
+def fireside_section():
+    return FIRESIDE_SECTION.search((ROOT / "prompts" / "interview.md").read_text()).group(0)
+
+
+def example_blocks():
+    """Every fenced block inside the Fireside scripts section of the prompt."""
+    return re.findall(r"^```\n(.*?)^```", fireside_section(), re.S | re.M)
+
+
+def worked_example():
+    """The full three-prompt example the prompt teaches from."""
+    return next(b for b in example_blocks() if "1. **What I'm hearing" in b)
+
+
+# The fixture: an invented reader (new team leaders in a care home), an invented
+# idea (a written handover beats a spoken one), and nothing technical in it.
+WHO = ("**Who this is for:** new team leaders in a care home, "
+       "in their first year of running a shift.")
+AIM = ("**What we're aiming at:** they can run one handover differently on Monday "
+       "and see whether it holds.")
+SWITCH = ('A relaxed set of three questions, at your pace. Say "gentler" or "push me" '
+          'at any point and I will move the next question one step.')
+OPENING = WHO + "\n" + AIM + "\n" + SWITCH
 
 LENGTHS = {"companion": "30 to 60 seconds", "fireside": "1 to 2 minutes", "deep dive": "2 to 3 minutes"}
-H1 = "   **Held, how it works:** If you'd like, walk me through what a Monday looks like now.\n"
-A1 = "   **Held, another angle:** If it helps, say who misses the meeting most.\n"
-H2 = "   **Held, how it works:** If you'd like, say what the team did that week in place of the meeting.\n"
-A2 = "   **Held, another angle:** If it helps, say what a newcomer would have seen that week.\n"
-H3 = "   **Held, how it works:** If you'd like, say how you would tell whether that person had a point.\n"
+H1 = "   **Held, how it works:** If you'd like, walk me through the first hour of a late shift.\n"
+A1 = "   **Held, another angle:** If it helps, say who notices first when something was missed.\n"
+H2 = "   **Held, how it works:** If you'd like, say what the written note held that the spoken one did not.\n"
+A2 = "   **Held, another angle:** If it helps, say what a new starter would have made of that shift.\n"
+H3 = "   **Held, how it works:** If you'd like, say how you would tell a skimmed note from one nobody read.\n"
 A3 = "   **Held, another angle:** If it helps, say what you would tell a friend to try on Monday.\n"
 H3_DOUBT = "   **Held, how it works:** If you'd like, say what you would look at to check.\n"
 Q3_DEEP_TAIL = " Add anything you could see by a date."
 TENSION = " | tension: live, notes.md lines 4 and 9"
-HEAR3 = ("Someone thoughtful might say the meeting is where trust gets built, and a written update cannot do that. "
+HEAR1 = ("Handover works better written down by the person leaving than said out loud. "
+         "My own position: the spoken one serves the person leaving, not the person arriving.")
+Q1 = "Who is carrying the gap when a handover is only spoken?"
+HEAR2 = ("What would settle this for another team leader is one handover that went wrong, "
+         "not the case for writing things down. I would guess one is already in mind.")
+Q2 = "Which one handover shows the difference best?"
+HOW2_TAIL = "Give one real handover, with the week it happened if you have it."
+HEAR3 = ("A team leader reading this might say the note takes ten minutes nobody has at seven "
+         "in the morning, and it gets skimmed anyway. "
          "I don't think that's the whole story, but I'd like to hear it from you.")
 Q3_FIRESIDE = "What is your reaction to that?"
 Q3_DOUBT = "Is there anything that would make you doubt this, even a little?"
-HEAR3_DOUBT = "You think the meeting mostly served the manager, and the team can do without it."
-HEAR2 = "One team tried it and it worked, and you think trust was the reason."
+HEAR3_DOUBT = "You think the written handover serves the person arriving, and the spoken one serves the person leaving."
+OUT1 = "outcome: a team leader can see who pays for a spoken handover"
+OUT2 = "outcome: a team leader can copy the note and the reasoning under it"
+OUT3 = "outcome: a team leader can weigh the ten minutes against the risk"
 
 
 def warm_set(engagement="fireside"):
     """A clean fireside-format set on an invented topic, at one setting."""
     length = LENGTHS[engagement]
-    marker3 = "move: the strongest opposing case | job: challenge the premise | receipt: number | level: 3"
+    marker3 = f"move: the strongest opposing case | job: challenge the premise | {OUT3} | receipt: number | level: 3"
     if engagement == "companion":
         hear3, q3, how3 = HEAR3_DOUBT, Q3_DOUBT, f"About {length}. A word or two is fine, and you can pass."
         h1, h2, h3 = H1, H2, H3_DOUBT
@@ -182,17 +217,17 @@ def warm_set(engagement="fireside"):
         how3 = f"About {length}. Then say what would change your mind.{Q3_DEEP_TAIL} Pass if you like."
     return (
         "# Interview questions\n\n" + OPENING + "\n\n"
-        "1. **What I'm hearing (my guess):** Small teams that drop the weekly status meeting keep track of the work. "
-        "They lose the habit of looking busy together. My own position: the meeting was mostly for the people in it.\n"
-        "   **Question:** Where does the work show up now, if it isn't in the meeting?\n"
-        f"   **How to answer:** About {length}. Name a place, a person or a tool. Rough is fine, and you can pass.\n"
+        f"1. **What I'm hearing (my guess):** {HEAR1}\n"
+        f"   **Question:** {Q1}\n"
+        f"   **How to answer:** About {length}. Name a person or a job. Rough is fine, and you can pass.\n"
         + h1 +
-        "   <!-- move: follow the value | job: buried lede, bigger context (why now, who benefits) | receipt: artifact | level: 1 -->\n"
+        "   <!-- move: follow the value | job: buried lede, bigger context (why now, who benefits) | "
+        f"{OUT1} | receipt: artifact | level: 1 -->\n"
         f"2. **What I'm hearing (my guess):** {HEAR2}\n"
-        "   **Question:** Which one week shows the change best?\n"
-        f"   **How to answer:** About {length}. Give one real week, with a date or a number if you have one. Rough is fine, or pass.\n"
+        f"   **Question:** {Q2}\n"
+        f"   **How to answer:** About {length}. {HOW2_TAIL} Rough is fine, or pass.\n"
         + h2 +
-        "   <!-- move: the specific case | job: one real case | receipt: story | level: 2 -->\n"
+        f"   <!-- move: the specific case | job: one real case | {OUT2} | receipt: story | level: 2 -->\n"
         f"3. **What I'm hearing (my guess):** {hear3}\n"
         f"   **Question:** {q3}\n"
         f"   **How to answer:** {how3}\n"
@@ -254,7 +289,7 @@ class Fireside(unittest.TestCase):
         self.assertIn("no-receipt", self.flags(warm_set().replace("receipt: story", "kind: story")))
 
     def test_hard_to_read(self):
-        s = warm_set().replace("Where does the work show up now, if it isn't in the meeting?",
+        s = warm_set().replace(Q1,
                                "Notwithstanding organisational reconfiguration, where does undocumented "
                                "interdepartmental coordination materialise subsequently, "
                                "considering institutional communication expectations, "
@@ -269,16 +304,42 @@ class Fireside(unittest.TestCase):
 
     def test_jargon_in_visible_text(self):
         for word in ("receipt", "steelman", "mechanism", "plumbing", "commodity", "falsifier"):
-            s = warm_set().replace("Which one week shows the change best?", f"Which one week is your {word}?")
+            s = warm_set().replace(Q2, f"Which one handover is your {word}?")
             self.assertIn("jargon", self.flags(s), word)
 
     def test_jargon_is_fine_in_the_hidden_comment(self):
         self.assertEqual([], self.flags(warm_set()))  # the comment already says "receipt" and "premise"
 
     def test_no_way_out(self):
-        s = warm_set().replace("Give one real week, with a date or a number if you have one. Rough is fine, or pass.",
-                               "Give one real week, with a date or a number if you have one.")
+        s = warm_set().replace(f"{HOW2_TAIL} Rough is fine, or pass.", HOW2_TAIL)
         self.assertIn("no-way-out", self.flags(s))
+
+    def test_the_opening_names_the_reader(self):
+        self.assertIn("no-audience-line", self.flags(warm_set().replace(WHO + "\n", "")))
+        self.assertIn("no-audience-line", self.flags(warm_set().replace(AIM + "\n", "")))
+        self.assertIn("no-audience-line", self.flags(warm_set().replace(WHO, "**Who this is for:**")))
+
+    def test_nothing_declared_must_fall_back_rather_than_stop(self):
+        stops = "**Who this is for:** no audience is declared for this piece."
+        self.assertIn("no-audience-line", self.flags(warm_set().replace(WHO, stops)))
+        for honest in (stops[:-1] + ", so I am writing to your one reader: governors of a small school.",
+                       "**Who this is for:** none declared. [ASK THE WRITER: who is this for?]"):
+            self.assertNotIn("no-audience-line", self.flags(warm_set().replace(WHO, honest)), honest)
+
+    def test_the_comment_says_what_changes_for_the_reader(self):
+        self.assertIn("no-outcome", self.flags(warm_set().replace(OUT1, "note: none")))
+        self.assertIn("no-outcome", self.flags(warm_set().replace("outcome:", "x:")))
+        self.assertIn("no-outcome", self.flags(warm_set().replace(OUT3, "outcome:")))
+
+    def test_the_objection_may_be_voiced_by_the_reader(self):
+        # the fireside fixture already voices it as the reader's own objection
+        self.assertNotIn("no-fair-critic", self.flags(warm_set()))
+        generic = ("Someone thoughtful might say the note takes ten minutes nobody has. "
+                   "I don't think that's the whole story, but I'd like to hear it from you.")
+        self.assertNotIn("no-fair-critic", self.flags(warm_set().replace(HEAR3, generic)))
+        nobody = ("The note takes ten minutes nobody has at seven in the morning. "
+                  "I'd like to hear it from you.")
+        self.assertIn("no-fair-critic", self.flags(warm_set().replace(HEAR3, nobody)))
 
     def test_no_switch_in_the_opening(self):
         s = warm_set().replace('Say "gentler" or "push me" at any point and I will move the next question one step.',
@@ -287,27 +348,45 @@ class Fireside(unittest.TestCase):
 
     def test_no_listening(self):
         self.assertIn("no-listening", self.flags(warm_set().replace("(my guess)", "")))
-        self.assertIn("no-listening", self.flags(warm_set().replace("(my guess):** Small teams that drop the weekly status meeting keep track of the work. They lose the habit of looking busy together.", "):**")))
+        self.assertIn("no-listening", self.flags(warm_set().replace(f"(my guess):** {HEAR1}", "):**")))
         self.assertIn("not-fireside-format", self.flags("1. Which matters more today?\n   A. Speed. B. Cost.\n"))
 
+    def test_a_guess_about_the_writer_is_not_a_verdict(self):
+        for line in ("I think you already have one in mind.",
+                     "I would guess you have one in mind.",
+                     "I think this is the one you keep coming back to, and I might be wrong."):
+            self.assertNotIn("verdict-voice", self.flags(warm_set().replace(HEAR2, HEAR2 + " " + line)), line)
+
+    def test_a_reaction_can_be_asked_for_in_more_than_one_way(self):
+        for q in ("What do you make of that?", "What would you say back to that trustee?",
+                  "How does that land with you?", "How much of that holds?"):
+            self.assertNotIn("no-fair-critic", self.flags(warm_set().replace(Q3_FIRESIDE, q)), q)
+        blank = "What is the best case against writing it down?"
+        self.assertIn("no-fair-critic", self.flags(warm_set().replace(Q3_FIRESIDE, blank)))
+
+    def test_the_answer_shape_may_ask_for_what_was_visible_at_the_time(self):
+        shape = "One thing anyone could have seen at the time, with its date or its figure."
+        self.assertNotIn("memory", self.flags(warm_set().replace(HOW2_TAIL, shape)))
+        self.assertIn("memory", self.flags(warm_set().replace(Q2, "What did you check first that week?")))
+
     def test_verdict_voice(self):
-        s = warm_set().replace(HEAR3, "I think you are wrong here, and the meeting matters.")
+        s = warm_set().replace(HEAR3, "I think you are wrong here, and the spoken handover is fine.")
         self.assertIn("verdict-voice", self.flags(s))
         # a case with no imagined person behind it
-        s = warm_set().replace(HEAR3, "The meeting is where trust gets built. I'd like to hear it from you.")
+        s = warm_set().replace(HEAR3, "The spoken handover is where the trust gets built. I'd like to hear it from you.")
         self.assertIn("no-fair-critic", self.flags(s))
         # the question must ask for a reaction, not a blank-page essay
-        s = warm_set().replace(Q3_FIRESIDE, "What is the best case against the meeting going?")
+        s = warm_set().replace(Q3_FIRESIDE, "What is the best case against writing it down?")
         self.assertIn("no-fair-critic", self.flags(s))
 
     def test_prompt_three_puts_the_opposing_case_on_the_table_first(self):
         s = warm_set()
-        self.assertIn("Someone thoughtful might say", s)
+        self.assertIn("A team leader reading this might say", s)
         self.assertIn("I don't think that's the whole story", s)
         self.assertNotIn("Picture a thoughtful person", s)
 
     def test_prompt_one_carries_a_position_of_its_own(self):
-        s = warm_set().replace(" My own position: the meeting was mostly for the people in it.", "")
+        s = warm_set().replace(" My own position: the spoken one serves the person leaving, not the person arriving.", "")
         self.assertIn("no-position", self.flags(s))
 
     def test_repeated_follow_ups(self):
@@ -315,30 +394,28 @@ class Fireside(unittest.TestCase):
         s = warm_set().replace(H2, H1, 1)
         self.assertIn("repeated-follow-up", self.flags(s))
         # repeats its own prompt's question
-        s = warm_set().replace("say what the team did that week in place of the meeting.",
-                               "say which one week shows the change best.")
+        s = warm_set().replace("say what the written note held that the spoken one did not.",
+                               "say which one handover shows the difference best.")
         self.assertIn("repeated-follow-up", self.flags(s))
         # two identical follow-ups in one prompt
         s = warm_set().replace(A1, H1.replace("how it works", "another angle"), 1)
         self.assertIn("repeated-follow-up", self.flags(s))
 
-    def test_the_worked_example_has_no_repeated_follow_ups(self):
-        text = (ROOT / "prompts" / "interview.md").read_text()
-        block = text.split("```\n")[1]
+    def test_the_worked_example_passes_every_check(self):
         d = tempfile.TemporaryDirectory()
         self.addCleanup(d.cleanup)
         p = Path(d.name) / "interview-questions.md"
-        p.write_text(block)
+        p.write_text(worked_example())
         self.assertEqual([], qc.check(p, warm=True, engagement="fireside"))
 
     def test_praise_and_hype(self):
         for word in ("great", "brilliant", "fascinating", "game-changing"):
-            s = warm_set().replace("One team tried it and it worked", f"One team tried it and it was {word}")
+            s = warm_set().replace("one handover that went wrong", f"one handover that was {word}")
             self.assertIn("praise", self.flags(s), word)
 
     def test_accusing(self):
         for phrase in ("why didn't you", "you failed", "against you", "you're wrong"):
-            s = warm_set().replace("Which one week", f"{phrase.capitalize()}? Which one week")
+            s = warm_set().replace("Which one handover", f"{phrase.capitalize()}? Which one handover")
             self.assertIn("accusing", self.flags(s), phrase)
 
     def test_follow_up_counts(self):
@@ -348,29 +425,29 @@ class Fireside(unittest.TestCase):
         self.assertIn("follow-ups", self.flags(three))
 
     def test_follow_ups_are_invitations(self):
-        s = warm_set().replace("If you'd like, walk me through what a Monday looks like now.", "Explain a Monday now.", 1)
+        s = warm_set().replace("If you'd like, walk me through the first hour of a late shift.", "Explain a late shift now.", 1)
         self.assertIn("not-invitation", self.flags(s))
 
     def test_a_bare_question_is_not_an_invitation(self):
-        s = warm_set().replace("If you'd like, walk me through what a Monday looks like now.",
-                               "What does a Monday look like now.", 1)
+        s = warm_set().replace("If you'd like, walk me through the first hour of a late shift.",
+                               "What does a late shift look like now.", 1)
         self.assertIn("not-invitation", self.flags(s))
 
     def test_an_invitation_can_be_worded_any_way(self):
         # The check stops an instruction. It does not make every script offer
         # things in the same two phrases, which is what made scripts read alike.
-        for line in ("There is more here if you want it: what a Monday looks like now.",
-                     "Whenever you want it: what a Monday looks like now.",
+        for line in ("There is more here if you want it: what a late shift looks like.",
+                     "Whenever you want it: what a late shift looks like.",
                      "Say what a Monday looks like now, if that is easy.",
-                     "No need to take this one: what a Monday looks like now.",
-                     "We can go into what a Monday looks like now.",
-                     "Ready when you are: what a Monday looks like now.",
-                     "Glad to hear what a Monday looks like now.",
-                     "Open any time: what a Monday looks like now.",
-                     "A second read, if you fancy it: what a Monday looks like now.",
-                     "Happy to go further into what a Monday looks like now.",
+                     "No need to take this one: what a late shift looks like.",
+                     "We can go into what a late shift looks like.",
+                     "Ready when you are: what a late shift looks like.",
+                     "Glad to hear what a late shift looks like.",
+                     "Open any time: what a late shift looks like.",
+                     "A second read, if you fancy it: what a late shift looks like.",
+                     "Happy to go further into what a late shift looks like.",
                      "Up to you whether we go into what a Monday looks like now."):
-            s = warm_set().replace("If you'd like, walk me through what a Monday looks like now.", line, 1)
+            s = warm_set().replace("If you'd like, walk me through the first hour of a late shift.", line, 1)
             self.assertNotIn("not-invitation", self.flags(s), line)
 
     def test_the_guess_never_reports_what_the_files_lack(self):
@@ -382,18 +459,16 @@ class Fireside(unittest.TestCase):
             self.assertIn("files-talk", self.flags(warm_set().replace(HEAR2, line)), line)
 
     def test_evidence_the_files_do_hold_is_not_files_talk(self):
-        held = "Your build log for 4 November has 31 flags gone, and the build down from 9 minutes to 6."
+        held = "Your notes have the date, 4 November, and the count: 31 calls that week, down from 60."
         self.assertEqual([], self.flags(warm_set().replace(HEAR2, held)))
 
     def test_a_second_ask_in_the_answer_shape(self):
-        s = warm_set().replace("Give one real week, with a date or a number if you have one.",
-                               "Give one real week, and what changed that week.")
+        s = warm_set().replace(HOW2_TAIL, "Give one real handover, and what changed that week.")
         self.assertIn("second-ask", self.flags(s))
         self.assertNotIn("compound", self.flags(s))
 
     def test_two_questions_in_the_question_are_still_compound(self):
-        s = warm_set().replace("Which one week shows the change best?",
-                               "Which one week shows the change best? Who noticed?")
+        s = warm_set().replace(Q2, Q2 + " Who noticed?")
         self.assertIn("compound", self.flags(s))
 
     def test_the_hidden_comment_carries_move_receipt_and_level(self):
@@ -446,11 +521,55 @@ class Fireside(unittest.TestCase):
 
     def test_deep_dive_asks_for_something_observable(self):
         s = warm_set("deep dive").replace(Q3_DEEP_TAIL, "")
-        s = s.replace("with a date or a number if you have one", "if you have one")
+        s = s.replace(HOW2_TAIL, "Give one real handover.")
         self.assertIn("no-observable", self.flags(s, "deep dive"))
+
+    def test_an_observable_need_not_use_the_word_date(self):
+        # "with the week or the count of swaps if you have it" is observable
+        for asked in ("with the week it happened if you have it",
+                      "with the month you last said it, if you have that",
+                      "with the count of swaps that shift",
+                      "something anyone could have seen from outside"):
+            s = warm_set("deep dive").replace(Q3_DEEP_TAIL, "").replace(HOW2_TAIL, f"Give one real handover, {asked}.")
+            self.assertNotIn("no-observable", self.flags(s, "deep dive"), asked)
 
     def test_the_prepared_check_alone_does_not_run_warmth(self):
         self.assertEqual([], self.flags(warm_set().replace("(my guess)", ""), warm=False))
+
+
+SOFTWARE = re.compile(
+    r"\b(code|codebase|coding|api|apis|deploy\w*|repo|repos|repositor\w+|commit|commits|committed"
+    r"|pull request|merge|refactor\w*|debug\w*|database|server|servers|software|sprint|backlog"
+    r"|endpoint\w*|developer\w*|engineer\w*|staging|rollback|outage|algorithm\w*|dashboard"
+    r"|saas|startup|app|apps|product|products|users?|launch\w*|migration|kill switch)\b", re.I)
+
+
+class NothingTechnical(unittest.TestCase):
+    """Every example a reader of this module or the prompt meets is non-technical.
+
+    The scripts are for writers who are not engineers, and an example written
+    about shipping code teaches the wrong shape for every other reader. The
+    guard is here because examples drift back towards what is easiest to write.
+    """
+
+    def assert_plain(self, label, text):
+        found = sorted({m.group(0).lower() for m in SOFTWARE.finditer(text)})
+        self.assertEqual([], found, f"{label} uses software words: {found}")
+
+    def test_the_prompts_examples_are_not_technical(self):
+        for i, block in enumerate(example_blocks()):
+            self.assert_plain(f"prompts/interview.md example {i + 1}", block)
+
+    def test_the_fixtures_are_not_technical(self):
+        for e in qc.ENGAGEMENTS:
+            self.assert_plain(f"warm_set({e})", warm_set(e))
+
+    def test_the_plan_examples_are_not_technical(self):
+        self.assert_plain("docs/plans/fireside-scripts.md", (ROOT / "docs" / "plans" / "fireside-scripts.md").read_text())
+
+    def test_the_guard_catches_a_technical_example(self):
+        with self.assertRaises(AssertionError):
+            self.assert_plain("x", "Which one deploy shows the change best?")
 
 
 class Engagement(unittest.TestCase):
@@ -511,6 +630,19 @@ class Engagement(unittest.TestCase):
         cs = (ROOT / "prompts" / "case-study.md").read_text()
         self.assertIn("Fireside scripts", cs)
         self.assertIn("--warm", cs)
+
+    def test_the_prompt_tells_the_reader_ladder_and_the_win_shapes(self):
+        text = fireside_section()
+        for needle in ("audiences.md", "Segments", "Declared before inferred", "Who this is for:",
+                       "What we're aiming at:", "one reader", "outcome:",
+                       "the constraint, the date and the number", "the reasoning under it",
+                       "stands up without the writer"):
+            self.assertIn(needle, text, needle)
+
+    def test_the_prompt_shows_the_no_audience_fallback(self):
+        block = next(b for b in example_blocks() if "nothing is declared" in b)
+        self.assertEqual([], qc.audience_flags(block))
+        self.assertIn("one reader", block)
 
     def test_the_prompts_name_moves_by_technique_not_person(self):
         text = (ROOT / "prompts" / "interview.md").read_text() + (ROOT / "prompts" / "case-study.md").read_text()

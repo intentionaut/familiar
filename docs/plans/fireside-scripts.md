@@ -5,12 +5,34 @@ Status: built (issue #107), builds on prepared sets (#95).
 ## The idea
 
 A prepared question set can read like a form or like a conversation. A
-fireside script is the second: three prompts that listen first, ask one
-thing, say how to answer, and hold two follow-ups back. One setting,
-`Interview engagement`, runs from `companion` to `deep dive`, and warmth and
-plain language are checked by `scripts/question-check.py --warm`, not hoped
-for. The format, the three settings and the arc are in `prompts/interview.md`,
-"Fireside scripts".
+fireside script is the second: three prompts for one named reader that listen
+first, ask one thing, say how to answer, and hold two follow-ups back. One
+setting, `Interview engagement`, runs from `companion` to `deep dive`, and
+warmth and plain language are checked by `scripts/question-check.py --warm`,
+not hoped for. The format, the three settings and the arc are in
+`prompts/interview.md`, "Fireside scripts".
+
+## The reader is the frame
+
+The set is built for a declared audience, read in the order
+`docs/plans/content-strategy-bot.md` sets out: the entry in the house's
+`audiences.md`, else the segment named in `positioning.md`, else the one
+reader, else say plainly that none is declared and ask. Nobody is invented,
+per AGENTS.md, "Declared before inferred".
+
+Their Win is a test, so it decides what every question digs for: the
+constraint with its date and number for a reader weighing judgement; the
+method with the reasoning under it for a reader who runs the same kind of
+place; the one sentence that stands alone for a reader who forwards it. The
+objection in prompt 3 is the one that reader brings, not a general devil's
+advocate, and each prompt's hidden comment names what changes for them, which
+`--warm` checks as `outcome:`.
+
+Every example in the prompt, the plan and the tests is non-technical on
+purpose, and a guard in `tests/test_question_check.py` keeps them that way.
+The readers in them are clinic managers, school governors, care-home team
+leaders and shopkeepers, because an example about shipping releases teaches
+the wrong shape to everybody else.
 
 ## Where the moves come from
 
@@ -27,11 +49,9 @@ prompts speaks in anyone's voice. The prompts name each move by what it does.
 ## What the scripts kept getting wrong
 
 The prompt was written against generated scripts, at all three settings, on
-invented ideas that differ in kind (a technical claim, a workplace idea, a
-personal-experience piece, a contrarian take, a half-formed hunch, and one
-where the files hold almost nothing). Five failures came back often enough to
-be worth a rule, and each rule in "Fireside scripts" that looks fussy is one
-of them:
+invented ideas that differ in kind and are written for different readers.
+These failures came back often enough to be worth a rule, and each rule in
+"Fireside scripts" that looks fussy is one of them:
 
 - The guess turned into an inventory when the files were thin ("your notes
   hold that one line and nothing else"), which tells the writer about the
@@ -42,13 +62,14 @@ of them:
   mind, and what you would tell a friend to do on Monday, all in one answer
   shape. The observable moved to prompt 2 and the friend became a held
   follow-up.
-- Deep dive built a tension out of the writer's idea versus a log entry, which
-  reads as a catch rather than a question. Both halves have to be the writer's
-  own words, and a bracketed tension stays out of what they read.
+- Deep dive built a tension out of the writer's idea set against one of their
+  own files, which reads as a catch rather than a question. Both halves have
+  to be the writer's own words, and a bracketed tension stays out of what they
+  read.
 - Questions carried the interviewer's position as settled ("which of those
-  four made the product worse?"), and every follow-up in every script opened
-  "if you'd like" or "if it helps". The invitation check was widened so the
-  wording can vary.
+  four made it worse?"), and every follow-up in every script opened "if you'd
+  like" or "if it helps". The invitation check was widened so the wording can
+  vary.
 
 ## Where the setting lives
 

@@ -32,6 +32,8 @@ stripped first). Flags, by name:
   files-talk       the visible text reports what the writer's files do not hold
   second-ask       the answer shape asks for a second thing ("one real week, and what changed")
   no-way-out       a prompt gives no way out ("rough is fine", "pass")
+  no-audience-line the opening does not name the reader it is written for, or say none is declared
+  no-outcome       the hidden comment does not say what changes for that reader
   no-switch        the opening does not name the "gentler" and "push me" switch
   no-listening     a prompt does not start from what the writer said, labelled a guess
   verdict-voice    the opposing case is the interviewer's verdict, not an imagined person's
@@ -207,9 +209,13 @@ PRAISE = re.compile(
     r"game-?changing|revolutionary|groundbreaking|love (that|this|it)|good question|you'?re right)\b", re.I)
 ACCUSING = re.compile(
     r"(against you|you'?re wrong|you are wrong|you failed|why didn'?t you|why did you not|you should have|you missed|your mistake)", re.I)
+# The objection is voiced by somebody other than the interviewer: the reader the
+# piece is for, by their own description, or an imagined fair critic.
 CRITIC = re.compile(
     r"\ba (thoughtful|fair|reasonable) (person|critic|colleague|reader)\b"
-    r"|\bsomeone (thoughtful|fair|reasonable)\b[^.?]*\b(might|would|could) say\b", re.I)
+    r"|\bsomeone (thoughtful|fair|reasonable)\b[^.?]*\b(might|would|could) say\b"
+    r"|\b(a|one|another|the) [\w'-]{2,}(\s+[\w'-]+){0,6}\s+"
+    r"(might|would|could) (say|argue|answer|put it|push back|stop|tell you)\b", re.I)
 IMAGINED = re.compile(
     r"\b(picture|imagine|suppose)\b[^.?]*\b(person|colleague|reader|friend|critic|someone)\b"
     r"|" + CRITIC.pattern, re.I)
@@ -229,8 +235,12 @@ TENSION_TEXT = re.compile(
 POSITION = re.compile(r"\b(my (own )?(position|view|take)|I lean|I suspect|I'd guess|I would guess)\b", re.I)
 REACTION = re.compile(
     r"\b(react\w*|make of (it|that|this)|think of (it|that|this)|land\w*|sit with you"
-    r"|how much of (that|this)|your (read|take) on (that|this)|(that|this) holds?)\b", re.I)
+    r"|how much of (that|this)|your (read|take) on (that|this)|(that|this) holds?"
+    r"|say (back|to that|to them)|say back to|answer (that|them|him|her)|would you say)\b", re.I)
 VERDICT = re.compile(r"\bI (think|believe|doubt|say) (that )?(you|this|it|the)\b|\bthe (real )?problem (is|with)\b", re.I)
+# "I think you already have one in mind" is a guess about the writer, which the
+# format asks for. "I think you are wrong" is the verdict this flag is for.
+GUESSED = re.compile(r"\b(in mind|you already|guess|i might be wrong|would (like|rather) to?\s*hear)\b", re.I)
 # An invitation, not an instruction. Written as two wide tests rather than a list
 # of accepted phrasings: a fixed list made every script offer things in the same
 # two ways, which is its own failure. A follow-up is an invitation unless it
@@ -240,8 +250,17 @@ OFFER = re.compile(
     r"|fancy|room|more (here|on this)|worth (hearing|a look)|second read|no pressure|your call"
     r"|in your own time|spare|sometime)\b", re.I)
 MODAL = re.compile(r"\b(would|could|can|might|may)\b", re.I)
-OBSERVABLE = re.compile(r"\b(date|dated|number|how many|how much|by when)\b|\d", re.I)
+OBSERVABLE = re.compile(
+    r"\b(date|dated|number|figures?|count|tally|total|takings|how many|how much|by when"
+    r"|which (week|month|day)|the (week|month|day) (it|you|they|we|the)"
+    r"|anyone (could|can) (have )?(see|seen|check))\b|\d", re.I)
 GUESS = re.compile(r"\b(guess|as i understand|i might be wrong|tell me if)\b", re.I)
+# The opening says who the set is written for, in the writer's declared words,
+# or says plainly that nothing is declared and falls back to the one reader.
+AUDIENCE_LINE = re.compile(r"^[ \t]*(?:\*\*)?Who this is for:?(?:\*\*)?[ \t]*(.*)$", re.M)
+AIM_LINE = re.compile(r"^[ \t]*(?:\*\*)?What we'?re aiming at:?(?:\*\*)?[ \t]*(.*)$", re.M)
+UNDECLARED = re.compile(r"\b(no|none|nothing|not)\b[^.]{0,40}\bdeclar\w*", re.I)
+ONE_READER = re.compile(r"\bone reader\b|\[(ASK THE WRITER|NEEDS SOURCE)", re.I)
 
 
 def _load_paths():
@@ -376,6 +395,26 @@ def _field(fields, prefix):
     return next((v for k, v in fields.items() if k.startswith(prefix)), "")
 
 
+def audience_flags(vis_opening):
+    """The opening names the reader, or says none is declared and falls back.
+
+    A set written for nobody is a set about the topic, so this is checked and
+    not hoped for. Both halves are the writer's declared words or a bracket:
+    the check never asks for a reader to be supplied, only for the line to be
+    honest about whether one exists.
+    """
+    out = []
+    who = AUDIENCE_LINE.search(vis_opening)
+    aim = AIM_LINE.search(vis_opening)
+    if not who or not who.group(1).strip():
+        out.append((1, "no-audience-line", "opening needs a 'Who this is for:' line"))
+    elif UNDECLARED.search(who.group(1)) and not ONE_READER.search(who.group(1)):
+        out.append((1, "no-audience-line", "with nothing declared, fall back to the one reader or bracket it"))
+    if not aim or not aim.group(1).strip():
+        out.append((1, "no-audience-line", "opening needs a 'What we're aiming at:' line"))
+    return out
+
+
 def warm_flags(text, engagement):
     """Warmth and plain-language flags for a fireside-format set: [(line, flag, detail)]."""
     engagement = normalise_engagement(engagement)
@@ -385,6 +424,7 @@ def warm_flags(text, engagement):
     vis_opening = strip_hidden(opening)
     if not (re.search(r"\bgentler\b", vis_opening, re.I) and re.search(r"\bpush me\b", vis_opening, re.I)):
         out.append((1, "no-switch", "opening does not name 'gentler' and 'push me'"))
+    out += audience_flags(vis_opening)
     # Reading ease is scored on the visible text only, per prompt and for the
     # opening, so one dense question cannot hide behind easy ones.
     scored = [(1, "the opening", vis_opening)]
@@ -412,7 +452,8 @@ def warm_flags(text, engagement):
             out.append((n, "praise", m.group(0)))
         if m := ACCUSING.search(vis):
             out.append((n, "accusing", m.group(0)))
-        if VERDICT.search(hearing + " " + question):
+        if any(VERDICT.search(s) and not GUESSED.search(s)
+               for s in re.split(r"(?<=[.!?])\s+", hearing + " " + question)):
             out.append((n, "verdict-voice", (hearing + " " + question)[:80]))
         lo, hi = (1, 2) if engagement == "companion" else (2, 2)
         if not lo <= len(held) <= hi:
@@ -432,6 +473,8 @@ def warm_flags(text, engagement):
                 out.append((n, "repeated-follow-up", v[:80]))
         if not all(re.search(rf"\b{w}\s*:", hidden, re.I) for w in ("move", "receipt", "level")):
             out.append((n, "no-comment", "hidden comment needs move, receipt and level"))
+        if not re.search(r"\boutcome\s*:[ \t]*[^|\s>]", hidden, re.I):
+            out.append((n, "no-outcome", "hidden comment needs what changes for the reader"))
         if not re.search(rf"(?<!\d){LENGTH[engagement]}", how):
             out.append((n, "wrong-length", f"{engagement} asks for {LENGTH[engagement]}"))
     if len(blocks) >= 3:
@@ -475,17 +518,21 @@ def warm_flags(text, engagement):
 def fireside_flags(line, block):
     """Mechanical flags for one fireside prompt: the question and its answer shape.
 
-    The guess and the held follow-ups are separate fields and are not asks. Two
-    differences from any other question. The "How to answer" line is the answer
-    shape, so `shape` never applies. And a second ask hidden in that line ("one
-    real week, and what changed") is reported as `second-ask` rather than
+    The guess and the held follow-ups are separate fields and are not asks.
+    Three differences from any other question. The "How to answer" line is the
+    answer shape, so `shape` never applies. A second ask hidden in that line
+    ("one real week, and what changed") is reported as `second-ask` rather than
     `compound`, because the question itself is fine and the shape is what needs
-    rewriting.
+    rewriting. And `memory` is judged on the question alone: an answer shape
+    asking for what anyone could have seen at the time is the evidence a reader
+    weighing judgement needs, not a prompt to reminisce.
     """
     fields, _ = parse_block(block)
     question, how = _field(fields, "question"), _field(fields, "how to answer")
     joined = question + " " + how
-    out = [(line, f, joined) for f in flags_for(joined) if f not in ("shape", "compound")]
+    out = [(line, f, joined) for f in flags_for(joined) if f not in ("shape", "compound", "memory")]
+    if MEMORY.search(question):
+        out.append((line, "memory", question))
     if asks(question) > 1:
         out.append((line, "compound", question))
     elif asks(how + "?") > 1:

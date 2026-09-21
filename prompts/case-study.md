@@ -66,8 +66,11 @@ process.
   the brief, not into questions: ask what the writer makes of them, not what
   they remember. One ask per line, each with its answer shape, a pick where one
   fits. Mark gaps that would need an [ASK THE WRITER: …] versus
-  [NEEDS SOURCE: …]. Aim for 8-12 questions; the live interview will trim and
-  reorder. Run `python3 scripts/question-check.py interview-questions.md` and
+  [NEEDS SOURCE: …]. Write **at most three prompts**, as prompts/interview.md,
+  "Prepared question sets", defines them: hunt the buried lede, interrogate the
+  bigger context, challenge the premise, each with a `Receipt:` line. Known
+  names and episodes go in the brief, not in a question. Run
+  `python3 scripts/question-check.py --prepared interview-questions.md` and
   rewrite what it flags.
 
 ## Exit

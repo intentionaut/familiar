@@ -38,3 +38,9 @@ have worked either. The angle change is the load-bearing part.
 - Does the same count apply to the other asking stages, or only interview?
 - How does an agent recognise it has already asked twice in a long session?
   The count may need to live in `notes.md` rather than in the agent's memory.
+
+## Not the same limit as the prepared-set cap
+
+`prompts/interview.md`, "Prepared question sets", caps a question file written
+ahead of the sitting at three prompts. That counts prompts in a set. This
+plan's rule counts re-asks of one live question. Neither replaces the other.

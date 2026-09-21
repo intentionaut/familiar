@@ -163,7 +163,10 @@ flags the mechanical failures (a compound question, a memory prompt, a vague
 opener, an internal id, no answer shape) in prepared question files and decision
 gates. Run it on anything you wrote before the writer sees it. With
 `--prepared` it also flags a set of more than three prompts, a prompt with no
-receipt, and a set with no premise challenge, lede or context prompt.
+receipt, and a set with no premise challenge, lede or context prompt. A set written
+as a fireside script (`prompts/interview.md`, "Fireside scripts") is checked with
+`--warm`: the reader it is written for, what each prompt changes for them, and
+warmth and plain language at the writer's `Interview engagement`.
 
 **Record the answer word for word.** An answer is evidence, and a paraphrase of
 it is worth nothing to `learn`.
@@ -673,7 +676,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `knowledge/rejected-rules.md`: the index of rules the writer turned down, kept in their house; learn reads it before proposing
 - `knowledge/TEMPLATES`: every file this repo may ship under `knowledge/`; public-check refuses any other
 - `scripts/build_log_entry.py`: the automatic log entry: where it goes, what survives, and one entry per session
-- `scripts/question-check.py`: flags questions that break "Asking the writer"; run on prepared questions and decision gates; `--prepared` adds the three-prompt set checks
+- `scripts/question-check.py`: flags questions that break "Asking the writer"; run on prepared questions and decision gates; `--prepared` adds the three-prompt set checks, `--warm` adds the fireside checks: the named reader, the outcome per prompt, warmth and plain language
 - `scripts/public-check.py`: refuses a writer's own material in this public repo; runs on every pull request
 - `knowledge/models.md`: per-stage model recommendations and fallback rule
 - `knowledge/board-provider.md`: which provider supplies the board's state; unset means the built-in board

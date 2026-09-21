@@ -69,9 +69,18 @@ process.
   [NEEDS SOURCE: …]. Write **at most three prompts**, as prompts/interview.md,
   "Prepared question sets", defines them: hunt the buried lede, interrogate the
   bigger context, challenge the premise, each with a `Receipt:` line. Known
-  names and episodes go in the brief, not in a question. Run
-  `python3 scripts/question-check.py --prepared interview-questions.md` and
-  rewrite what it flags.
+  names and episodes go in the brief, not in a question. Write the set as a
+  fireside script, in the format prompts/interview.md, "Fireside scripts",
+  defines: an opening that names the reader the piece is for, in the writer's
+  declared words and never invented, what the set is aiming at for them, and
+  the "gentler" and "push me" switch; then per prompt your labelled guess, one
+  question about what changes for that reader, how to answer, held follow-ups
+  written for that prompt's own question, and a hidden comment carrying the
+  outcome. Use the house's `Interview engagement` setting (unset means
+  fireside). Run
+  `python3 scripts/question-check.py --warm interview-questions.md` and
+  rewrite what it flags; it runs the `--prepared` checks too, and takes the
+  receipt in the comment or on a `Receipt:` line.
 
 ## Exit
 

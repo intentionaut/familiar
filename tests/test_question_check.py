@@ -94,5 +94,56 @@ class Files(unittest.TestCase):
         self.assertEqual([], qc.check(p))
 
 
+CLEAN_SET = """# Questions
+
+1. Which failure changed how you work most? Pick one: A. one you fixed, B. one you left alone. Or something else.
+   Receipt: one story, number or artifact showing what changed. Buried lede: the claim your audience is not already hearing.
+2. Who carries the cost today? Pick one: A. the team, B. the customer. Or something else.
+   Receipt: a number or artifact from one case. Bigger context: why now, who benefits and what incentive keeps it in place.
+3. Where might the premise fail? Name one case in a sentence.
+   Receipt: an artifact or story that would falsify it.
+"""
+
+
+class PreparedSets(unittest.TestCase):
+    def write(self, text):
+        d = tempfile.TemporaryDirectory()
+        self.addCleanup(d.cleanup)
+        p = Path(d.name) / "interview-questions.md"
+        p.write_text(text)
+        return p
+
+    def flags(self, text):
+        return sorted({f for _, f, _ in qc.check(self.write(text), prepared=True)})
+
+    def test_a_clean_set_passes(self):
+        self.assertEqual([], self.flags(CLEAN_SET))
+
+    def test_a_fourth_prompt_is_too_many(self):
+        extra = CLEAN_SET + "4. How many users?\n"
+        self.assertIn("too-many", self.flags(extra))
+
+    def test_a_prompt_without_a_receipt_is_flagged(self):
+        bad = CLEAN_SET.replace("Receipt: one story, number or artifact showing what changed. ", "")
+        found = qc.check(self.write(bad), prepared=True)
+        self.assertEqual([(3, "no-receipt")], [(n, f) for n, f, _ in found if f == "no-receipt"])
+
+    def test_a_set_with_no_challenge_is_flagged(self):
+        bad = CLEAN_SET.replace("Where might the premise fail?", "What else matters?").replace(
+            "would falsify it", "would help")
+        self.assertIn("no-challenge", self.flags(bad))
+
+    def test_lede_and_context_are_required(self):
+        bad = CLEAN_SET.replace("Buried lede: the claim your audience is not already hearing.", "Note.").replace("why now", "so")
+        self.assertIn("no-lede", self.flags(bad))
+        bad = CLEAN_SET.replace("Who carries the cost today?", "Which one?").replace(
+            "Bigger context: why now, who benefits and what incentive keeps it in place.", "")
+        self.assertIn("no-context", self.flags(bad))
+
+    def test_the_set_check_is_opt_in(self):
+        p = self.write("1. Which matters more today?\n   A. Speed. B. Cost.\n")
+        self.assertEqual([], qc.check(p))
+
+
 if __name__ == "__main__":
     unittest.main()

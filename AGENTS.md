@@ -150,10 +150,20 @@ a build) runs each question through five tests before asking it.
 answers settled, and offer to carry on. A decision gate in the context log
 carries one question, never a list; the next one waits its turn.
 
+**A prepared question set is capped at three prompts**, and that cap is not the
+interview's "ask up to three times" rule. The cap limits how many prompts a
+file written ahead of the sitting may hold, each with a receipt, and together
+covering the buried lede, the bigger context and a premise challenge (see
+`prompts/interview.md`, "Prepared question sets"). "Ask up to three times"
+limits re-asks of one question in the live interview. The live interview is
+unchanged: one question at a time.
+
 **A question that fails gets rewritten, not softened.** `scripts/question-check.py`
 flags the mechanical failures (a compound question, a memory prompt, a vague
 opener, an internal id, no answer shape) in prepared question files and decision
-gates. Run it on anything you wrote before the writer sees it.
+gates. Run it on anything you wrote before the writer sees it. With
+`--prepared` it also flags a set of more than three prompts, a prompt with no
+receipt, and a set with no premise challenge, lede or context prompt.
 
 **Record the answer word for word.** An answer is evidence, and a paraphrase of
 it is worth nothing to `learn`.
@@ -663,7 +673,7 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `knowledge/rejected-rules.md`: the index of rules the writer turned down, kept in their house; learn reads it before proposing
 - `knowledge/TEMPLATES`: every file this repo may ship under `knowledge/`; public-check refuses any other
 - `scripts/build_log_entry.py`: the automatic log entry: where it goes, what survives, and one entry per session
-- `scripts/question-check.py`: flags questions that break "Asking the writer"; run on prepared questions and decision gates
+- `scripts/question-check.py`: flags questions that break "Asking the writer"; run on prepared questions and decision gates; `--prepared` adds the three-prompt set checks
 - `scripts/public-check.py`: refuses a writer's own material in this public repo; runs on every pull request
 - `knowledge/models.md`: per-stage model recommendations and fallback rule
 - `knowledge/board-provider.md`: which provider supplies the board's state; unset means the built-in board

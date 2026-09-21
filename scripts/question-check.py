@@ -13,8 +13,21 @@ a question is the asking stage's job; this cannot know.
   shape      nothing says what a complete answer looks like
   not-asked  a decision gate that holds no question at all
 
+With --prepared, the file is treated as a prepared question set and the set is
+checked as a whole (see prompts/interview.md, "Prepared question sets"):
+
+  too-many      more than three prompts
+  no-receipt    a prompt that does not ask for a story, a number or an artifact
+  no-challenge  no prompt challenges the premise or asks what would falsify it
+  no-lede       no prompt hunts the buried lede
+  no-context    no prompt interrogates the bigger context
+
+The cap of three is for a prepared set. It is not the live "ask up to three
+times" follow-up rule, which counts re-asks of one question.
+
 Usage:
   question-check.py <file> [<file> ...]
+  question-check.py --prepared interview-questions.md
   question-check.py --all SESSION-CONTEXT.md   every gate, not just the latest
 
 Exit 0 clean, 1 flagged, 2 could not run.
@@ -39,6 +52,14 @@ SHAPE = re.compile(
     r"\b(yes or no|a number|how many|one (sentence|word|line|name|thing|moment"
     r"|decision|person|habit)|name one|which (one|of these|\w+ (survives|matters|goes|stays|first))|pick one"
     r"|or something else)\b", re.I)
+RECEIPT = re.compile(r"\breceipt\b[^\n]*\b(story|number|artifact|artefact)\b", re.I)
+CHALLENGE = re.compile(
+    r"\b(falsif\w*|premise|where (it|this|the (piece|argument|claim)) (may|might|could) (fail|break)"
+    r"|what evidence would (change|disprove|count against))", re.I)
+LEDE = re.compile(r"\b(buried lede|non-obvious claim|the claim (the|your) audience (is not|isn't|has not))", re.I)
+CONTEXT = re.compile(
+    r"\b(why now|who (else )?(carries|bears|pays)|who benefits|what repeats|incentive|power)\b", re.I)
+MAX_PREPARED = 3
 LIST_ITEM = re.compile(r"^(\s{0,3})([-*+]|\d+[.)])\s+(.*)")
 GATE_KEY = re.compile(r"^[A-Z][A-Za-z ]+:")
 
@@ -108,24 +129,47 @@ def gates(text, every=False):
     return found if every else found[-1:]
 
 
-def check(path, every=False):
+def set_flags(items):
+    """Whole-set flags for a prepared question set: [(line, flag, text)]."""
+    out = []
+    if not items:
+        return out
+    for n, q in items[MAX_PREPARED:]:
+        out.append((n, "too-many", q))
+    for n, q in items[:MAX_PREPARED]:
+        if not RECEIPT.search(q):
+            out.append((n, "no-receipt", q))
+    whole = "\n".join(q for _, q in items[:MAX_PREPARED])
+    first = items[0]
+    for flag, rx in (("no-challenge", CHALLENGE), ("no-lede", LEDE), ("no-context", CONTEXT)):
+        if not rx.search(whole):
+            out.append((first[0], flag, "set of prompts"))
+    return out
+
+
+def check(path, every=False, prepared=False):
     text = Path(path).read_text()
     if Path(path).name == "SESSION-CONTEXT.md":
         items = gates(text, every)
     else:
         items = question_items(text)
-    return [(n, f, q) for n, q in items for f in flags_for(q)]
+    found = [(n, f, q) for n, q in items for f in flags_for(q)]
+    if prepared and Path(path).name != "SESSION-CONTEXT.md":
+        found += set_flags(items)
+    return found
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("files", nargs="+")
     ap.add_argument("--all", action="store_true", help="every decision gate, not only the latest")
+    ap.add_argument("--prepared", action="store_true",
+                    help="also check the file as a prepared set: at most three prompts, a receipt in each, a premise challenge")
     a = ap.parse_args()
     total = 0
     for f in a.files:
         try:
-            found = check(f, a.all)
+            found = check(f, a.all, a.prepared)
         except OSError as e:
             print(f"question-check could not read {f}: {e}", file=sys.stderr)
             return 2

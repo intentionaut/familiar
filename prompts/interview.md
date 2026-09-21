@@ -91,6 +91,52 @@ answer, write it as an options block per AGENTS.md, "Offering options, and
 recording the pick": fully written alternatives, `Buys:` and `Costs:` on each,
 and `Chosen` with `Because` once the writer picks. Never only in conversation.
 
+## Prepared question sets
+
+This section applies when a question set is written ahead of the sitting
+(`interview-questions.md`, from the case-study stage or from you). It does not
+change the live interview above: still one question at a time, still "ask up
+to three times" on a single question. Those are two different limits. The
+follow-up rule counts re-asks of one question; the cap below counts the prompts
+in a prepared set.
+
+A prepared set has **at most three prompts**, and it is ready only when the
+three cover these jobs. One prompt may do more than one.
+
+1. **Hunt the buried lede.** Find the non-obvious claim the audience is not
+   already hearing, the one the writer may be treating as a side note. Look for
+   it in the brief and log, then ask for it directly.
+2. **Interrogate the bigger context**, with a receipt: why now, who carries the
+   cost, who benefits, what repeats, and what power or incentive keeps the
+   problem in place.
+3. **Challenge the premise.** At least one prompt names where the piece may
+   fail or asks what evidence would falsify it.
+
+Rules for every prompt in the set:
+
+- **A receipt is required.** Each prompt asks for one story, number or
+  artifact, written as a line beginning `Receipt:` that names which of the
+  three is wanted.
+- **Known names, acronyms and episodes go in the brief or setup.** State them
+  as facts for the interviewer and the reader. Do not ask the writer to explain
+  a reference the audience lacks, and do not spend a prompt on it.
+- Each prompt still passes AGENTS.md, "Asking the writer": one ask, an answer
+  shape, the writer's words.
+
+Example, with invented material: instead of "Which failure first taught you to
+automate the release?", ask "Which one failure changed how you release?" with
+`Receipt: the number or artifact showing what changed`, and put who else could
+rely on the mechanism and why it matters now into the context prompt. Instead of
+"What did the outage reveal?", put the outage in the setup. The premise prompt
+might be "Where did turning a failure into a checklist make the process heavier
+or hide who decides?"
+
+Before the writer sees the set, run
+`python3 scripts/question-check.py --prepared interview-questions.md` and
+rewrite what it flags. It checks the count, a receipt per prompt, and the
+lede, context and challenge markers. Whether a prompt really finds the lede is
+still your judgement.
+
 ## Exit
 
 When you have enough, stop interviewing and summarise in notes.md:

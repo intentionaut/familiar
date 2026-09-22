@@ -159,6 +159,7 @@ The stages, for Familiar's own routing:
 | `social` | `prompts/social.md` | A week of posts on the writer's cadence; includes the quality pass; ends at approved copy |
 | `publish [file]` | `prompts/publish.md` | Schedules already-approved posts; builds and counts URLs first, never rewrites copy |
 | `bring [draft\|notes] <path>` | `prompts/bring.md` | A draft or notes you already have: the spine it has, the claims it makes, the questions it cannot answer |
+| `rough-draft` | `prompts/rough-draft.md` | Between a raw voice capture and drafting: reorders and cuts, never rewrites a sentence |
 | `engage [dir]` | this file, step 3 above | Read a project's git history, report its observations and what there is to work from; the way in when there is no piece yet, and on request at any time |
 | `case-study <LOG.md \| transcript.jsonl \| session [dir] \| project [dir]>` | `prompts/case-study.md` | Brief and questions from a build log, a coding session, or a project's git history (`scripts/project-digest.py`) |
 | `learn ingest <path>` / `learn diff <piece>` / `learn decisions` | `prompts/learn.md` | Propose voice rules from past writing, from draft-vs-final, or from the choices the writer made |

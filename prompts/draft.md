@@ -30,23 +30,38 @@ no longer in the draft, suggest nothing and say so.
 ## If the writer brought this piece in
 
 `source.md` in the piece folder means the words came from outside Familiar and
-the writer already owns them. Do not put fresh prose over the top of them on
-your own judgement. Offer an options block per AGENTS.md, both fully written:
+the writer already owns them. `rough-draft.md` means the same thing for
+dictated material that has already been through `prompts/rough-draft.md`:
+reordered and cut, still every sentence hers. Treat whichever of the two is
+present as the brought-in words for this gate; if both exist, `rough-draft.md`
+is the newer, shaped version and takes the gate. Do not put fresh prose over
+the top of them on your own judgement. Offer an options block per AGENTS.md,
+all fully written:
 
-- **Carry your words across.** `draft.md` becomes `source.md` exactly as it
-  stands, with frontmatter added and not one sentence touched.
+- **Shape it first.** Only when the piece folder holds a raw voice capture
+  (`voice-*.md`) and no `rough-draft.md` yet. Run `prompts/rough-draft.md`
+  before choosing either option below.
+  `Buys:` the material gets its natural order and its tangents cut before
+  anything else touches it, so carrying across or rebuilding starts from the
+  argument, not the transcript.
+  `Costs:` one more pass before a draft exists at all.
+- **Carry your words across.** `draft.md` becomes `source.md` (or
+  `rough-draft.md`) exactly as it stands, with frontmatter added and not one
+  sentence touched.
   `Buys:` the piece stays as they wrote it, and every edit stage from here works
   on their prose rather than on yours.
   `Costs:` the structure chosen at outline is not applied, so a spine that moved
   is theirs to move.
 - **Rebuild on the chosen spine.** Draft normally from `outline.md` and
-  `notes.md`, with `source.md` as evidence the notes do not hold.
+  `notes.md`, with `source.md` (or `rough-draft.md`) as evidence the notes do
+  not hold.
   `Buys:` the piece follows the argument they settled on.
   `Costs:` sentences they liked are gone, and getting one back means going into
-  `source.md` for it.
+  `source.md` (or `rough-draft.md`) for it.
 
-If the context log records `Register: tidied`, take the first and say so. That
-is what tidied meant at the bring gate, and asking again spends the shortcut.
+If the context log records `Register: tidied`, take carrying across and say
+so. That is what tidied meant at the bring gate, and asking again spends the
+shortcut.
 
 Carrying across is a copy. Take the body as it stands, including the sentences
 you would have phrased differently, and add the frontmatter below with the

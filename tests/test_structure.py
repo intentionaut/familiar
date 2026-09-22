@@ -585,5 +585,76 @@ class Structure(unittest.TestCase):
         self.assertEqual([], offenders, f"em dashes in shipped prose: {offenders}")
 
 
+class RoughDraftStage(unittest.TestCase):
+    """prompts/rough-draft.md is prompt-only, like interview or case-study:
+    no script backs it, so its own correctness is asserted on the prose."""
+
+    def setUp(self):
+        self.prompt = (PROMPTS / "rough-draft.md").read_text()
+        self.draft = (PROMPTS / "draft.md").read_text()
+
+    def test_the_four_things_this_pass_does_are_present(self):
+        rules = [
+            "Reorder and group the material into the argument's natural order",
+            "Cut tangents and circles",
+            "the spark goes first",
+            "Move her sentences, never rewrite them",
+        ]
+        for rule in rules:
+            self.assertIn(rule, self.prompt, f"missing rule: {rule!r}")
+
+    def test_the_three_exclusions_are_present(self):
+        exclusions = [
+            "All sentence-level work",
+            "New content: nothing invented",
+            "Polish of any kind",
+        ]
+        for exclusion in exclusions:
+            self.assertIn(exclusion, self.prompt, f"missing exclusion: {exclusion!r}")
+
+    def test_the_file_discovery_rule_is_documented(self):
+        """The pattern and the newest-by-mtime rule both have to be spelled
+        out, or 'the newest raw capture' is not something two runs would
+        agree on."""
+        self.assertIn("voice-*.md", self.prompt)
+        self.assertIn("modification time", self.prompt)
+        self.assertIn("newest first", self.prompt)
+
+    def test_it_does_not_apply_voice_or_style_yet(self):
+        self.assertIn("do NOT apply them yet", self.prompt)
+
+    def test_cuts_go_to_cuts_md_with_a_flag(self):
+        self.assertIn("cuts.md", self.prompt)
+        self.assertIn("Flag: reusable", self.prompt)
+
+    def test_knowledge_references_are_relative(self):
+        for ref in re.findall(r"knowledge/[a-z0-9_/-]+\.md", self.prompt):
+            self.assertTrue((ROOT / ref).exists(), f"dangling reference: {ref}")
+        self.assertNotIn("/Users/", self.prompt)
+        self.assertNotIn("/Documents/", self.prompt)
+
+    def test_the_bring_gates_third_option_is_in_draft_md(self):
+        self.assertIn("**Shape it first.**", self.draft)
+        self.assertIn("prompts/rough-draft.md", self.draft)
+        self.assertIn("voice-*.md", self.draft)
+        # It sits alongside the two existing options, in the same shape.
+        shape_it_first = self.draft.index("**Shape it first.**")
+        carry_across = self.draft.index("**Carry your words across.**")
+        rebuild = self.draft.index("**Rebuild on the chosen spine.**")
+        self.assertLess(shape_it_first, carry_across)
+        self.assertLess(carry_across, rebuild)
+        section = self.draft[shape_it_first:carry_across]
+        self.assertIn("`Buys:`", section)
+        self.assertIn("`Costs:`", section)
+
+    def test_the_skill_table_lists_rough_draft(self):
+        skill = (ROOT / "skills" / "familiar" / "SKILL.md").read_text()
+        self.assertIn("`prompts/rough-draft.md`", skill)
+
+    def test_rough_draft_has_a_context_log_close(self):
+        self.assertIn("Context log:", self.prompt)
+        self.assertIn("knowledge/context-log.md", self.prompt)
+
+
 if __name__ == "__main__":
     unittest.main()

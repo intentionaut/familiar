@@ -318,7 +318,14 @@ differently in a public archive than they did on the day.
 
 ## House style details
 
-- Reading ease target: 60+ (Flesch), grade level ~8 or below for main body text
+- Reading ease: a tripwire, not a target. Report the Flesch score and grade
+  level on every pass, and flag a piece that sits well outside the writer's own
+  usual range. Never edit towards the number. Nine formulas score the same text
+  across a 4.5-grade spread, their correlation with what readers actually find
+  difficult is weak, and they have been known to be gameable since 1981: capping
+  sentence length moves every score without making anything clearer. A piece
+  that reads 15 points below the writer's normal is worth a look. A piece at 58
+  is not a problem.
 - Coined or unfamiliar terms: italics on first use, define immediately in plain words
 - Links: inline, descriptive anchor text (never "click here")
 - Blockquotes for other people's words; always name the speaker

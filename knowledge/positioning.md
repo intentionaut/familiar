@@ -22,7 +22,9 @@ These are the mechanical choices the line edit enforces. Set them once.
   English-only rules]
 - Spelling: [British / American / other]
 - Em dashes: [never / sparingly / fine]
-- Reading ease target: [e.g. Flesch 60+, grade level about 8]
+- Reading ease, your usual range: [e.g. Flesch 55-70. A range, not a target:
+  stages report the score and flag a piece well outside it, and never edit
+  towards the number]
 - Pieces end with: [an invitation to reply / a question / nothing in particular]
 - Anything else that is non-negotiable: [e.g. sentence-case headings, no exclamation marks]
 

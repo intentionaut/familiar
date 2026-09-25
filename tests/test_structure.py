@@ -29,6 +29,36 @@ def stems(directory):
     return {p.stem for p in directory.glob("*.md")}
 
 
+# Directories under the repo root that are not the repo's own content.
+#
+# `.claude/worktrees/` is the one that bites. An agent working in a git
+# worktree gets a full checkout of this repo nested inside it, at whatever
+# commit that branch is on. A scan that walks the root then reads those files
+# as if they were ours, so a branch that is not merged yet, or one that has
+# moved on, fails the suite on main. The work is fine and the test is wrong.
+#
+# `.claude/commands/` IS ours, so this excludes the worktrees path rather than
+# the whole of `.claude`.
+NOT_REPO_CONTENT = (".git", "pieces", Path(".claude") / "worktrees")
+
+
+def repo_markdown(root=None):
+    """Every markdown file that is this repo's own content.
+
+    Skips nested checkouts and the writer's pieces. Used by any check that
+    scans from the root rather than from a named directory.
+    """
+    root = Path(root) if root is not None else ROOT
+    out = []
+    for f in sorted(root.rglob("*.md")):
+        rel = f.relative_to(root)
+        if any(rel == skip or rel.is_relative_to(skip) for skip in
+               (Path(s) for s in NOT_REPO_CONTENT)):
+            continue
+        out.append(f)
+    return out
+
+
 def shipped_prose():
     """Prose that ships as the product.
 
@@ -121,13 +151,40 @@ class Structure(unittest.TestCase):
 
     def test_referenced_prompts_exist(self):
         missing = set()
-        for f in ROOT.rglob("*.md"):
-            if ".git" in f.parts or "pieces" in f.parts:
-                continue
+        for f in repo_markdown():
             for ref in re.findall(r"prompts/([a-z0-9-]+)\.md", f.read_text()):
                 if not (PROMPTS / f"{ref}.md").exists():
                     missing.add(f"{ref}.md in {f.relative_to(ROOT)}")
         self.assertEqual(set(), missing, f"dangling prompt references: {sorted(missing)}")
+
+    def test_a_nested_checkout_is_not_repo_content(self):
+        """A worktree under .claude/ is a checkout of this repo at another
+        commit. Reading its files as ours means an unmerged branch can fail
+        main's suite, which happened on 25 September 2026: a held PR's
+        draft.md referenced a prompt that did not exist on main yet.
+
+        .claude/commands/ is ours and must survive the same filter.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "prompts").mkdir()
+            (root / "prompts" / "real.md").write_text("see prompts/real.md")
+            (root / ".claude" / "commands").mkdir(parents=True)
+            (root / ".claude" / "commands" / "ours.md").write_text("ours")
+            (root / ".claude" / "worktrees" / "agent-x" / "prompts").mkdir(parents=True)
+            (root / ".claude" / "worktrees" / "agent-x" / "prompts" / "draft.md").write_text(
+                "see prompts/not-on-main.md")
+            (root / "pieces" / "2026-01-01-x").mkdir(parents=True)
+            (root / "pieces" / "2026-01-01-x" / "draft.md").write_text("the writer's own")
+
+            found = {f.relative_to(root).as_posix() for f in repo_markdown(root)}
+
+        self.assertIn("prompts/real.md", found)
+        self.assertIn(".claude/commands/ours.md", found, "commands/ is repo content")
+        self.assertNotIn(".claude/worktrees/agent-x/prompts/draft.md", found,
+                         "a nested checkout is not this repo's content")
+        self.assertNotIn("pieces/2026-01-01-x/draft.md", found,
+                         "the writer's pieces are not repo content")
 
     def test_referenced_knowledge_files_exist(self):
         missing = set()

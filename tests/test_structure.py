@@ -211,9 +211,13 @@ class Structure(unittest.TestCase):
         it exists but is invisible."""
         skill = (ROOT / "skills" / "familiar" / "SKILL.md").read_text()
         listed = set(re.findall(r"`prompts/([a-z0-9-]+)\.md`", skill))
-        # All prompts should be listed in the skill, except those without a command.
-        # The skill lists everything so agents can route to any stage.
-        self.assertTrue(len(listed) > 0, "skill table is empty")
+        # Prompts that are not stages: a block the writer pastes, not a route.
+        not_stages = {"log"}
+        prompts = {p.stem for p in PROMPTS.glob("*.md")}
+        self.assertEqual(set(), prompts - listed - not_stages,
+                         "prompts with no row in the skill's stage table")
+        self.assertEqual(set(), listed - prompts, "skill rows naming a prompt that does not exist")
+        self.assertEqual(set(), not_stages - prompts, "a not-a-stage exception for a prompt that is gone")
 
     def test_the_site_lists_every_stage(self):
         """familiar.intentionaut.com lists the three ways in."""

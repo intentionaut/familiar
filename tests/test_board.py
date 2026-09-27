@@ -360,6 +360,17 @@ class Findings(Piece):
         self.assertEqual(["3.1", "3.2"], [f["label"] for f in got])
         self.assertNotIn("Not a finding", got[1]["body"])
 
+    def test_round_prefixed_findings_are_read_and_round_one_keeps_its_keys(self):
+        round1 = "## Round 1\n\n### 3a. Opening buries the spark\n\nMove it.\n"
+        before = {f["label"]: f["key"] for f in E.findings(round1)}
+        both = round1 + ("\n## Round 2\n\n| ID | Status |\n|---|---|\n| 3a | resolved |\n\n"
+                         "### R2-3a. Novelty claim: the harness\n\nQuoted claim.\n\n"
+                         "### R2-4.1 Passive voice\n\nRewrite.\n\n### R2 notes\n\nNot a finding.\n")
+        got = E.findings(both)
+        self.assertEqual(["3a", "R2-3a", "R2-4.1"], [f["label"] for f in got])
+        self.assertEqual(before["3a"], got[0]["key"])
+        self.assertNotIn("Not a finding", got[2]["body"])
+
     def test_a_line_block_under_a_numbered_heading_is_that_findings_body(self):
         text = ('## Findings\n\n### 1. Em dash\n\n[line 3] "a thing—another"\n'
                 'Issue: em dash\nFix: split it\n\n### 2. Spelling\n\n[line 9] "color"\n'

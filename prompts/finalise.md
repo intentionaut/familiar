@@ -12,7 +12,7 @@ settled title to point at.
 
 1. Read the piece's `draft.md`, `notes.md` and `outline.md`, and the reports in
    `edits/`. Read the whole finished piece before proposing anything.
-2. Read knowledge/positioning.md, knowledge/voice-guide.md, knowledge/links.md.
+2. Read knowledge/positioning.md, knowledge/voice-guide.md, knowledge/links.md. If `brief.md` has a `Reader language and intent evidence` section, read the writer's chosen primary buyer/query target, excluded adjacent targets, observed language and receipts. If no choice is recorded, leave target-derived metadata provisional; do not silently choose a target here.
 3. If the writer keeps SEO notes of their own, read those and work from them.
    Look first for a filled `## Search` section at the foot of
    `knowledge/themes.md`, and read that section only; nothing else in that
@@ -60,12 +60,11 @@ the context log which kind was chosen, so a pattern can be seen across issues.
 
 Only for pieces that get a web version. Skip it for email-only, and say you did.
 
-Work from the writer's own SEO notes when they exist. When they do not:
+Work from the writer's own SEO notes when they exist. If the optional intent check has a chosen target, use it as the starting point for the meta title, description and slug, checking each against the finished article and the actual reader words. Explain how the proposed metadata answers that buyer question, what it does not promise, and which adjacent query it deliberately leaves out. Do not invent new targets at finalise. If no intent check ran, carry on with the finished article and the writer's own SEO notes; do not block this stage. When there are no notes:
 
 - **Slug.** Short, readable, stable. It is a permanent address, so it outlives
   the title and must not be regenerated later.
-- **Meta description.** One sentence, written for a person deciding whether to
-  click, not stuffed. Around 150 characters.
+- **Meta title and description.** A title and one-sentence description written for a person deciding whether to click, not stuffed. Keep the description around 150 characters; if the writer selected a buyer/query target, use its observed language only where it fits the article, not as a keyword pasted in. Check the on-page title and platform title template before proposing a separate meta title. A meta title is a proposal until the writer picks it.
 - **Headings.** The finished piece already has them. Check they read as a
   sensible outline on their own, because that is how a search engine and a
   skimming reader both use them.
@@ -90,7 +89,7 @@ cut section or a dropped set of evidence is material, not waste.
 ## Exit
 
 Write the decisions into `draft.md` frontmatter (`title`, `subtitle`,
-`alternates`, `title_settled: true`, `slug`, `description`) and everything
+`alternates`, `title_settled: true`, `slug`, `description`, and a `meta_title` only when the platform supports and the writer picks a separate value) and everything
 proposed but not taken into the piece as an options block.
 
 Report in one line what is settled and what is still open.

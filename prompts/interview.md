@@ -22,6 +22,17 @@ or "surprise me." If so:
 This is the only time patterns.md is read during an interview. Once the writer
 picks a topic (or brings their own), the interview proceeds normally.
 
+## Optional reader-intent check
+
+When the writer asks which buyer question a candidate piece should focus on
+or how an AI answer might cite it, offer `intent-check <piece or idea>` before the interview settles an
+angle. It is optional: do not run it on every harvest topic, block a writer who
+wants to interview now, or treat visible demand as a condition of writing.
+Read the `Reader language and intent evidence` section of `brief.md` if it
+exists. Use its observed questions as prompts, not as a replacement thesis.
+If the audience or thesis changes materially during the interview, offer a
+scoped recheck rather than silently carrying the old inference forward.
+
 ## Setup
 
 1. Read knowledge/positioning.md, knowledge/voice-guide.md. If positioning.md
@@ -136,6 +147,20 @@ Before the writer sees the set, run
 rewrite what it flags. It checks the count, a receipt per prompt, and the
 lede, context and challenge markers. Whether a prompt really finds the lede is
 still your judgement.
+
+## Novelty check at the thesis gate
+
+After the working thesis is clear and before offering the outline, run the
+novelty check in `knowledge/novelty-skeptic.md` on any claim that implies
+invention, a first, a new mechanism, or a surprising reframing. Use the
+piece's evidence and the sources the writer has reviewed and linked; when
+antecedents need finding, name one research question for the writer or their
+research tool. Record a short classification, closest sourced
+antecedent (or the search gap), and the bounded contribution under Open
+questions in `notes.md`. Keep the thesis in the writer's words; this is a
+question for their verdict, not a silent rewrite or another interview prompt.
+A reframe that brings new people into an existing discussion is a valid
+contribution. A missing precedent in a search is not proof of originality.
 
 ## Exit
 

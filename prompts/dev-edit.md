@@ -7,17 +7,18 @@ in place, never produce a "clean version".
 ## Setup
 
 1. Read the piece's draft.md (newest `pieces/*/` if not given via $ARGUMENTS).
-2. Read knowledge/editor-report.md for taxonomy and format, knowledge/voice-guide.md, knowledge/positioning.md.
+2. Read knowledge/editor-report.md for taxonomy and format, knowledge/novelty-skeptic.md, knowledge/voice-guide.md, knowledge/positioning.md.
+3. Read the existing `edits/dev-edit-report.md` and `edits/rework.md`, if present. Determine the next round number from the report, not the date. Reconcile earlier findings against the current draft and the writer's decisions before adding new ones.
 
-**Scope:** if `$ARGUMENTS` names a section, heading or paragraph, work on that part only and leave everything else in the file untouched. Say which part you worked on. If the target file already has content and no scope is given, ask before replacing it: replace, add to, or write a numbered variant beside it.
+**Scope:** if `$ARGUMENTS` names a section, heading or paragraph, work on that part only and leave everything else in the file untouched. Say which part you worked on. An existing report is not a replacement target: append the next round to it. Ask only if the writer named an ambiguous section or the file cannot be safely appended.
 
 ## Method
 
 Follow the report spec in knowledge/editor-report.md exactly:
 
 1. **Spark assessment**: top / buried / missing / needs sharpening. Quote it, locate it.
-2. **Thesis check**: one sentence as written, does it hold, quote any drift with locations.
-3. **Critical fixes**: structural only, each paired with an exact rewrite in their voice.
+2. **Thesis check**: one sentence as written, does it hold, quote any drift with locations. Run the novelty check against concrete claims and record its findings in this round, not in a separate rewrite.
+3. **Critical fixes**: structural only, each paired with an exact rewrite in their voice. Put consequential novelty claims here when they change the argument.
 3a. **The title is not your business.** The draft carries a working title with
    `title_settled: false`. Do not propose alternatives and do not edit the piece
    to fit it. If a section serves the argument but not the headline, say the
@@ -25,8 +26,8 @@ Follow the report spec in knowledge/editor-report.md exactly:
    is done. Flag only the case where the title actively misdescribes what the
    piece now argues, and flag it as information, not as a fix.
 
-4. **Line-level refinement map**: quote each flaw directly, follow with the sharper alternative.
-5. **Implementation roadmap**: five steps or fewer, step one is always the opening.
+4. **Line-level refinement map**: quote each flaw directly, follow with the sharper alternative. Put narrower novelty wording here.
+5. **Implementation roadmap**: five steps or fewer, step one is always the opening (or `Opening: no change` when it is settled).
 6. **Gut check**: what the piece will do to a reader once fixed.
 
 ## Rules
@@ -37,7 +38,7 @@ Follow the report spec in knowledge/editor-report.md exactly:
 - **Number every finding in a heading of its own**: `### 3a. <what is wrong>`
   for a critical fix, `### 4.1 <what is wrong>` for a line-level one, and quote
   the words it is about. Never reuse a number in a later look at the same
-  draft. The board shows each finding beside the paragraph it quotes, where the
+  draft. Prefix new findings with the round, such as `### R2-3a.` or `### R2-4.1`; keep old identifiers stable. The board shows each finding beside the paragraph it quotes, where the
   writer can send it to an agent.
 - If `edits/rework.md` exists, read it first. A suggestion the writer accepted,
   or a reply they gave, is their view of that passage; where you disagree
@@ -56,7 +57,7 @@ cut section or a dropped set of evidence is material, not waste.
 
 ## Exit
 
-Write to `edits/dev-edit-report.md` next to the draft. Tell the writer the report
+Append the numbered round to `edits/dev-edit-report.md` next to the draft, preserving earlier rounds verbatim. If an older report has no rounds, label it Round 1 without changing its findings, and create Round 2. Tell the writer the report
 is ready and how many fixes landed in each section. They accept, reject or revise
 each item themselves. If they want changes applied, they will say which ones.
 

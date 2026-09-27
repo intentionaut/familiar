@@ -73,6 +73,14 @@ process.
   `python3 scripts/question-check.py --prepared interview-questions.md` and
   rewrite what it flags.
 
+## Optional reader-intent handoff
+
+This brief describes what the writer did, not what an audience wants. If the
+writer asks about reader questions before the interview, run
+`prompts/intent-check.md` on this candidate and append its sourced section to
+`brief.md`. Do not infer audience demand from the build log alone or make this
+a prerequisite to interviewing.
+
 ## Exit
 
 - Save brief.md and interview-questions.md.

@@ -199,7 +199,7 @@ def findings(text):
     """Each finding an edit report makes, in the order it makes them.
 
     Three shapes turn up, and all three are read: a numbered heading
-    (`### 3a. ...`), a numbered bold line (`**1. ...**`), and a bare
+    (`### 3a. ...`, or `### R2-3a. ...` from a later round), a numbered bold line (`**1. ...**`), and a bare
     `[line 31] "..."` paragraph with Issue and Fix lines under it. Anything
     inside a code block belongs to the finding above it.
 
@@ -217,9 +217,10 @@ def findings(text):
         h = re.match(r"^(#{1,6})\s+(.*)", line)
         if h:
             heads.append((i, len(h.group(1))))
-        # `### 3a.` and `### 3.1` both number a finding. A bare number with no
-        # full stop (`## 2026 plans`) does not.
-        m = re.match(r"^(#{2,4})\s+(\d+[a-z]?\.|\d+\.\d+\.?)\s+(.+?)\s*$", line)
+        # `### 3a.` and `### 3.1` both number a finding, and so do their
+        # round-prefixed forms from a later dev-edit round (`### R2-3a.`,
+        # `### R2-4.1`). A bare number with no full stop (`## 2026 plans`) does not.
+        m = re.match(r"^(#{2,4})\s+((?:R\d+-)?(?:\d+[a-z]?\.|\d+\.\d+\.?))\s+(.+?)\s*$", line)
         if m and m.group(3).strip().rstrip(".").lower() not in SECTIONS:
             starts.append((i, m.group(2).rstrip("."), m.group(3), len(m.group(1))))
             numbered = True

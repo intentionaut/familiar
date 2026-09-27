@@ -96,7 +96,7 @@ def cmd_engage(args):
         print("a session you just finished, a draft, some notes, or an idea.")
         print()
         return cmd_status(args)
-    if top == HOME:
+    if target == HOME or HOME in target.parents or top == HOME:
         print("This is Familiar's own folder. Stand in a project you have built and")
         print("run `familiar`: it reads the history and finds what it can say about it.")
         print()

@@ -6,7 +6,7 @@ in their voice, not in model voice.
 ## Setup
 
 1. Read the piece's outline.md (chosen structure marked) and notes.md.
-2. Read knowledge/voice-guide.md, knowledge/style-rules.md, knowledge/positioning.md, knowledge/examples/canonical.md. Internalise them before typing. If `Language:` in positioning.md is not English, read `knowledge/languages/<code>.md` too and write in that language's conventions, not English ones.
+2. Read knowledge/voice-guide.md, knowledge/style-rules.md, knowledge/positioning.md, knowledge/examples/canonical.md. Internalise them before typing. If an `instance/` directory exists at the repo root, read every `instance/voice-*.md` the same way: it is the writer's personal voice layer and wins any conflict with the knowledge templates. If `Language:` in positioning.md is not English, read `knowledge/languages/<code>.md` too and write in that language's conventions, not English ones.
 3. Target length: 800 to 1200 words for a standard piece; deep dives up to 2500 only if outline says so.
 
 **Scope:** if `$ARGUMENTS` names a section, heading or paragraph, draft that part only and leave everything else in `draft.md` untouched. Say which part you worked on. If `draft.md` already has content and no scope is given, ask before replacing it: replace, add to, or write a numbered variant beside it (`draft-2.md`).
@@ -126,3 +126,4 @@ Then stop. They rewrite; the next stage is dev-edit only when they ask.
   knowledge/context-log.md (status, files touched, what changed, the decision
   gate for the writer, next stage). Terse; this is what makes the article easy to
   resume later.
+

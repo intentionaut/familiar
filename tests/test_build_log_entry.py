@@ -150,3 +150,52 @@ class Paths(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Usage(unittest.TestCase):
+    """Each entry logs what its calls reported: real numbers, null when absent, never estimated."""
+
+    def run_with(self, stdout, returncode=0):
+        from unittest import mock
+        done = mock.Mock(returncode=returncode, stdout=stdout, stderr="")
+        ble.USAGE.clear()
+        with mock.patch.object(ble.subprocess, "run", return_value=done) as run:
+            text = ble.call_model("prompt")
+        return text, run.call_args.args[0]
+
+    def test_the_call_asks_for_json_and_returns_the_text(self):
+        out = json.dumps({"result": "## entry", "is_error": False, "total_cost_usd": 0.012,
+                          "usage": {"input_tokens": 900, "output_tokens": 70},
+                          "modelUsage": {"claude-sonnet-5": {}}})
+        text, args = self.run_with(out)
+        self.assertEqual("## entry", text)
+        self.assertEqual(["--output-format", "json"], args[-2:])
+        self.assertEqual([{"model": "claude-sonnet-5", "input_tokens": 900,
+                           "output_tokens": 70, "cost_usd": 0.012}], ble.USAGE)
+
+    def test_a_plain_text_reply_is_kept_and_its_usage_is_null(self):
+        text, _ = self.run_with("## entry\n")
+        self.assertEqual("## entry", text)
+        rec = ble.USAGE[0]
+        self.assertEqual("sonnet", rec["model"])
+        self.assertIsNone(rec["input_tokens"])
+        self.assertIsNone(rec["output_tokens"])
+        self.assertIsNone(rec["cost_usd"])
+
+    def test_a_reported_error_raises_after_its_usage_is_kept(self):
+        out = json.dumps({"result": "overloaded", "is_error": True, "usage": {"input_tokens": 5}})
+        with self.assertRaises(RuntimeError):
+            self.run_with(out)
+        self.assertEqual(5, ble.USAGE[0]["input_tokens"])
+
+    def test_the_line_totals_what_was_reported(self):
+        line = ble.usage_line([
+            {"model": "sonnet", "input_tokens": 1000, "output_tokens": 50, "cost_usd": 0.01},
+            {"model": "sonnet", "input_tokens": 2000, "output_tokens": 60, "cost_usd": 0.02}])
+        self.assertEqual("usage: 2 calls (sonnet): 3,000 in, 110 out, $0.0300", line)
+
+    def test_the_line_says_so_when_nothing_was_reported(self):
+        line = ble.usage_line([{"model": "sonnet", "input_tokens": None,
+                                "output_tokens": None, "cost_usd": None}])
+        self.assertEqual("usage: 1 call (sonnet): no call reported usage", line)
+        self.assertNotIn(" 0 ", line)

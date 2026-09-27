@@ -110,6 +110,8 @@ The spec's own note is the rule this project already wanted: *"a score value of 
 - A check that could not run is recorded as such. It is not a pass and not a fail (#149).
 - No composite score (#154). If a number is wanted it is a count: *three checks flagged*.
 
+**Implemented (26 Sep).** A research pipeline's `claude -p` steps write these fields on every step log: the model, input/output tokens and cost from the step's own JSON result - real numbers only. A stage that cannot observe its usage writes nulls, never estimates. Each sweep preview carries a per-piece total line (stages, models, summed tokens and cost), printed in the preview summary. Familiar-core's build-log writer (`scripts/build_log_entry.py`) asks its `claude -p` calls for JSON and logs one usage line per entry: calls, models, summed tokens and cost, null when a call reported none. Stages run inside an interactive session still have no writer: the session does not expose its usage to them.
+
 ## 4. Judgement
 
 One record per decision the writer made. Low-volume, deliberate, and **the asset**.

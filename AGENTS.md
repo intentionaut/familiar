@@ -58,6 +58,7 @@ person adds it.
 /dev-edit   → edits/dev-edit-report.md   (report only, never auto-apply)
 /line-edit  → edits/line-edit-report.md  (mechanical pass, exact fixes per flag)
 /finalise   → title, subject line, SEO   (the last creative act; repurpose and social need a settled title)
+/publication-time → publication-time.md  (newsletter/article manual time hold, chosen by writer; never queues or sends)
 /repurpose  → short: social.md | long: a companion piece's brief.md (you pick first; long seeds the pipeline, never drafts)
 /social     → social.md       (candidate pool → quality pass → the writer picks per channel → finalise; ends at approved copy)
 /publish    → social.md ## Scheduled  (schedules approved copy only; builds and counts URLs first, one confirm gate)

@@ -7,7 +7,7 @@ mechanical, exhaustive, boring on purpose.
 ## Setup
 
 1. Read the piece's draft.md (newest `pieces/*/` if not given).
-2. Read knowledge/style-rules.md and knowledge/voice-guide.md. Check `Language:`
+2. Read knowledge/style-rules.md and knowledge/voice-guide.md. If an `instance/` directory exists at the repo root, read every `instance/voice-*.md` as well: the personal voice layer, which wins on conflict with the templates. Check `Language:`
    in knowledge/positioning.md; if not English, read `knowledge/languages/<code>.md`
    and apply its skip/keep/replace table before anything marked (en).
 
@@ -103,3 +103,4 @@ AGENTS.md, "Opening the file at an edit stage". Open both on yes; drop it on no.
   knowledge/context-log.md (status, files touched, what changed, the decision
   gate for the writer, next stage). Terse; this is what makes the article easy to
   resume later.
+

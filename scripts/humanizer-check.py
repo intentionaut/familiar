@@ -8,7 +8,9 @@ The two drift. This script fetches humanizer's SKILL.md, pulls out its
 overused-word list and its numbered patterns, and writes
 knowledge/humanizer-check.md listing anything Familiar does not mention yet.
 
-It proposes; it never edits style-rules.md. A human decides what to adopt,
+It proposes; it never edits style-rules.md. Files matching voice-*.md in the
+repo-root instance/ directory (the personal voice layer) count as part of
+the house list. A human decides what to adopt,
 one pattern at a time, with a real example (see CONTRIBUTING.md).
 
 Usage: scripts/humanizer-check.py [--quiet]
@@ -20,6 +22,10 @@ RAW = "https://raw.githubusercontent.com/blader/humanizer/main/SKILL.md"
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RULES = ROOT / "knowledge" / "style-rules.md"
 REPORT = ROOT / "knowledge" / "humanizer-check.md"
+# Personal layer: any voice-*.md under the repo-root instance/ directory
+# counts as part of the house list, so adopted personal tells are not
+# reported as gaps.
+INSTANCE = ROOT.parent.parent / "instance"
 
 def fetch():
     with urllib.request.urlopen(RAW, timeout=30) as r:
@@ -52,6 +58,9 @@ def main():
     version = re.search(r"version:\s*\"?([0-9.]+)", skill)
     version = version.group(1) if version else "unknown"
     ours = norm(RULES.read_text(encoding="utf-8"))
+    if INSTANCE.is_dir():
+        for vf in sorted(INSTANCE.glob("voice-*.md")):
+            ours += " " + norm(vf.read_text(encoding="utf-8"))
 
     # Humanizer spells the American way and this house the British one.
     missing_words = [w for w in words_from(skill)
@@ -93,3 +102,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

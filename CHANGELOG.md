@@ -51,6 +51,12 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.46.0 (2026-09-27)
+
+- **Is the idea new?** After the interview, and again in the developmental edit, Familiar says whether the piece's central claim is established practice, a useful reframe, or something new, and says so plainly when the evidence is too thin to tell.
+- **What readers are asking.** An optional check before the interview collects the questions real readers ask in public, with a link for each, and turns them into two or three angles to choose from.
+- **When to publish.** A new step suggests when an article or newsletter should go out, from publishing windows you set once. It suggests a time; you send it.
+
 ## 0.45.4 (2026-09-25)
 
 Bug fixes and updates.

@@ -150,11 +150,13 @@ The stages, for Familiar's own routing:
 | Stage | Prompt | What it does |
 |---|---|---|
 | `interview <idea>` | `prompts/interview.md` | One question at a time until the idea is sharp |
+| `intent-check <piece \| idea>` | `prompts/intent-check.md` | Optional, before the interview settles an angle: the reader questions and buyer fit a candidate could answer, sourced, for the writer to choose one |
 | `outline` | `prompts/outline.md` | Three genuinely different structures; the writer picks |
 | `draft` | `prompts/draft.md` | Full draft in the writer's voice, brackets over inventions |
 | `dev-edit` | `prompts/dev-edit.md` | Editorial report, nothing applied |
 | `line-edit` | `prompts/line-edit.md` | Mechanical pass, exact fix per flag |
 | `finalise` | `prompts/finalise.md` | Title, framing, subject line and SEO, once the piece is finished |
+| `publication-time` | `prompts/publication-time.md` | For newsletters and articles, proposes and holds a manual publication time; never queues or sends |
 | `repurpose short\|long` | `prompts/repurpose.md` | The writer picks short or long first; long seeds a companion piece and hands to interview |
 | `social` | `prompts/social.md` | A week of posts on the writer's cadence; includes the quality pass; ends at approved copy |
 | `publish [file]` | `prompts/publish.md` | Schedules already-approved posts; builds and counts URLs first, never rewrites copy |

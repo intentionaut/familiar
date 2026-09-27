@@ -14,6 +14,9 @@ JSON on stdin and gets out of the way. Everything decided here:
               session wired in two settings files is still recorded once
 
 Env overrides: FAMILIAR_LOG_FILE, FAMILIAR_LOG_MODEL, FAMILIAR_LOG_EFFORT.
+
+Every entry logs one usage line: calls, models, tokens and cost as the calls
+reported them, null when they did not (docs/plans/records.md section 3).
 """
 import datetime
 import fcntl
@@ -136,21 +139,66 @@ def chunk(turns, limit=LIMIT):
     return out
 
 
+USAGE = []  # one record per model call this run: model, tokens and cost as the call reported them
+
+
+def usage_of(result):
+    """Model, tokens and cost from a claude -p JSON result. A field the result
+    does not carry is None: never estimated, never zero."""
+    usage = (result or {}).get("usage") or {}
+    models = sorted((result or {}).get("modelUsage") or {})
+    return {"model": models[0] if len(models) == 1 else (", ".join(models) or None),
+            "input_tokens": usage.get("input_tokens"),
+            "output_tokens": usage.get("output_tokens"),
+            "cost_usd": (result or {}).get("total_cost_usd")}
+
+
+def usage_line(records):
+    """One log line totalling this entry's calls; a total is null when no call reported it."""
+    if not records:
+        return "usage: no model call"
+
+    def total(field):
+        values = [r[field] for r in records if isinstance(r.get(field), (int, float))]
+        return sum(values) if values else None
+
+    models = sorted({r["model"] for r in records if r.get("model")})
+    parts = [f"{total('input_tokens'):,} in" if total("input_tokens") is not None else None,
+             f"{total('output_tokens'):,} out" if total("output_tokens") is not None else None,
+             f"${total('cost_usd'):.4f}" if total("cost_usd") is not None else None]
+    parts = [p for p in parts if p]
+    return (f"usage: {len(records)} call{'s' if len(records) != 1 else ''}"
+            f"{' (' + ', '.join(models) + ')' if models else ''}: "
+            f"{', '.join(parts) if parts else 'no call reported usage'}")
+
+
 def call_model(prompt, timeout=600):
     model = os.environ.get("FAMILIAR_LOG_MODEL", "sonnet")
     effort = os.environ.get("FAMILIAR_LOG_EFFORT", "medium")
     res = subprocess.run(
         # --setting-sources "" loads no settings, so no hooks: the summariser
-        # cannot trigger this hook again.
+        # cannot trigger this hook again. JSON output, so the call reports its
+        # own tokens and cost.
         ["claude", "-p", "--no-session-persistence", "--setting-sources", "",
-         "--model", model, "--effort", effort, "--tools", ""],
+         "--model", model, "--effort", effort, "--tools", "", "--output-format", "json"],
         input=prompt, capture_output=True, text=True, timeout=timeout,
         cwd=os.path.expanduser("~"),
         env={**os.environ, "CLAUDE_CODE_ENABLE_AWAY_SUMMARY": "0"},
     )
     if res.returncode != 0:
         raise RuntimeError(f"claude exit {res.returncode}: {res.stderr.strip()[:300]}")
-    return res.stdout.strip()
+    try:
+        result = json.loads(res.stdout)
+    except json.JSONDecodeError:
+        result = None
+    if not isinstance(result, dict) or not isinstance(result.get("result"), str):
+        # A CLI that ignored the flag: keep the text, record the call with no usage.
+        USAGE.append({**usage_of(None), "model": model})
+        return res.stdout.strip()
+    USAGE.append({**usage_of(result), "model": usage_of(result)["model"] or model})
+    if result.get("is_error"):
+        raise RuntimeError(f"claude reported an error: {result['result'].strip()[:300]}")
+    return result["result"].strip()
 
 
 NOTES_PROMPT = """Below is part {i} of {n} of one Claude Code working session, in order.
@@ -301,7 +349,9 @@ def main():
             entry = call_model(prompt)
         except Exception as e:
             log(f"{e}", session, event)
+            log(usage_line(USAGE), session, event)
             return 0
+        log(usage_line(USAGE), session, event)
         if not entry or entry.upper().startswith("NOTHING"):
             log("model judged nothing worth recording", session, event)
             offset_file.write_text(str(len(lines)))

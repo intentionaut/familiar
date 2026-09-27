@@ -85,7 +85,11 @@ class ChannelCheck(unittest.TestCase):
         self.tmp.cleanup()
 
     def problems(self):
-        return channel_check.check(self.cfg)
+        # An empty pieces folder of its own: left to resolve, check() reads the
+        # writer's real pieces (FAMILIAR_PIECES or .familiar) and fails on them.
+        pieces = self.cfg / "pieces"
+        pieces.mkdir(exist_ok=True)
+        return channel_check.check(self.cfg, [pieces])
 
     def test_a_consistent_house_passes(self):
         write(self.cfg, "social-schedule.md", SCHEDULE_OK)

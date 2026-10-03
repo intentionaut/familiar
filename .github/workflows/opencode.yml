@@ -30,5 +30,9 @@ jobs:
         uses: anomalyco/opencode/github@latest
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          # CI only: name sessions with the free model. Set here, not in a repo
+          # opencode.json, so nobody's own opencode setup changes when they clone.
+          OPENCODE_CONFIG_CONTENT: '{"small_model":"opencode/big-pickle"}'
         with:
           model: opencode/big-pickle
+          share: false

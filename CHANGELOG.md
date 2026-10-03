@@ -6,6 +6,9 @@ New changes to Familiar. Written for the writer using it, not the developer.
 
 Hard rules. An entry that breaks one of them does not ship.
 
+`docs/public-writing.md` covers every release note and pull request in this
+repo. The rules below add to it.
+
 1. **Nothing that reports on a person's working.** No dates from a session, no
    piece titles, no description of how someone wrote or how their run went, no
    detail traceable to one person's setup. A release note is not an incident

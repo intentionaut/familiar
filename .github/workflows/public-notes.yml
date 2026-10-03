@@ -1,0 +1,32 @@
+name: public notes
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  public-notes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check public text
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PRIVATE_TERMS: ${{ secrets.FAMILIAR_PRIVATE_TERMS }}
+          BASE_REF: ${{ github.base_ref }}
+          # A pull request from a fork or from Dependabot cannot read the secret,
+          # so the terms check is required only for this repo's own branches.
+          SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
+        run: |
+          flags=""
+          if [ "$SAME_REPO" = "true" ]; then flags="--require-terms"; fi
+          python3 scripts/public-notes-check.py --base "origin/$BASE_REF" $flags

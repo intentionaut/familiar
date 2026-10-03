@@ -47,6 +47,13 @@ writer's list in any added line, commit message, title or description. It is a b
 be wrong for this repo. A `public-ok` label skips the terms check only, and a
 person adds it.
 
+## Writing in public
+
+Release notes, pull request titles and descriptions, and comments in this repo
+follow `docs/public-writing.md`. Read it before writing any of them.
+`scripts/public-notes-check.py` runs on every pull request and refuses what it
+can catch.
+
 ## Pipeline
 
 ```

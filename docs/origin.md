@@ -36,13 +36,13 @@ it broke.
 
 ## Origin
 
-Written while building a career coaching tool, a startup whose technical journey
-was never captured. Five days in, we wanted to
+Written while building [Friday](https://fridayforwork.com), a career coaching tool
+for people getting their first jobs in film and TV. Five days in, we wanted to
 look back at the build and found the first three days were unrecoverable — the git
 history recorded what happened and nothing about why, and the working doc had
 pruned every superseded decision.
 
-The first log entry of that project had to be reconstructed from `git log`, and it reads
+The first Friday log entry had to be reconstructed from `git log`, and it reads
 like a changelog. That's the whole argument for the tool, demonstrated
 accidentally.
 

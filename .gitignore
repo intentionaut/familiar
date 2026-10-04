@@ -26,3 +26,6 @@ knowledge/digests/
 # but keep observability.yaml versioned (the service-to-repo map)
 .intracor/*
 !.intracor/observability.yaml
+
+# Private module names the public test checks for. Never committed.
+tests/private-terms.txt

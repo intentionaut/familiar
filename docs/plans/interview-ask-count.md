@@ -27,7 +27,7 @@ From the session that wrote `2026-08-30-familiar`:
   restart from the first gate.
 - On the return visit, the third ask came from a different angle: not "when did
   a question help you" but "when did you last lose something because you did
-  not write it down". That produced Friday, the startup whose technical journey
+  not write it down". That produced a career coaching startup, whose technical journey
   was never captured, which became the thesis of the whole piece.
 
 Two asks was not enough. A third ask phrased the same way probably would not

@@ -21,15 +21,22 @@ the person asking what to write about has failed at the one thing it is for.
    cross-project log path (if any).
 2. Read knowledge/patterns.md to see what was extracted last time, including
    the Ledger and the Turned down list at its foot.
-2b. If `knowledge/digests/` exists, read every digest in it. Each is one
-   project's git history, reconstructed by `scripts/project-digest.py`, and it
-   counts as a source the way a build log does, weaker on reasoning and
-   stronger on dates. Say which projects came from digests rather than logs.
-   Each digest opens with `## Observations`: facts with a contrast in them
-   from that one project. An observation that recurs across two or more
+2b. If `knowledge/digests/` exists, run `scripts/digest-observations.py` and
+   read what it prints in place of the digests. Each digest is one project's
+   git history, reconstructed by `scripts/project-digest.py`, and it counts as
+   a source the way a build log does, weaker on reasoning and stronger on
+   dates. Say which projects came from digests rather than logs. The script
+   gives each project's `## Observations`, facts with a contrast in them from
+   that one project, word for word, and how many of its commits carried
+   reasoning and how many were corrections. Carry an observation's dates and
+   commit ids as they are given: one restated without them can no longer be
+   checked against the history. An observation that recurs across two or more
    digests, or that a log or reflection speaks to, is a theme candidate; one
    that appears in a single digest stays an observation and is not offered as
-   a topic on its own.
+   a topic on its own. Open a digest itself only for a theme candidate, to
+   read the commits behind it. Exit 2 means at least one digest could not be
+   read: name it in the exit report as unreadable, never as a project with
+   nothing in it.
 3. Read knowledge/themes.md for the writer's declared themes. THESE ARE WHAT
    THE STAGE IS LISTENING FOR, and they are the lens: a finding that connects
    to a declared theme is a stronger candidate than one that does not. Each

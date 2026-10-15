@@ -85,13 +85,18 @@ link: [the piece's URL if known, else [ADD POST URL]]
 chars: <count per channel>
 viewpoint: <the one thing this post says, in a sentence. If it needs an "and",
             the candidate is two posts and does not go in the pool>
+source: <where in the piece it comes from: the section heading, or the
+         quotable line or proof point from the building blocks>
 review: <nothing, or what it fails and why>
 ```
 
 Rules for every candidate:
 
 - Built from something the source actually says. No new claims, no invented
-  quotes or numbers.
+  quotes or numbers. The `source:` line names the place; a candidate that
+  cannot name one is not built from the piece and does not go in the pool.
+  Two candidates with the same source and the same viewpoint are one
+  candidate in different words: keep the stronger.
 - One post, one destination. A candidate that wants to send the reader to
   two places is two candidates. Identical copy never goes to two channels:
   the channel's relationships in channels.md say what companion means.

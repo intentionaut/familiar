@@ -109,6 +109,24 @@ the fix is a bracket, not an invention.
    holds a real claim, state the claim. Keep an objection the text attributes or
    answers in full, and an option a reader would actually weigh.
 
+**(en)** **No thought verbs.** Familiar's own, unnumbered so 1 to 25 keep
+humanizer's numbers. A common fiction-craft rule: a sentence that reports what
+a person knew, felt or wanted hands the reader the conclusion and keeps back the
+evidence. Replace the inner state with an observable: what the person did,
+said, held, avoided or looked at. Before: "She knew he was lying." After: "She
+watched him look at the door before he answered." Flag it when a person is the
+subject and the verb reports an inner state; the fix is offered with the
+rewritten line, never applied.
+Watch for: knew, knows, known, knowing, realised, realises, realising,
+realized, realizes, realizing, wanted, wants, wanting, felt, feels, feeling,
+thought, thinks, thinking, believed, believes, believing, decided, decides,
+deciding, understood, understands, understanding, noticed, notices, noticing,
+wondered, wonders, wondering, hoped, hopes, hoping, feared, fears, fearing,
+sensed, senses, sensing.
+Leave alone: the writer's own first person ("I think", "we decided"), anyone's
+words inside quotation marks, and subjects that are not people (an
+organisation, a system, a model: "the board decided", "the model thinks").
+
 ### B. Rhythm by rule
 
 6. **Forced groups of three.** Ideas in threes to sound complete: in one

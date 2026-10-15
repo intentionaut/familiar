@@ -22,6 +22,7 @@ import tempfile
 import threading
 import time
 import unittest
+from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -478,6 +479,75 @@ class TheAgentsSide(Piece):
         self.assertEqual(3, rework.cmd_watch(interval=0.01, timeout=0.05))
         self.comment(send=True)
         self.assertEqual(0, rework.cmd_watch(interval=0.01, timeout=1))
+
+
+class SaveRollback(Piece):
+    """A save that fails part-way leaves the draft as the writer last had it.
+
+    Failures are injected, not raced: each test replaces one step of the save
+    with a function that raises or writes, so the outcome is the same on every
+    run. A save keeps a copy of the old draft before it writes, so a refused or
+    failed save still leaves that backup; the tests pin that, it is a spare copy
+    and not a lost edit.
+    """
+
+    def temp_files(self):
+        return sorted(p.name for p in self.folder.glob(".board-*.tmp"))
+
+    def assert_untouched(self, raw):
+        self.assertEqual(raw, self.draft())
+        self.assertEqual([], self.temp_files())
+
+    def assert_old_draft_kept(self, raw):
+        kept = E.versions(self.folder)
+        self.assertEqual(1, len(kept))
+        self.assertEqual(raw, kept[0].read_text(encoding="utf-8"))
+
+    def test_a_write_that_fails_before_the_replace_leaves_the_draft_and_no_temp_file(self):
+        raw = self.draft()
+
+        def fails_after_the_temp_file_exists(fd, *a, **kw):
+            os.close(fd)
+            raise OSError("disk full")
+
+        with mock.patch.object(E.os, "fdopen", fails_after_the_temp_file_exists):
+            with self.assertRaises(OSError):
+                E.save_draft(self.folder, E.digest(raw), raw + "\nMine.\n")
+        self.assert_untouched(raw)
+        self.assert_old_draft_kept(raw)
+
+    def test_a_replace_that_fails_leaves_the_draft_as_it_was(self):
+        raw = self.draft()
+        with mock.patch.object(E.os, "replace", side_effect=OSError("read-only")):
+            with self.assertRaises(OSError):
+                E.save_draft(self.folder, E.digest(raw), raw + "\nMine.\n")
+        self.assert_untouched(raw)
+        self.assert_old_draft_kept(raw)
+
+    def test_an_edit_that_lands_mid_save_is_kept_and_the_save_is_refused(self):
+        raw = self.draft()
+        theirs = raw.replace("The closing paragraph.", "Closed in Obsidian.")
+        real = E.keep_version
+
+        def other_editor_saves_while_this_one_keeps_a_copy(*a, **kw):
+            kept = real(*a, **kw)
+            (self.folder / "draft.md").write_text(theirs, encoding="utf-8")
+            return kept
+
+        with mock.patch.object(E, "keep_version", other_editor_saves_while_this_one_keeps_a_copy):
+            with self.assertRaises(E.Conflict):
+                E.save_draft(self.folder, E.digest(raw), raw + "\nMine.\n")
+        self.assert_untouched(theirs)
+        self.assert_old_draft_kept(raw)
+
+    def test_a_draft_that_is_not_utf8_is_refused_and_untouched(self):
+        latin = "caf\u00e9 au lait\n".encode("latin-1")
+        (self.folder / "draft.md").write_bytes(latin)
+        with self.assertRaises(E.Refused):
+            E.save_draft(self.folder, E.digest("anything"), "Mine.\n")
+        self.assertEqual(latin, (self.folder / "draft.md").read_bytes())
+        self.assertEqual([], self.temp_files())
+        self.assertEqual([], E.versions(self.folder))
 
 
 class Server(Piece):

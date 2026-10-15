@@ -185,6 +185,127 @@ class Retries(Guard):
         self.assertFalse(nd.read_state(self.folder).get("interrupted"))
 
 
+HUMAN_EDIT = "A person rewrote this line."
+HUMAN_ADD = "A person added this paragraph."
+PARTIAL = LOCAL_EDIT.replace("Closing line.", "A new closing line.\n\nAnd one more.")
+
+
+class Resumes(Guard):
+    """A retry continues only from states the operation's own writes explain."""
+
+    def interrupt(self):
+        self.fake.fail_after = 1                      # the first step goes through, the second fails
+        res = self.run_guard(PARTIAL)
+        self.assertEqual("write_failed", res["stopped"])
+        self.fake.fail_after = None
+        return len(self.fake.mutations)
+
+    def assert_held(self, retry, before, human):
+        self.assertEqual("conflict", retry["outcome"], retry)
+        self.assertEqual(before, len(self.fake.mutations), "nothing written after the human edit")
+        self.assertEqual("choose_side", retry["gate"]["gate"])
+        self.assertIn(human, self.fake.md())
+        self.assertEqual({"notion", "local", "live"}, set(retry["versions"]))
+        self.assertIn(human, (self.folder / retry["versions"]["live"]).read_text())
+        self.assertEqual(BODY, (self.folder / retry["versions"]["notion"]).read_text())
+        self.assertEqual(blocks.canon(PARTIAL), (self.folder / retry["versions"]["local"]).read_text())
+        self.assertEqual(self.agreed, ng.agreed_digest(self.folder))
+        self.assertTrue(nd.read_state(self.folder)["interrupted"])
+        self.assertEqual("conflict", ng.read_journal(self.folder, PID, "op-1")["state"])
+        blob = json.dumps(retry["log"]) + "".join(
+            f.read_text() for f in (self.folder / be.VERSIONS).glob("guard-*.json"))
+        for s in SECRETS + (HUMAN_EDIT, HUMAN_ADD):
+            self.assertNotIn(s, blob)
+        again = self.run_guard(PARTIAL)
+        self.assertTrue(again["replayed"])
+        self.assertEqual(before, len(self.fake.mutations))
+
+    def test_a_human_edit_to_an_existing_block_after_a_partial_write_holds_the_retry(self):
+        before = self.interrupt()
+        self.fake.edit_text(self.fake.ids()[-1], HUMAN_EDIT)
+        self.assert_held(self.run_guard(PARTIAL), before, HUMAN_EDIT)
+
+    def test_a_human_added_block_after_a_partial_write_holds_the_retry(self):
+        before = self.interrupt()
+        self.fake.add_after("page-1", self.fake.ids()[0],
+                            {"type": "paragraph", "paragraph": {"rich_text": [{"text": {"content": HUMAN_ADD}}]}})
+        self.assert_held(self.run_guard(PARTIAL), before, HUMAN_ADD)
+
+    def test_a_human_deletion_after_a_partial_write_holds_the_retry(self):
+        before = self.interrupt()
+        heading = next(b for b in self.fake.body() if b["type"] == "heading_2")
+        self.fake.kids["page-1"].remove(heading["id"])
+        retry = self.run_guard(PARTIAL)
+        self.assertEqual("conflict", retry["outcome"], retry)
+        self.assertEqual(before, len(self.fake.mutations))
+        self.assertNotIn("## A heading", self.fake.md())
+
+    def test_a_stale_stop_then_a_retry_does_not_overwrite_the_human_edit(self):
+        original = self.page.read
+        state = {"n": 0}
+
+        def moving():
+            state["n"] += 1
+            if state["n"] == 2:
+                self.fake.edit_text(self.ids[0], HUMAN_EDIT)
+            return original()
+
+        self.page.read = moving
+        self.assertEqual("stale", self.run_guard(LOCAL_EDIT)["stopped"])
+        self.page.read = original
+        retry = self.run_guard(LOCAL_EDIT)
+        self.assertEqual("conflict", retry["outcome"], retry)
+        self.assertEqual([], self.fake.mutations)
+        self.assertIn(HUMAN_EDIT, self.fake.md())
+
+    def test_a_timeout_after_an_applied_insert_is_reconciled_without_a_second_append(self):
+        fake = self.fake
+        original = fake.__call__
+        armed = {"on": True}
+
+        class LostReply(type(fake)):
+            def __call__(s, method, url, headers, body):
+                out = original(method, url, headers, body)
+                if armed["on"] and method == "PATCH" and url.endswith("/children"):
+                    armed["on"] = False
+                    raise TimeoutError("the reply was lost after Notion applied the insert")
+                return out
+
+        fake.__class__ = LostReply
+        local = BODY.replace("Closing line.", "Closing line.\n\nAn added line.")
+        res = self.run_guard(local)
+        self.assertEqual("write_failed", res["stopped"])
+        self.assertEqual(1, fake.md().count("An added line."), "the insert landed")
+        retry = self.run_guard(local)
+        self.assertIsNone(retry["stopped"], retry)
+        self.assertEqual("apply_local", retry["outcome"])
+        self.assertEqual(blocks.canon(local), fake.md())
+        self.assertEqual(1, fake.md().count("An added line."))
+        self.assertEqual(len(fake.ids()), len(set(fake.ids())))
+
+    def test_a_completed_replay_after_a_later_remote_edit_reports_the_page_moved(self):
+        done = self.run_guard(LOCAL_EDIT)
+        self.assertEqual("apply_local", done["outcome"])
+        mutations = len(self.fake.mutations)
+        self.fake.edit_text(self.fake.ids()[0], HUMAN_EDIT)
+        again = self.run_guard(LOCAL_EDIT)
+        self.assertTrue(again["replayed"])
+        self.assertEqual("apply_local", again["outcome"], "the historical outcome is kept")
+        self.assertEqual(be.digest(LOCAL_EDIT), again["agreed"], "what was agreed then")
+        self.assertTrue(again["page_moved"])
+        self.assertEqual(be.digest(self.fake.md()), again["live"])
+        self.assertNotEqual(again["agreed"], again["live"])
+        self.assertEqual(mutations, len(self.fake.mutations))
+        self.assertEqual(be.digest(LOCAL_EDIT), ng.agreed_digest(self.folder))
+
+    def test_a_completed_replay_with_no_later_edit_reports_the_page_unmoved(self):
+        self.run_guard(LOCAL_EDIT)
+        again = self.run_guard(LOCAL_EDIT)
+        self.assertTrue(again["replayed"])
+        self.assertFalse(again["page_moved"])
+        self.assertEqual(be.digest(LOCAL_EDIT), again["live"])
+
+
 class Stops(Guard):
     def test_a_mismatched_readback_leaves_the_prior_agreed_digest(self):
         fake = self.fake

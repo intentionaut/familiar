@@ -15,7 +15,14 @@ mechanical, exhaustive, boring on purpose.
 
 ## Method
 
-Sweep the entire draft against every rule in knowledge/style-rules.md:
+Run `python3 scripts/tell-check.py <the draft>` first. Each line it prints is a
+candidate finding: weigh it like any other (a word on the list can be the
+writer's own, a term of art or doing real work), and write up the ones that
+stand in the format below. A flag you leave out gets one line in the summary
+saying why. If it says kills were not checked, or that it could not run, say
+that in the report; it is not a clean result.
+
+Then sweep the entire draft against every rule in knowledge/style-rules.md:
 
 - Em dashes (absolute)
 - American spellings
@@ -81,6 +88,15 @@ the piece describes. Flag with the exact rewrite, as with any other finding.
 Write to `edits/line-edit-report.md`: findings, then the summary table from the
 spec (flags per category, reading ease, grade level, top three highest-impact fixes).
 They apply what they agree with. Nothing is auto-applied.
+
+Then run `python3 scripts/edge-diff.py edits/line-edit-report.md`. It compares
+each quoted line with its `Fix:` and flags what the polish costs: a contraction
+expanded, an idiom lost, short sentences joined, a length moved. Under each
+finding it flags, add one line, `Edge cost: <rule>, <detail>`, so she sees the
+cost beside the suggestion before she decides. Do not drop or soften a Fix
+because it was flagged; the cost is hers to weigh. If it says it could not run,
+or that a suggestion had no rewritten line, say so in the summary; that is not
+a clean result.
 
 Every finding in the report carries a `Disposition:` line, left for the writer
 to fill as they work through it: `accepted`, `rejected` or `revised`, and a

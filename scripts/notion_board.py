@@ -71,7 +71,16 @@ def urllib_transport(method, url, headers, body):
 
 
 class NotionClient:
-    """One request at a time, paced to Notion's documented average, with backoff."""
+    """One request at a time, paced to Notion's documented average, with backoff.
+
+    Every caller says whether its request is safe to send twice. A read, or a
+    write that sets the same values again, is retried after a server error. A
+    create or an append is not: Notion may have made it before the error came
+    back, and sending it again would make a second copy. That raises
+    OutcomeUnknown, so the caller reads what is there before writing again.
+    A 429 is a refusal, so nothing was made, and any request waits as long as
+    Notion asks and goes again.
+    """
 
     def __init__(self, token, transport=None, sleep=time.sleep, clock=time.monotonic,
                  per_second=3.0, max_attempts=5, rng=random.random):
@@ -85,7 +94,7 @@ class NotionClient:
             self.sleep(self.gap - (now - self._last))
         self._last = self.clock()
 
-    def request(self, method, path, body=None):
+    def request(self, method, path, body=None, *, replay_safe):
         headers = {"Authorization": f"Bearer {self._token}", "Notion-Version": VERSION,
                    "Content-Type": "application/json"}
         data = json.dumps(body).encode() if body is not None else None
@@ -95,6 +104,11 @@ class NotionClient:
             if status == 200:
                 return payload
             if status in (429, 529) or status >= 500:
+                if status != 429 and not replay_safe:
+                    raise bp.OutcomeUnknown(
+                        f"Notion returned an error ({status}) after the write was sent, so it may "
+                        "or may not have been made. It was not sent again.",
+                        "Look at the page in Notion, then run it again; the next run reads what is there first.")
                 if attempt == self.max_attempts:
                     break
                 wait = _retry_after(hdrs)
@@ -184,7 +198,7 @@ class NotionProvider(bp.BoardProvider):
     # -- finding the board -------------------------------------------------
 
     def _source(self):
-        found = self.client.request("GET", f"/databases/{self.database}").get("data_sources", [])
+        found = self.client.request("GET", f"/databases/{self.database}", replay_safe=True).get("data_sources", [])
         ids = [d["id"] for d in found]
         if self._ds:
             if self._ds.replace("-", "") not in [i.replace("-", "") for i in ids]:
@@ -201,7 +215,7 @@ class NotionProvider(bp.BoardProvider):
         if self._checked:
             return
         ds = self._source()
-        schema = self.client.request("GET", f"/data_sources/{ds}").get("properties", {})
+        schema = self.client.request("GET", f"/data_sources/{ds}", replay_safe=True).get("properties", {})
         problems = []
         for f, (_, kind) in PROPERTIES.items():
             name = self.names[f]
@@ -257,7 +271,8 @@ class NotionProvider(bp.BoardProvider):
             payload = dict(body, page_size=100)
             if cursor:
                 payload["start_cursor"] = cursor
-            res = self.client.request("POST", f"/data_sources/{self._ds}/query", payload)
+            res = self.client.request("POST", f"/data_sources/{self._ds}/query", payload,
+                                      replay_safe=True)
             rows += res.get("results", [])
             if not res.get("has_more"):
                 return rows
@@ -287,7 +302,7 @@ class NotionProvider(bp.BoardProvider):
                   "links": item.links, "id": item.id}
         page = self.client.request("POST", "/pages", {
             "parent": {"type": "data_source_id", "data_source_id": self._ds},
-            "properties": self._props(values)})
+            "properties": self._props(values)}, replay_safe=False)
         return self._item(page)
 
     def update(self, item_id, changes, version):
@@ -301,7 +316,8 @@ class NotionProvider(bp.BoardProvider):
                                    "Look at it in Notion, then say which value stands.")
         # Only the named fields are sent, so every other property is left as it is.
         return self._item(self.client.request("PATCH", f"/pages/{page['id']}",
-                                              {"properties": self._props(changes)}))
+                                              {"properties": self._props(changes)},
+                                              replay_safe=True))
 
 
 def read_field(knowledge, label):

@@ -19,11 +19,11 @@ DRY=0
 stamp=$(date "+%Y-%m-%d %H:%M")
 say() { echo "$stamp  $*" >> "$LOG"; [ "$DRY" = 1 ] && echo "$*"; }
 
-# Settings can live in the repo or, inside a Dex vault, in the vault.
+# Settings live in the writer's house, wherever scripts/paths.py resolves it (FAMILIAR_KNOWLEDGE, .familiar, ...),
+# else in the repo's shipped copy.
 SETTINGS="$DIR/knowledge/reflection.md"
-for alt in "$HOME/Documents/Dex/06-Resources/Familiar/knowledge/reflection.md"; do
-  [ -f "$alt" ] && SETTINGS="$alt"
-done
+alt="$(python3 "$DIR/scripts/paths.py" --knowledge-only 2>/dev/null)/reflection.md"
+[ -f "$alt" ] && SETTINGS="$alt"
 [ -f "$SETTINGS" ] || { say "no reflection.md found; nothing to do"; exit 0; }
 
 field() { sed -n "s/^- $1: *//p" "$SETTINGS" | head -1 | sed 's/ *$//'; }

@@ -32,12 +32,43 @@ class FamiliarCLI(unittest.TestCase):
         self.assertEqual(0, result.returncode)
         self.assertIn("agent", result.stdout.lower())
 
+    def test_every_init_run_has_its_own_home(self):
+        """`init` installs agent commands under HOME. A test that runs it with the real HOME repoints the
+        writer's own /familiar-* commands at the checkout under test, so each one must set HOME."""
+        import ast
+
+        def sets_home(node):
+            return isinstance(node, ast.Dict) and any(
+                isinstance(k, ast.Constant) and k.value == "HOME" for k in node.keys)
+
+        bare, runs = [], 0
+        for fn in ast.walk(ast.parse(Path(__file__).read_text())):
+            if not isinstance(fn, ast.FunctionDef):
+                continue
+            envs = {t.id: a.value for a in ast.walk(fn) if isinstance(a, ast.Assign)
+                    for t in a.targets if isinstance(t, ast.Name)}
+            for call in ast.walk(fn):
+                if not (isinstance(call, ast.Call) and call.args and isinstance(call.args[0], ast.List)):
+                    continue
+                if not any(isinstance(e, ast.Constant) and e.value == "init" for e in call.args[0].elts):
+                    continue
+                runs += 1
+                env = next((k.value for k in call.keywords if k.arg == "env"), None)
+                env = envs.get(env.id) if isinstance(env, ast.Name) else env
+                if not sets_home(env):
+                    bare.append(call.lineno)
+        self.assertGreater(runs, 0)
+        self.assertEqual([], bare, "init run without its own HOME, at these lines")
+
     def test_init_creates_config_and_knowledge(self):
-        with tempfile.TemporaryDirectory() as tmp:
+        # HOME is a temporary folder: `init --force` runs setup.sh, which writes the agent commands into
+        # ~/.claude, ~/.codex and the rest, pointed at whichever checkout ran the test.
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as home:
             result = subprocess.run(
                 ["python3", str(CLI), "init", "--force"],
                 capture_output=True, text=True, cwd=tmp,
                 env={**os.environ,
+                     "HOME": home,
                      "FAMILIAR_KNOWLEDGE": "",
                      "FAMILIAR_CONFIG": "",
                      "FAMILIAR_PIECES": ""})

@@ -117,7 +117,8 @@ gives one. When they do not, work it out and say so:
       > I can see <N> other projects under <root>. Pull them all in and look for
       > themes across them, or name the ones you want me to read?
       On a yes, `scripts/project-digest.py --all` writes one digest per project
-      under `knowledge/digests/`, and `harvest` reads them alongside the logs.
+      under `knowledge/digests/`, and `harvest` reads their observations
+      alongside the logs.
       Never read a folder the writer did not say yes to; never read outside
       the projects root.
    e. **Writing is offered, not assumed.** Close with one line: if one of the

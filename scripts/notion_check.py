@@ -181,7 +181,8 @@ def run(database, token, write=False, out=sys.stdout, transport=None, **client_k
                                                      "numbered_list_item": {"list_start_index": 3,
                                                                             "rich_text": [{"type": "text", "text": {"content": "third"}}]}})):
         try:
-            client.request("PATCH", f"/blocks/{made.extra['page_id']}/children", {"children": [child]})
+            client.request("PATCH", f"/blocks/{made.extra['page_id']}/children", {"children": [child]},
+                           replay_safe=False)
             r.note(f"accepted: {label}. The converter still refuses it; it can be lifted.")
         except bp.BoardError as e:
             r.note(f"refused by Notion: {label}. The converter's refusal is right for this version.")

@@ -3,9 +3,11 @@
 No model is called and no real transcript is read: every session here is built
 in the test.
 """
+import hashlib
 import importlib.util
 import json
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -170,8 +172,59 @@ class Usage(unittest.TestCase):
         text, args = self.run_with(out)
         self.assertEqual("## entry", text)
         self.assertEqual(["--output-format", "json"], args[-2:])
-        self.assertEqual([{"model": "claude-sonnet-5", "input_tokens": 900,
-                           "output_tokens": 70, "cost_usd": 0.012}], ble.USAGE)
+        (rec,) = ble.USAGE
+        self.assertEqual({"model": "claude-sonnet-5", "input_tokens": 900, "output_tokens": 70,
+                          "cost_usd": 0.012, "outcome": "ok"},
+                         {k: rec[k] for k in ("model", "input_tokens", "output_tokens", "cost_usd", "outcome")})
+        self.assertEqual(hashlib.sha256(b"prompt").hexdigest(), rec["prompt_sha256"])
+        self.assertIsInstance(rec["duration_ms"], int)
+
+    def failing(self, side_effect):
+        from unittest import mock
+        ble.USAGE.clear()
+        calls = []
+
+        def run(*a, **k):
+            calls.append(a)
+            return side_effect(*a, **k)
+
+        with mock.patch.object(ble.subprocess, "run", side_effect=run):
+            try:
+                ble.call_model("prompt", timeout=1)
+            except BaseException as e:  # noqa: B036 - the cancel case raises KeyboardInterrupt on purpose
+                raised = e
+        self.assertEqual(1, len(calls), "a failed call was retried")
+        (rec,) = ble.USAGE
+        return raised, rec
+
+    def test_every_ending_is_recorded_with_null_usage(self):
+        from unittest import mock
+
+        def timeout(args, **k):
+            raise subprocess.TimeoutExpired(args, 1)
+
+        def cancel(*a, **k):
+            raise KeyboardInterrupt
+
+        cases = [("timeout", timeout, subprocess.TimeoutExpired), ("cancelled", cancel, KeyboardInterrupt),
+                 ("error", lambda *a, **k: mock.Mock(returncode=2, stdout="", stderr="no"), RuntimeError)]
+        for outcome, effect, kind in cases:
+            raised, rec = self.failing(effect)
+            self.assertIsInstance(raised, kind)
+            self.assertEqual(outcome, rec["outcome"])
+            self.assertEqual((None, None, None), (rec["input_tokens"], rec["output_tokens"], rec["cost_usd"]))
+            self.assertEqual(hashlib.sha256(b"prompt").hexdigest(), rec["prompt_sha256"])
+            self.assertNotIn("prompt", rec.values())  # the hash is kept, never the prompt
+        self.assertEqual(0, ble.MODEL_RETRIES)
+
+    def test_the_line_counts_unknowns_and_outcomes(self):
+        line = ble.usage_line([
+            {"model": "sonnet", "input_tokens": 1000, "output_tokens": 50, "cost_usd": 0.01,
+             "duration_ms": 1200, "outcome": "ok"},
+            {"model": "sonnet", "input_tokens": None, "output_tokens": None, "cost_usd": None,
+             "duration_ms": 600000, "outcome": "timeout"}])
+        self.assertEqual("usage: 2 calls (sonnet): 1,000 in (1 unknown), 50 out (1 unknown), "
+                         "$0.0100 (1 unknown); 601,200 ms; ok 1, timeout 1", line)
 
     def test_a_plain_text_reply_is_kept_and_its_usage_is_null(self):
         text, _ = self.run_with("## entry\n")

@@ -5,13 +5,19 @@ hours budgets and plan of record. Gitignoring it leaves one copy on one disk.
 So the registry records where the log went, and every reader resolves it the
 same way.
 """
+import contextlib
 import importlib.util
+import io
+import json
 import os
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
+
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 spec = importlib.util.spec_from_file_location("flog", ROOT / "scripts" / "log.py")
@@ -454,3 +460,233 @@ class EveryCommandReportsWhetherItWorked(unittest.TestCase):
             [sys.executable, str(ROOT / "scripts" / "familiar"), "log"],
             capture_output=True, text=True)
         self.assertEqual(out.returncode, 1, out.stdout + out.stderr)
+
+
+class BrokenSettings(unittest.TestCase):
+    """What `log` says when a settings.json or git cannot be read: one plain line
+    naming the file, exit 1 where the command failed, no traceback."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        base = Path(self.tmp.name)
+        self.home = base / "home"
+        self.know = self.home / "knowledge"
+        self.proj = base / "Projects" / "widget"
+        self.know.mkdir(parents=True)
+        (self.proj / ".claude").mkdir(parents=True)
+        (self.know / "positioning.md").write_text("# Positioning\n", encoding="utf-8")
+        (self.know / "build-logs.md").write_text(
+            f"# Build logs\n\n## Settings\n\n- Projects live in: {self.proj.parent}\n\n## Watched\n",
+            encoding="utf-8")
+        self.settings = self.proj / ".claude" / "settings.json"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def run_log(self, *args, path=None):
+        env = {k: v for k, v in os.environ.items() if k not in ("FAMILIAR_CONFIG", "FAMILIAR_PIECES")}
+        env.update(HOME=str(self.home), FAMILIAR_KNOWLEDGE=str(self.know))
+        if path is not None:
+            env["PATH"] = path
+        return subprocess.run([sys.executable, str(ROOT / "scripts" / "log.py"), *args],
+                              capture_output=True, text=True, env=env, stdin=subprocess.DEVNULL)
+
+    def test_scan_names_an_unreadable_settings_file(self):
+        self.settings.write_text("{not json", encoding="utf-8")
+        r = self.run_log("list")
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertIn("settings.json unreadable in: widget", r.stdout)
+        self.assertNotIn("Traceback", r.stderr)
+
+    def test_scan_treats_a_missing_settings_file_as_not_wired_not_unreadable(self):
+        r = self.run_log("list")
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertNotIn("unreadable", r.stdout)
+
+    def test_add_with_bad_json_names_the_file_and_exits_1(self):
+        self.settings.write_text("{not json", encoding="utf-8")
+        r = self.run_log("add", "widget", "--file", str(Path(self.tmp.name) / "LOG.md"))
+        self.assertEqual(1, r.returncode)
+        self.assertIn(f"{self.settings} is not valid JSON", r.stderr)
+        self.assertNotIn("Traceback", r.stderr)
+
+    def test_add_with_an_unreadable_settings_file_says_could_not_read(self):
+        self.settings.write_text("{}", encoding="utf-8")
+        with mock.patch.object(Path, "read_text", side_effect=PermissionError(13, "Permission denied")):
+            with self.assertRaises(SystemExit) as cm:
+                flog.load_settings_json(self.settings)
+        self.assertEqual(f"Could not read {self.settings}: Permission denied.", cm.exception.code)
+
+    def test_global_with_bad_json_names_the_file_and_exits_1(self):
+        (self.home / ".claude").mkdir()
+        bad = self.home / ".claude" / "settings.json"
+        bad.write_text("{not json", encoding="utf-8")
+        r = self.run_log("global")
+        self.assertEqual(1, r.returncode)
+        self.assertIn(f"{bad} is not valid JSON", r.stderr)
+        self.assertNotIn("Traceback", r.stderr)
+        self.assertEqual("{not json", bad.read_text(encoding="utf-8"))
+
+    def test_scan_survives_a_folder_with_no_git(self):
+        empty = Path(self.tmp.name) / "empty-path"
+        empty.mkdir()
+        r = self.run_log("list", path=str(empty))
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertIn("no commits", r.stdout)
+        with mock.patch.object(subprocess, "run", side_effect=FileNotFoundError("git")):
+            self.assertIsNone(flog.last_commit(self.proj))
+            self.assertEqual(self.proj, flog.main_checkout(self.proj))
+
+
+class AddWritesSafely(unittest.TestCase):
+    """`log add` and `log move` write to a project, the registry and a log.
+
+    Each test builds its own house, home and projects folder under a temporary
+    directory, so nothing real is read or written. The registry already answers
+    the one-time question (logs live in the project), so no run waits for input.
+    Failures are injected by replacing the write that should fail, not by file
+    modes, so they behave the same as root and as a normal user.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        base = Path(self.tmp.name).resolve()
+        self.home = base / "home"
+        self.home.mkdir()
+        self.house = base / "house"
+        self.house.mkdir()
+        (self.house / "positioning.md").write_text("# Positioning\n", encoding="utf-8")
+        self.projects = base / "projects"
+        self.project = self.projects / "widget"
+        self.project.mkdir(parents=True)
+        self.registry = self.house / "build-logs.md"
+        self.registry.write_text(
+            "# Build logs\n\n## Settings\n\n"
+            f"- Projects live in: {self.projects}\n"
+            "- Build logs live in: in the project\n\n"
+            "<!-- familiar log add appends below this line -->\n", encoding="utf-8")
+        self.settings = self.project / ".claude" / "settings.json"
+        self.line = f"- `{self.project}`: `WIDGET-LOG.md`"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def run_log(self, *args):
+        env = {k: v for k, v in os.environ.items()
+               if k not in ("FAMILIAR_CONFIG", "FAMILIAR_PIECES")}
+        env.update(HOME=str(self.home), FAMILIAR_KNOWLEDGE=str(self.house))
+        return subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "log.py"), *args],
+            capture_output=True, text=True, env=env, cwd=self.tmp.name)
+
+    def add_in_process(self):
+        out = io.StringIO()
+        with mock.patch.dict(os.environ, {"FAMILIAR_KNOWLEDGE": str(self.house)}), \
+                contextlib.redirect_stdout(out):
+            flog.cmd_add(["widget"])
+        return out.getvalue()
+
+    def fail_writes_to(self, name):
+        real = Path.write_text
+
+        def write_text(path, *a, **kw):
+            if path.name == name:
+                raise PermissionError(13, "Permission denied", str(path))
+            return real(path, *a, **kw)
+
+        return mock.patch.object(Path, "write_text", write_text)
+
+    def test_add_wires_a_project_and_records_it_once(self):
+        self.settings.parent.mkdir()
+        other = {"type": "command", "command": "/somewhere/else.sh"}
+        self.settings.write_text(json.dumps(
+            {"model": "kept", "hooks": {"SessionEnd": [{"hooks": [other]}]}}), encoding="utf-8")
+        for _ in range(2):
+            got = self.run_log("add", "widget")
+            self.assertEqual(0, got.returncode, got.stdout + got.stderr)
+        self.assertEqual(1, self.registry.read_text(encoding="utf-8").count(self.line))
+        data = json.loads(self.settings.read_text(encoding="utf-8"))
+        self.assertEqual("kept", data["model"])
+        for event in ("PreCompact", "SessionEnd"):
+            commands = [h["command"] for g in data["hooks"][event] for h in g["hooks"]]
+            ours = [c for c in commands if c.endswith("build-log-entry.sh")]
+            self.assertEqual(1, len(ours), (event, commands))
+        end = [h["command"] for g in data["hooks"]["SessionEnd"] for h in g["hooks"]]
+        self.assertIn("/somewhere/else.sh", end)
+        log = self.project / "WIDGET-LOG.md"
+        self.assertTrue(log.read_text(encoding="utf-8").startswith("# widget build log"))
+
+    def test_add_never_rewrites_a_log_that_already_has_entries(self):
+        log = self.project / "WIDGET-LOG.md"
+        log.write_text("# widget build log\n\n## 2026-10-01\n\nkept\n", encoding="utf-8")
+        got = self.run_log("add", "widget")
+        self.assertEqual(0, got.returncode, got.stdout + got.stderr)
+        self.assertEqual("# widget build log\n\n## 2026-10-01\n\nkept\n",
+                         log.read_text(encoding="utf-8"))
+
+    def test_add_with_a_broken_settings_file_says_so_and_leaves_it(self):
+        self.settings.parent.mkdir()
+        self.settings.write_text("{not json", encoding="utf-8")
+        before = self.registry.read_bytes()
+        got = self.run_log("add", "widget")
+        self.assertNotEqual(0, got.returncode)
+        self.assertIn("settings.json", got.stdout + got.stderr)
+        self.assertIn("not valid JSON", got.stdout + got.stderr)
+        self.assertEqual("{not json", self.settings.read_text(encoding="utf-8"))
+        self.assertEqual(before, self.registry.read_bytes())
+
+    @pytest.mark.xfail(strict=True, reason="tracked as issue 386: cmd_add creates the log before it reads settings.json")
+    def test_a_failed_add_leaves_no_log_behind(self):
+        # Known defect, tracked as issue 386: cmd_add creates the log
+        # before it reads settings.json. strict: the run fails once it is fixed.
+        self.settings.parent.mkdir()
+        self.settings.write_text("{not json", encoding="utf-8")
+        self.run_log("add", "widget")
+        self.assertEqual([], sorted(p.name for p in self.project.glob("*-LOG.md")))
+
+    def test_add_that_cannot_write_the_settings_changes_nothing_else_and_says_it_failed(self):
+        before = self.registry.read_bytes()
+        with self.fail_writes_to("settings.json"):
+            with self.assertRaises(PermissionError):
+                self.add_in_process()
+        self.assertFalse(self.settings.exists())
+        self.assertEqual(before, self.registry.read_bytes())
+
+    def test_add_run_again_after_the_registry_could_not_be_written_finishes_the_job(self):
+        with self.fail_writes_to("build-logs.md"):
+            with self.assertRaises(PermissionError):
+                self.add_in_process()
+        self.assertNotIn(self.line, self.registry.read_text(encoding="utf-8"))
+        got = self.run_log("add", "widget")
+        self.assertEqual(0, got.returncode, got.stdout + got.stderr)
+        self.assertEqual(1, self.registry.read_text(encoding="utf-8").count(self.line))
+        hooks = json.loads(self.settings.read_text(encoding="utf-8"))["hooks"]
+        for event in ("PreCompact", "SessionEnd"):
+            self.assertEqual(1, len(hooks[event]))
+
+    def test_a_registry_line_that_does_not_parse_is_ignored_not_fatal(self):
+        (self.project / "journal.md").write_text("# journal\n", encoding="utf-8")
+        text = self.registry.read_text(encoding="utf-8")
+        self.registry.write_text(
+            text + "\n- `/broken\n- no backticks at all: here\n"
+            f"- `{self.project}`: `journal.md`\n", encoding="utf-8")
+        got = self.run_log("list")
+        self.assertEqual(0, got.returncode, got.stdout + got.stderr)
+        row = [l for l in got.stdout.splitlines() if l.strip().startswith("widget")]
+        self.assertEqual(1, len(row), got.stdout)
+        self.assertIn("journal.md", row[0])
+
+    def test_move_refuses_to_overwrite_a_file_at_the_destination(self):
+        log = self.project / "WIDGET-LOG.md"
+        log.write_text("# widget build log\n\nmine\n", encoding="utf-8")
+        vault = Path(self.tmp.name) / "vault"
+        vault.mkdir()
+        taken = vault / "WIDGET-LOG.md"
+        taken.write_text("someone else's\n", encoding="utf-8")
+        before = self.registry.read_bytes()
+        got = self.run_log("move", "widget", str(vault))
+        self.assertNotEqual(0, got.returncode)
+        self.assertIn("already exists", got.stdout + got.stderr)
+        self.assertEqual("# widget build log\n\nmine\n", log.read_text(encoding="utf-8"))
+        self.assertEqual("someone else's\n", taken.read_text(encoding="utf-8"))
+        self.assertEqual(before, self.registry.read_bytes())

@@ -35,6 +35,12 @@ PLACEHOLDER = re.compile(r"\[[^\]\n]{3,}\](?!\()")
 OK, TEMPLATE, MISSING = "ready", "still a template", "not there yet"
 
 
+def reason(e):
+    """One plain line for a failure: the exception's name and message, no traceback."""
+    text = " ".join(str(e).split())
+    return f"{type(e).__name__}: {text}" if text else type(e).__name__
+
+
 def short_path(path):
     """A path a person can read. Home becomes ~, and a path under the folder
     they are standing in is shown from there."""
@@ -108,9 +114,12 @@ UPDATE_STAMP = Path.home() / ".familiar" / "update-check"
 
 
 def local_version():
+    """This clone's version, or None when plugin.json is missing or unusable."""
     try:
         return json.loads((HOME / ".claude-plugin" / "plugin.json").read_text())["version"]
-    except Exception:
+    except (OSError, ValueError, KeyError, TypeError):
+        # Missing, unreadable, not JSON, or no "version". check_update says so
+        # in its own words rather than blaming the release page.
         return None
 
 
@@ -125,7 +134,8 @@ def newest_version(url, timeout=4):
             page = r.read().decode("utf-8", errors="replace")
         m = re.search(r'id="v(\d+)-(\d+)-(\d+)"', page)
         return ".".join(m.groups()) if m else None
-    except Exception:
+    except Exception:  # deliberately broad: network, TLS, decode and URL errors all mean "could not read"
+        # The user sees "Update: unknown (could not read the release page)" from check_update.
         return None
 
 
@@ -168,7 +178,9 @@ def check_update(cfg):
             except OSError:
                 pass
     local = local_version()
-    if not newest or not local:
+    if not local:
+        print("  Update: unknown (could not read this clone's version)")
+    elif not newest:
         print("  Update: unknown (could not read the release page)")
     elif _vtuple(newest) > _vtuple(local):
         print(f"  Update: {newest} is out; this clone is {local}. git pull to update.")
@@ -300,8 +312,8 @@ def main():
         from context import context_counts, context_lines
         print("\n".join(context_lines(context_counts(cfg))))
         print()
-    except Exception as e:  # never let the report die on the context block
-        print(f"  What I have to work from: could not be counted ({e})")
+    except Exception as e:  # deliberately broad: never let the report die on the context block
+        print(f"  What I have to work from: skipped: {reason(e)}")
         print()
 
     themes_report(cfg, HOME / "knowledge" / "themes.md")
@@ -332,8 +344,8 @@ def main():
         else:
             print("  Channels: template (declare where your pieces appear "
                   "in knowledge/channels.md)")
-    except Exception as e:  # never let the report die on the channels block
-        print(f"  Channels: could not be checked ({e})")
+    except Exception as e:  # deliberately broad: never let the report die on the channels block
+        print(f"  Channels: skipped: {reason(e)}")
 
     # Reflection
     refl = cfg / "reflection.md"

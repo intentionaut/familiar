@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PRIVATE = re.compile(r"\b(portent|magpie|find-familiar)\b", re.I)
+PRIVATE = re.compile(r"\b(portent|magpie|scrying|find-familiar)\b", re.I)
 SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv"}
 
 
@@ -32,9 +32,9 @@ class PrivateNames(unittest.TestCase):
         self.assertEqual([], hits, "private module named in what publishes")
 
     def test_the_pattern_catches_the_names_and_spares_ordinary_words(self):
-        for caught in ("Portent's steps", "run magpie track", "the find-familiar repo", "PORTENT"):
+        for caught in ("Portent's steps", "run magpie track", "the find-familiar repo", "PORTENT", "Scrying's queue"):
             self.assertRegex(caught, PRIVATE, caught)
-        for spared in ("portentous", "portents of doom", "magpies at dawn", "familiar find"):
+        for spared in ("portentous", "portents of doom", "magpies at dawn", "familiar find", "scryings"):
             self.assertNotRegex(spared, PRIVATE, spared)
 
 

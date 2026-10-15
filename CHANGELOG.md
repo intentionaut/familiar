@@ -51,6 +51,23 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.50.0 (2026-10-15)
+
+- **See what a rewrite costs before you take it.** The line edit and the developmental edit now compare each of your lines with the rewrite suggested for it, and note what the polish gives up: a contraction written out, a spoken idiom dropped, short sentences joined, a line much longer or shorter. The note sits under the finding, so the cost is in front of you before you say yes. Nothing is changed or blocked, and a rewrite that is flagged is still yours to take.
+
+## 0.49.0 (2026-10-13)
+
+- **A first pass for AI tells.** The draft and line edit now start by running `scripts/tell-check.py`. It marks the phrases your style rules name, anything on your kill list (a `killed.md` of phrases you have ruled out), and groups of three that may be there for rhythm rather than meaning. Each mark gives the line and asks whether the words earn their place; you decide. Add a phrase to your style rules and it is checked from then on.
+
+## 0.48.0 (2026-10-04)
+
+- **The outline reads your research.** If a research tool leaves a `signals.json` in the piece folder, the outline uses up to five signals as evidence, each cited by its own sources. Every structure says which signals it uses and which it leaves out, and anything the research left unresolved is shown to you and not used.
+
+## 0.47.0 (2026-10-01)
+
+- **Sharper context questions.** When Familiar prepares interview questions, the bigger-context prompt now also asks "what is this a rerun of?". A historical parallel has to come with a named precedent, a source and a date. If the evidence is missing, Familiar records a source gap instead of inventing a parallel or asking you to remember the source.
+- **The interview reads your theme's evidence line.** Before asking anything, it reads the theme the piece serves and its evidence line, including any comparison baseline you have declared (what changed since when). It never infers a baseline; if none is declared, it says so and carries on.
+
 ## 0.46.0 (2026-09-27)
 
 - **Is the idea new?** After the interview, and again in the developmental edit, Familiar says whether the piece's central claim is established practice, a useful reframe, or something new, and says so plainly when the evidence is too thin to tell.

@@ -14,6 +14,8 @@ The rules under test:
   - front matter stays in draft.md, and a sent piece's draft is never written
   - content with no form on the other side is refused and named
   - an interrupted push is not mistaken for edits, and cannot be pulled
+  - an append Notion may have made is not sent again; the next push reads the
+    page and adds only what is missing
 """
 import copy
 import json
@@ -537,6 +539,68 @@ class Interrupted(Base):
         self.assertFalse(nd.read_state(self.folder).get("interrupted"))
         self.assertEqual(1, len(list((self.folder / ".versions").glob("notion-*.md"))))
         self.assertEqual("unchanged", self.push()[0])
+
+
+class UnknownOutcome(Base):
+    """An append that Notion made, then answered with a server error."""
+
+    def appends(self):
+        return [c for c in self.fake.calls if c[0] == "PATCH" and c[1].endswith("/children")]
+
+    def fail_next_append(self, times=1, skip=0):
+        def match(path, state={"skip": skip}):
+            if not path.endswith("/children"):
+                return False
+            if state["skip"]:
+                state["skip"] -= 1
+                return False
+            return True
+        self.prov.client.transport = tn.CommitsThenFails(self.fake, "PATCH", match, times)
+
+    def test_an_append_that_went_through_is_not_sent_again_and_the_next_push_adds_nothing_twice(self):
+        self.synced()
+        self.draft.write_text(DRAFT.replace("Closing line.", "Closing line.\n\nA new last paragraph."),
+                              encoding="utf-8")
+        self.fake.calls.clear()
+        self.fail_next_append()
+        status, msg = self.push()
+        self.assertEqual("failed", status, msg)
+        self.assertEqual(1, len(self.appends()))
+        self.assertIn("may", msg)
+        self.assertTrue(nd.read_state(self.folder).get("interrupted"))
+        self.assertEqual(1, self.fake.md().count("A new last paragraph."))
+        status, msg = self.push()
+        self.assertEqual("pushed", status, msg)
+        self.assertEqual(blocks.canon(nd.split_draft(self.draft.read_text())[1]), self.fake.md())
+        self.assertEqual(1, self.fake.md().count("A new last paragraph."))
+        self.assertEqual("unchanged", self.push()[0])
+
+    def test_a_long_append_interrupted_in_its_second_batch_keeps_the_first_batch_and_the_order(self):
+        big = "\n\n".join(f"Paragraph {i}." for i in range(230))
+        self.draft.write_text(big, encoding="utf-8")
+        self.fail_next_append(skip=1)                 # batch 1 answers; batch 2 is made, then 503
+        status, msg = self.push()
+        self.assertEqual("failed", status, msg)
+        self.assertEqual(2, len(self.appends()))
+        first = self.fake.ids()[:100]
+        status, msg = self.push()
+        self.assertEqual("pushed", status, msg)
+        self.assertEqual(blocks.canon(big), self.fake.md())
+        self.assertEqual(first, self.fake.ids()[:100])
+        self.assertEqual(230, len(self.fake.ids()))
+        self.assertFalse(set(first) & set(self.fake.trash))
+
+    def test_recovery_leaves_the_blocks_it_did_not_need_to_touch_so_their_comments_stay(self):
+        ids = self.synced()
+        self.draft.write_text(DRAFT.replace("Closing line.", "Closing line.\n\nA new last paragraph."),
+                              encoding="utf-8")
+        self.fail_next_append()
+        self.assertEqual("failed", self.push()[0])
+        status, msg = self.push()
+        self.assertEqual("pushed", status, msg)
+        self.assertEqual(ids, self.fake.ids()[:len(ids)])  # untouched blocks, so their comments stay
+        self.assertEqual([], self.fake.trash)
+        self.assertEqual(1, len(list((self.folder / ".versions").glob("notion-*.md"))))
 
 
 class Wiring(unittest.TestCase):

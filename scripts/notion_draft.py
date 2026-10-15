@@ -60,7 +60,7 @@ class Page:
         out, cursor = [], None
         while True:
             q = f"?page_size=100" + (f"&start_cursor={cursor}" if cursor else "")
-            res = self.client.request("GET", f"/blocks/{block_id}/children{q}")
+            res = self.client.request("GET", f"/blocks/{block_id}/children{q}", replay_safe=True)
             for b in res.get("results", []):
                 if b.get("has_children"):
                     b["children"] = self._list(b["id"])
@@ -75,7 +75,8 @@ class Page:
         for i in range(0, len(children), 100):
             position = {"type": "after_block", "after_block": {"id": anchor}} if anchor else {"type": "start"}
             res = self.client.request("PATCH", f"/blocks/{self.id}/children",
-                                      {"children": children[i:i + 100], "position": position})
+                                      {"children": children[i:i + 100], "position": position},
+                                      replay_safe=False)
             ids = [b["id"] for b in res.get("results", [])]
             made += ids
             anchor = ids[-1] if ids else anchor
@@ -89,10 +90,10 @@ class Page:
             body["caption"] = new[t].get("caption", [])
         if t == "to_do":
             body["checked"] = bool(new[t].get("checked"))
-        self.client.request("PATCH", f"/blocks/{block_id}", {t: body})
+        self.client.request("PATCH", f"/blocks/{block_id}", {t: body}, replay_safe=True)
 
     def delete(self, block_id):
-        self.client.request("DELETE", f"/blocks/{block_id}")
+        self.client.request("DELETE", f"/blocks/{block_id}", replay_safe=True)
 
 
 def _has_kids(b):

@@ -583,6 +583,80 @@ class Structure(unittest.TestCase):
             self.assertIn("Update: unknown", run())
             self.assertEqual("2000-01-01 9.9.9", stamp.read_text().strip())
 
+    def _doctor_module(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("doctor_under_test", ROOT / "scripts" / "doctor.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def _house(self, kn):
+        for name in ("positioning.md", "voice-guide.md"):
+            shutil.copy(ROOT / "knowledge" / name, Path(kn) / name)
+
+    def _run_doctor_main(self, mod, kn):
+        import contextlib
+        import io
+        from unittest import mock
+        buf = io.StringIO()
+        env = {k: v for k, v in os.environ.items() if k not in ("FAMILIAR_PIECES", "FAMILIAR_CONFIG")}
+        with mock.patch.dict(os.environ, env, clear=True), \
+             mock.patch.object(sys, "argv", ["doctor.py", "--config", kn]), \
+             contextlib.redirect_stdout(buf):
+            code = mod.main()
+        return code, buf.getvalue()
+
+    def test_update_unknown_blames_the_clone_when_its_version_is_missing(self):
+        import contextlib
+        import io
+        from unittest import mock
+        mod = self._doctor_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "updates.md").write_text("- Update check: on\n")
+            page = Path(tmp) / "releases.html"
+            page.write_text('<h2 id="v9-9-9">9.9.9</h2>')
+            buf = io.StringIO()
+            with mock.patch.object(mod, "local_version", return_value=None), \
+                 mock.patch.object(mod, "RELEASES_URL", page.as_uri()), \
+                 mock.patch.object(mod, "UPDATE_STAMP", Path(tmp) / "stamp"), \
+                 contextlib.redirect_stdout(buf):
+                mod.check_update(Path(tmp))
+        out = buf.getvalue()
+        self.assertIn("Update: unknown (could not read this clone's version)", out)
+        self.assertNotIn("release page", out)
+
+    def test_local_version_is_none_for_a_plugin_json_that_is_not_json(self):
+        from unittest import mock
+        mod = self._doctor_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / ".claude-plugin").mkdir()
+            (Path(tmp) / ".claude-plugin" / "plugin.json").write_text("{nope")
+            with mock.patch.object(mod, "HOME", Path(tmp)):
+                self.assertIsNone(mod.local_version())
+
+    def test_a_failing_context_block_is_reported_as_skipped(self):
+        from unittest import mock
+        mod = self._doctor_module()
+        with tempfile.TemporaryDirectory() as kn:
+            self._house(kn)
+            with mock.patch("context.context_counts", side_effect=RuntimeError("digests folder is locked")):
+                code, out = self._run_doctor_main(mod, kn)
+        self.assertEqual(0, code)
+        self.assertIn("What I have to work from: skipped: RuntimeError: digests folder is locked", out)
+        self.assertNotIn("Traceback", out)
+
+    def test_a_failing_channels_block_is_reported_as_skipped(self):
+        from unittest import mock
+        mod = self._doctor_module()
+        with tempfile.TemporaryDirectory() as kn:
+            self._house(kn)
+            with mock.patch("channel_check.parse_registry", return_value={"a": {}}), \
+                 mock.patch("channel_check.check", side_effect=ValueError("channels.md is unreadable")):
+                code, out = self._run_doctor_main(mod, kn)
+        self.assertEqual(0, code)
+        self.assertIn("Channels: skipped: ValueError: channels.md is unreadable", out)
+        self.assertNotIn("Traceback", out)
+
     def test_nothing_asks_the_writer_which_stage(self):
         """A writer should never be asked to name a stage or a mode.
 

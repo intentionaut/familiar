@@ -303,7 +303,9 @@ def main_checkout(folder):
     try:
         r = subprocess.run(["git", "-C", str(folder), "rev-parse", "--path-format=absolute",
                             "--git-common-dir"], capture_output=True, text=True, timeout=10)
-    except Exception:
+    except (OSError, subprocess.SubprocessError):
+        # No git, or it hung. Silent on purpose: this runs per project on every
+        # scan and hook, and a folder without git is its own checkout.
         return folder
     common = pathlib.Path(r.stdout.strip()) if r.returncode == 0 else None
     if common and common.name == ".git" and common.parent.resolve() != folder.resolve():
@@ -366,12 +368,21 @@ def route(cwd, touched, root, watched, cross=None):
     return None, "no project log and no cross-project log"
 
 
+UNREADABLE = "unreadable"
+
+
 def hooks_wired(folder):
+    """True or False, or UNREADABLE when settings.json exists but cannot be read
+    or is not a JSON object. A missing file is False: no hooks, nothing wrong."""
     s = folder / ".claude" / "settings.json"
     try:
         data = json.loads(s.read_text(encoding="utf-8"))
-    except Exception:
+    except FileNotFoundError:
         return False
+    except (OSError, ValueError):
+        return UNREADABLE
+    if not isinstance(data, dict):
+        return UNREADABLE
     blob = json.dumps(data.get("hooks", {}))
     # Only Familiar's own hook counts as coverage. Captain's Log's hook was
     # accepted here during the migration, which meant the one project still
@@ -385,7 +396,9 @@ def last_commit(folder):
         out = subprocess.run(["git", "-C", str(folder), "log", "-1", "--format=%ct"],
                              capture_output=True, text=True, timeout=10)
         return int(out.stdout.strip()) if out.returncode == 0 and out.stdout.strip() else None
-    except Exception:
+    except (OSError, subprocess.SubprocessError, ValueError):
+        # No git, a hang, or output that is not a time. Shown as "no commits",
+        # on purpose: a folder without git history is normal.
         return None
 
 
@@ -403,9 +416,14 @@ def ago(ts):
 
 
 def reflections_folder():
-    """Where reflections live, so the scan does not offer to log them."""
-    for p in (ROOT / "knowledge" / "reflection.md",
-              pathlib.Path.home() / "Documents/Dex/06-Resources/Familiar/knowledge/reflection.md"):
+    """Where reflections live, so the scan does not offer to log them.
+
+    Read from reflection.md in the writer's house, wherever `paths.py` resolves it, then from the shipped copy.
+    """
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from paths import knowledge_dir
+    kdir, _whose = knowledge_dir()
+    for p in dict.fromkeys((kdir / "reflection.md", ROOT / "knowledge" / "reflection.md")):
         try:
             m = re.search(r"^- Reflections live in:\s*(.+?)\s*$", p.read_text(encoding="utf-8"), re.M)
         except OSError:
@@ -437,17 +455,36 @@ def scan(root, watched):
     return out
 
 
+def load_settings_json(sp):
+    """A settings.json as a dict, {} when it does not exist yet. Exits 1 with one
+    plain line, naming the file, when it cannot be read or is not JSON."""
+    if not sp.exists():
+        return {}
+    try:
+        data = json.loads(sp.read_text(encoding="utf-8"))
+    except OSError as e:
+        sys.exit(f"Could not read {sp}: {e.strerror or e}.")
+    except ValueError:
+        sys.exit(f"{sp} is not valid JSON. Fix it, then run this again.")
+    if not isinstance(data, dict):
+        sys.exit(f"{sp} is not a JSON object. Fix it, then run this again.")
+    return data
+
+
 def cmd_list():
     root, watched, reg = read_settings()
     projects = scan(root, watched)
     if not projects:
         sys.exit(f"No projects under {root}")
 
-    print(f"\n  {'PROJECT':<26} {'BUILD LOG':<24} {'HOOKS':<8} LAST SHIPPED")
+    print(f"\n  {'PROJECT':<26} {'BUILD LOG':<24} {'HOOKS':<11} LAST SHIPPED")
     for p in projects:
         log = p["log"] or "none"
-        hooks = "on" if p["wired"] else ("" if p["log"] else "")
-        print(f"  {p['name']:<26} {log:<24} {hooks:<8} {ago(p['commit'])}")
+        hooks = UNREADABLE if p["wired"] == UNREADABLE else ("on" if p["wired"] else "")
+        print(f"  {p['name']:<26} {log:<24} {hooks:<11} {ago(p['commit'])}")
+    broken = [p["name"] for p in projects if p["wired"] == UNREADABLE]
+    if broken:
+        print(f"\n  settings.json unreadable in: {', '.join(broken)}. Open it and fix it.")
 
     week = time.time() - 86400 * 7
     gap = [p for p in projects if not p["log"] and p["commit"] and p["commit"] > week]
@@ -501,10 +538,7 @@ def cmd_add(args):
     # Merge into the project's settings, never replace.
     sp = folder / ".claude" / "settings.json"
     sp.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        data = json.loads(sp.read_text(encoding="utf-8")) if sp.exists() else {}
-    except Exception:
-        sys.exit(f"{sp} is not valid JSON. Fix it, then run this again.")
+    data = load_settings_json(sp)
     hooks = data.setdefault("hooks", {})
     entry = {"type": "command", "command": str(HOOK), "timeout": 60}
     added = 0
@@ -618,10 +652,7 @@ def cmd_global(args):
     runs once per session whichever settings file fired it.
     """
     sp = pathlib.Path.home() / ".claude" / "settings.json"
-    try:
-        data = json.loads(sp.read_text(encoding="utf-8")) if sp.exists() else {}
-    except Exception:
-        sys.exit(f"{sp} is not valid JSON. Fix it, then run this again.")
+    data = load_settings_json(sp)
     hooks = data.setdefault("hooks", {})
     off = "--off" in args
     for event in ("PreCompact", "SessionEnd"):

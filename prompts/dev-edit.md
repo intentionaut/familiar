@@ -33,7 +33,9 @@ Follow the report spec in knowledge/editor-report.md exactly:
 ## Rules
 
 - Quote the draft verbatim when flagging; never paraphrase a flaw.
-- Every flag gets a concrete fix, not advice ("consider tightening").
+- Every flag gets a concrete fix, not advice ("consider tightening"). Write a
+  rewritten line as `Rewrite: <the line>` straight under the quoted one, so the
+  edge diff can compare the two.
 - Order by impact, not by position in the text.
 - **Number every finding in a heading of its own**: `### 3a. <what is wrong>`
   for a critical fix, `### 4.1 <what is wrong>` for a line-level one, and quote
@@ -57,7 +59,7 @@ cut section or a dropped set of evidence is material, not waste.
 
 ## Exit
 
-Append the numbered round to `edits/dev-edit-report.md` next to the draft, preserving earlier rounds verbatim. If an older report has no rounds, label it Round 1 without changing its findings, and create Round 2. Tell the writer the report
+Append the numbered round to `edits/dev-edit-report.md` next to the draft, preserving earlier rounds verbatim. Then run `python3 scripts/edge-diff.py edits/dev-edit-report.md`: for each quoted line and its `Rewrite:` it flags what the polish costs (a contraction expanded, an idiom lost, short sentences joined, a length moved). Put one `Edge cost:` line under each finding it flags; never soften the rewrite because of it. If it says it could not run, say so in the report. If an older report has no rounds, label it Round 1 without changing its findings, and create Round 2. Tell the writer the report
 is ready and how many fixes landed in each section. They accept, reject or revise
 each item themselves. If they want changes applied, they will say which ones.
 

@@ -72,6 +72,10 @@ class RateLimited(BoardError):
     """The board asked for a pause."""
 
 
+class OutcomeUnknown(BoardError):
+    """A write was sent and the answer did not say whether it was made. Never sent again blind."""
+
+
 class ReadOnly(BoardError):
     """This provider derives its state and has nothing to write to."""
 

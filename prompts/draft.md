@@ -113,6 +113,11 @@ date: YYYY-MM-DD
 After writing, run the mechanical self-check against knowledge/style-rules.md
 before saving: every absolute rule, every banned word and phrase in the
 overused list, and the AI-tell patterns, against your own output line by line.
+Start with `python3 scripts/tell-check.py <the draft>`: it flags the quoted
+phrases from style-rules.md, the writer's kill list if one is set, and forced
+groups of three, each with its line. It is the mechanical half; the patterns it
+cannot match are still yours to sweep. If it says it could not run, say so in
+the list rather than reporting the check as clean.
 Fix what it catches in your own prose before the writer ever sees the draft,
 and list what it caught: the rule, the line, the fix. That is tidying prose
 you just wrote, not editing the writer, and the list is how the writer knows

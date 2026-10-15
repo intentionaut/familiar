@@ -145,7 +145,10 @@ def cmd_hook():
     Familiar must see no trace of this running."""
     try:
         payload = json.loads(sys.stdin.read() or "{}")
-    except Exception:
+    except (ValueError, OSError):
+        # Unreadable hook input (bad JSON, bad bytes, closed stdin). The user sees
+        # nothing, on purpose: hooks/session-checkin.sh sends stderr to /dev/null
+        # and puts stdout into the session, so a message has nowhere right to go.
         return
     cwd = payload.get("cwd") or os.getcwd()
     try:
@@ -158,7 +161,9 @@ def cmd_hook():
         if whose == "the shipped templates":
             return  # no house configured; nothing to offer against
         is_due, first_time, name = due(cfg, cwd)
-    except Exception:
+    except Exception:  # deliberately broad: house lookup and `due()` shell out to git
+        # and read files, and can fail many ways. A SessionStart hook must never
+        # break a session, so the user sees nothing (see the stdin handler above).
         return
     if not is_due:
         return
@@ -178,7 +183,8 @@ def cmd_hook():
     try:
         print(json.dumps({"hookSpecificOutput": {
             "hookEventName": "SessionStart", "additionalContext": context}}))
-    except Exception:
+    except OSError:
+        # Stdout closed (BrokenPipeError is an OSError). Nothing to tell, nowhere to tell it.
         return
 
 

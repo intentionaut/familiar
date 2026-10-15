@@ -48,8 +48,9 @@ def load():
     house, whose = paths.knowledge_dir()
     if whose != "yours":
         # No config at all is a new install with nothing to check. A config
-        # that resolved to templates anyway is a misconfiguration.
-        return ("unresolved" if paths._config_file() else "off"), [], []
+        # that resolved to templates anyway, in a file or the environment, is a
+        # misconfiguration.
+        return ("unresolved" if paths.familiar_configured() else "off"), [], []
     f = house / "never-publish.md"
     if not f.is_file():
         return "off", [], []

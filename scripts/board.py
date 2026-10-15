@@ -39,7 +39,7 @@ FAMILIAR_PIECES to a colon-separated list. When there is more than one, each
 card says which folder it came from:
 
   scripts/board.py --open \
-    --pieces ~/Documents/Dex/04-Projects/Writing \
+    --pieces ~/vault/Writing \
     --pieces ~/Projects/intentionaut-newsroom/issues
 """
 import argparse, datetime, html, json, os, pathlib, re, secrets, shutil, sys, threading, webbrowser

@@ -14,6 +14,8 @@ The rules under test:
   - a board that cannot be reached, refused, drifted or paused says what
     happened and what to do, and is never reported as empty
   - requests are paced, and a 429 waits as long as Notion asks
+  - a read or a same-body replacement is retried after a server error; a
+    create or an append is not, because Notion may have made it already
   - the token never appears in an error
 """
 import json
@@ -127,6 +129,25 @@ class Clock:
     def sleep(self, s):
         self.slept.append(s)
         self.t += s
+
+
+class CommitsThenFails:
+    """A transport that lets matching writes go through, then answers 503.
+
+    Notion can make a block or a row and still return a server error, so the
+    caller cannot tell from the answer whether it was made.
+    """
+
+    def __init__(self, fake, method, match, times=1):
+        self.fake, self.method, self.match, self.left = fake, method, match, times
+
+    def __call__(self, method, url, headers, body):
+        out = self.fake(method, url, headers, body)
+        path = url[len(nb.API):]
+        if self.left and method == self.method and self.match(path) and out[0] == 200:
+            self.left -= 1
+            return 503, {}, {"code": "service_unavailable"}
+        return out
 
 
 def provider(fake, clock=None, names=None, data_source=None, **kw):
@@ -387,6 +408,73 @@ class Pacing(unittest.TestCase):
         p, clock = provider(f)
         p.read_all()
         self.assertGreaterEqual(len(clock.slept), 2)
+
+
+class Replays(unittest.TestCase):
+    def test_a_row_made_then_answered_with_a_server_error_is_not_made_again(self):
+        f = FakeNotion()
+        p, _ = provider(f)
+        p.client.transport = CommitsThenFails(f, "POST", lambda path: path == "/pages")
+        with self.assertRaises(bp.OutcomeUnknown) as cm:
+            p.create(item())
+        self.assertEqual(1, f.calls.count(("POST", "/pages")))
+        self.assertEqual(1, len(f.pages))
+        self.assertTrue(cm.exception.next_step)
+        self.assertNotIsInstance(cm.exception, bp.BoardUnavailable)   # not "try again shortly"
+        self.assertIn(bp.push(p, item()), ("unchanged", "updated"))
+        self.assertEqual(1, len(f.pages))
+
+    def test_an_unknown_outcome_is_a_line_from_sync_not_a_second_row(self):
+        f = FakeNotion()
+        p, _ = provider(f)
+        p.client.transport = CommitsThenFails(f, "POST", lambda path: path == "/pages")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "pieces"
+            (root / "2026-02-01-gamma").mkdir(parents=True)
+            import board_sync as bs
+            status, msg = bs.sync_piece([root], "gamma", provider=p)
+            self.assertEqual("failed", status, msg)
+            self.assertEqual(1, len(f.pages))
+            status, msg = bs.sync_piece([root], "gamma", provider=p)
+            self.assertNotEqual("failed", status, msg)
+            self.assertEqual(1, len(f.pages))
+
+    def test_a_query_is_a_read_and_is_retried_after_a_server_error(self):
+        f = FakeNotion()
+        f.add(pid="abc123")
+        p, clock = provider(f)
+        p.read_all()                                  # data source found
+        f.script = [(502, {}, {})]
+        self.assertEqual(1, len(p.read_all()))
+        self.assertTrue(clock.slept)
+
+    def test_a_property_update_sends_the_same_body_again_after_a_server_error(self):
+        f = FakeNotion()
+        f.add(pid="abc123")
+        p, _ = provider(f)
+        row = p.read("abc123")
+        page_id = f.pages[0]["id"]
+        p.client.transport = CommitsThenFails(f, "PATCH", lambda path: path == f"/pages/{page_id}")
+        p.update("abc123", {"state": "editing"}, row.version)
+        self.assertEqual(2, f.calls.count(("PATCH", f"/pages/{page_id}")))
+        self.assertEqual("editing", p.read("abc123").state)
+
+    def test_a_429_on_a_create_waits_as_asked_and_sends_it_once_more(self):
+        f = FakeNotion()
+        p, clock = provider(f)
+        refused = []
+
+        def transport(method, url, headers, body):
+            if method == "POST" and url.endswith("/pages") and not refused:
+                refused.append(1)
+                f.calls.append((method, url[len(nb.API):]))
+                return 429, {"Retry-After": "4"}, {"code": "rate_limited"}
+            return f(method, url, headers, body)
+        p.client.transport = transport
+        p.create(item())
+        self.assertIn(4.0, clock.slept)
+        self.assertEqual(2, f.calls.count(("POST", "/pages")))
+        self.assertEqual(1, len(f.pages))             # the first was refused, not made
 
 
 class Settings(unittest.TestCase):

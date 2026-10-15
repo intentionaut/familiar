@@ -38,7 +38,10 @@ scoped recheck rather than silently carrying the old inference forward.
 1. Read knowledge/positioning.md, knowledge/voice-guide.md. If positioning.md
    is still the shipped template, say so in one line and carry on: the
    interview works from what the writer tells you. The file is needed before
-   a draft, not before this.
+   a draft, not before this. Also read the theme the piece serves in
+   knowledge/themes.md, and its `Evidence:` line, including any `Baseline:`
+   (what changed since when). The baseline is the writer's declaration: never
+   infer one. If it is `unknown` or absent, say so in one line and carry on.
 2. Take the idea from $ARGUMENTS, or ask: "What's rattling around?"
 3. **Read what is already known before asking anything.** In the piece
    folder: `brief.md`, `interview-questions.md`, `spine.md`, `source.md`,
@@ -118,8 +121,11 @@ three cover these jobs. One prompt may do more than one.
    already hearing, the one the writer may be treating as a side note. Look for
    it in the brief and log, then ask for it directly.
 2. **Interrogate the bigger context**, with a receipt: why now, who carries the
-   cost, who benefits, what repeats, and what power or incentive keeps the
-   problem in place.
+   cost, who benefits, what repeats, "what is this a rerun of?", and what power
+   or incentive keeps the problem in place. A historical parallel needs a named
+   precedent, a source and a date in its receipt. If that evidence is missing,
+   record a source gap; do not invent a parallel, and do not ask the writer to
+   remember the source.
 3. **Challenge the premise.** At least one prompt names where the piece may
    fail or asks what evidence would falsify it.
 

@@ -71,6 +71,19 @@ def knowledge_dir(explicit=None):
     return SHIPPED, "the shipped templates"
 
 
+def familiar_configured():
+    """True when anything names the house, whether or not it resolved.
+
+    Kept beside knowledge_dir() so the two read the same inputs. A house named
+    in the environment and missing is a misconfiguration, the same as one named
+    in `.familiar`; only ./knowledge and ~/.familiar/knowledge are defaults
+    rather than a choice.
+    """
+    return bool(os.environ.get("FAMILIAR_KNOWLEDGE")
+                or os.environ.get("FAMILIAR_CONFIG")
+                or _config_file())
+
+
 def pieces_dirs(explicit=None):
     """Every folder holding piece folders, in order. Always at least one."""
     if explicit:

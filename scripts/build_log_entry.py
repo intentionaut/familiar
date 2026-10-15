@@ -21,12 +21,14 @@ reported them, null when they did not (docs/plans/records.md section 3).
 import datetime
 import fcntl
 import glob
+import hashlib
 import json
 import os
 import pathlib
 import re
 import subprocess
 import sys
+import time
 
 ROOT = pathlib.Path(os.environ.get("FAMILIAR_ROOT") or
                     pathlib.Path(__file__).resolve().parent.parent)
@@ -139,7 +141,10 @@ def chunk(turns, limit=LIMIT):
     return out
 
 
-USAGE = []  # one record per model call this run: model, tokens and cost as the call reported them
+USAGE = []  # one record per model call this run: model, tokens and cost as the call reported them, the time
+            # measured around it, how it ended and the sha256 of the prompt sent (never the prompt)
+MODEL_TIMEOUT = 600  # seconds; the call is killed after this and recorded as a timeout
+MODEL_RETRIES = 0    # a failed call is recorded and raised; nothing here asks the model again
 
 
 def usage_of(result):
@@ -154,38 +159,69 @@ def usage_of(result):
 
 
 def usage_line(records):
-    """One log line totalling this entry's calls; a total is null when no call reported it."""
+    """One log line totalling this entry's calls; a total is null when no call reported it, and a total some calls
+    left null says how many. Then the measured time and how the calls ended, when the records carry them."""
     if not records:
         return "usage: no model call"
 
-    def total(field):
-        values = [r[field] for r in records if isinstance(r.get(field), (int, float))]
-        return sum(values) if values else None
+    def observed(field):
+        return [r[field] for r in records if isinstance(r.get(field), (int, float)) and not isinstance(r.get(field), bool)]
+
+    def part(field, fmt):
+        values = observed(field)
+        if not values:
+            return None
+        unknown = len(records) - len(values)
+        return fmt(sum(values)) + (f" ({unknown} unknown)" if unknown else "")
 
     models = sorted({r["model"] for r in records if r.get("model")})
-    parts = [f"{total('input_tokens'):,} in" if total("input_tokens") is not None else None,
-             f"{total('output_tokens'):,} out" if total("output_tokens") is not None else None,
-             f"${total('cost_usd'):.4f}" if total("cost_usd") is not None else None]
+    parts = [part("input_tokens", lambda n: f"{n:,} in"), part("output_tokens", lambda n: f"{n:,} out"),
+             part("cost_usd", lambda n: f"${n:.4f}")]
     parts = [p for p in parts if p]
-    return (f"usage: {len(records)} call{'s' if len(records) != 1 else ''}"
+    line = (f"usage: {len(records)} call{'s' if len(records) != 1 else ''}"
             f"{' (' + ', '.join(models) + ')' if models else ''}: "
             f"{', '.join(parts) if parts else 'no call reported usage'}")
+    if any("outcome" in r or "duration_ms" in r for r in records):
+        counts = {}
+        for r in records:
+            key = r.get("outcome") or "unknown"
+            counts[key] = counts.get(key, 0) + 1
+        line += ("; " + (part("duration_ms", lambda n: f"{n:,} ms") or "time unknown")
+                 + "; " + ", ".join(f"{k} {n}" for k, n in sorted(counts.items())))
+    return line
 
 
-def call_model(prompt, timeout=600):
+def call_model(prompt, timeout=MODEL_TIMEOUT):
     model = os.environ.get("FAMILIAR_LOG_MODEL", "sonnet")
     effort = os.environ.get("FAMILIAR_LOG_EFFORT", "medium")
-    res = subprocess.run(
-        # --setting-sources "" loads no settings, so no hooks: the summariser
-        # cannot trigger this hook again. JSON output, so the call reports its
-        # own tokens and cost.
-        ["claude", "-p", "--no-session-persistence", "--setting-sources", "",
-         "--model", model, "--effort", effort, "--tools", "", "--output-format", "json"],
-        input=prompt, capture_output=True, text=True, timeout=timeout,
-        cwd=os.path.expanduser("~"),
-        env={**os.environ, "CLAUDE_CODE_ENABLE_AWAY_SUMMARY": "0"},
-    )
+    sha = hashlib.sha256(prompt.encode()).hexdigest()
+    t0 = time.monotonic()
+
+    def record(outcome, result=None):
+        """Every call leaves a record, whatever happened to it: null usage when the call reported none."""
+        used = usage_of(result)
+        USAGE.append({**used, "model": used["model"] or model,
+                      "duration_ms": int((time.monotonic() - t0) * 1000), "outcome": outcome, "prompt_sha256": sha})
+
+    try:
+        res = subprocess.run(
+            # --setting-sources "" loads no settings, so no hooks: the summariser
+            # cannot trigger this hook again. JSON output, so the call reports its
+            # own tokens and cost.
+            ["claude", "-p", "--no-session-persistence", "--setting-sources", "",
+             "--model", model, "--effort", effort, "--tools", "", "--output-format", "json"],
+            input=prompt, capture_output=True, text=True, timeout=timeout,
+            cwd=os.path.expanduser("~"),
+            env={**os.environ, "CLAUDE_CODE_ENABLE_AWAY_SUMMARY": "0"},
+        )
+    except subprocess.TimeoutExpired:
+        record("timeout")
+        raise
+    except KeyboardInterrupt:  # subprocess.run has already killed the call
+        record("cancelled")
+        raise
     if res.returncode != 0:
+        record("error")
         raise RuntimeError(f"claude exit {res.returncode}: {res.stderr.strip()[:300]}")
     try:
         result = json.loads(res.stdout)
@@ -193,9 +229,9 @@ def call_model(prompt, timeout=600):
         result = None
     if not isinstance(result, dict) or not isinstance(result.get("result"), str):
         # A CLI that ignored the flag: keep the text, record the call with no usage.
-        USAGE.append({**usage_of(None), "model": model})
+        record("ok")
         return res.stdout.strip()
-    USAGE.append({**usage_of(result), "model": usage_of(result)["model"] or model})
+    record("error" if result.get("is_error") else "ok", result)
     if result.get("is_error"):
         raise RuntimeError(f"claude reported an error: {result['result'].strip()[:300]}")
     return result["result"].strip()

@@ -142,7 +142,7 @@ class SchemaProvider:
     # -- schema --------------------------------------------------------
 
     def _source(self):
-        found = self.client.request("GET", f"/databases/{self.database}").get("data_sources", [])
+        found = self.client.request("GET", f"/databases/{self.database}", replay_safe=True).get("data_sources", [])
         ids = [d["id"] for d in found]
         if self._ds:
             if self._ds.replace("-", "") not in [i.replace("-", "") for i in ids]:
@@ -159,7 +159,7 @@ class SchemaProvider:
         if self._checked:
             return
         ds = self._source()
-        schema = self.client.request("GET", f"/data_sources/{ds}").get("properties", {})
+        schema = self.client.request("GET", f"/data_sources/{ds}", replay_safe=True).get("properties", {})
         problems = []
         for f, (_, kind) in FIELDS.items():
             name = self.names[f]
@@ -217,7 +217,8 @@ class SchemaProvider:
             payload = dict(body, page_size=100)
             if cursor:
                 payload["start_cursor"] = cursor
-            res = self.client.request("POST", f"/data_sources/{self._ds}/query", payload)
+            res = self.client.request("POST", f"/data_sources/{self._ds}/query", payload,
+                                      replay_safe=True)
             rows += res.get("results", [])
             if not res.get("has_more"):
                 return rows
@@ -261,7 +262,8 @@ class SchemaProvider:
         # Only the named fields are sent, so every other property — owned by
         # this map or not — is left exactly as it is.
         return self._item(self.client.request("PATCH", f"/pages/{page['id']}",
-                                              {"properties": self._props(changes)}))
+                                              {"properties": self._props(changes)},
+                                              replay_safe=True))
 
 
 def push(provider, piece_id, values):

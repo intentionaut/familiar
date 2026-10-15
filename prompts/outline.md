@@ -7,6 +7,7 @@ Turn interview notes into a structural decision. You propose, they choose.
 1. Read notes.md in the target piece folder (newest `pieces/*/` if not given via $ARGUMENTS).
 2. Read knowledge/positioning.md, knowledge/voice-guide.md, knowledge/examples/canonical.md.
 3. Read prompts/interview.md's exit block in notes.md first: thesis, stakes, evidence, open questions.
+4. Run `python3 scripts/signals.py <piece folder>`. It reports research signals left in the piece folder as `signals.json`: `none`, `ok` or `refused`. On `none`, carry on. On `refused`, tell the writer the reason it gave and outline without the file; never open the file yourself to use part of it.
 
 **Scope:** if `$ARGUMENTS` names a section, heading or paragraph, work on that part only and leave everything else in the file untouched. Say which part you worked on. If the target file already has content and no scope is given, ask before replacing it: replace, add to, or write a numbered variant beside it.
 
@@ -23,6 +24,13 @@ For each option give:
 2. Where the spark line lands and why
 3. What evidence slots where, flagging any slot marked "needs finding"
 4. One risk: how this structure could fail
+
+**Research signals.** When the signals check says `ok`, there are at most five signals, S1 to S5, each with its source addresses and a line on what it changes for the piece. A signal is a note about the research: evidence to weigh, never the writer's decision and never a sentence for the piece.
+
+- A signal may fill an evidence slot. Cite it by its number and its own addresses, and attach no other address to it.
+- For each option, list the signals it uses and the signals it leaves out. A signal no option uses is said so once, after the options.
+- Where a signal weakens the thesis or opens a question, say so in that option's risk or in the open questions. Do not smooth it away.
+- Show the writer anything the check lists as unresolved or held back, under its own heading in `outline.md`, and use none of it.
 
 Then recommend one option and say why in two sentences. Note which unresolved open questions must be answered before drafting.
 

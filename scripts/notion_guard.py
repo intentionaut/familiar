@@ -25,6 +25,14 @@ digests and file names only, so an interrupted operation resumes from what it
 first saw. After a write the page is read back; only a matching readback records
 the new agreed digest. Logs carry IDs and digests, never draft text.
 
+Before each write the journal also records `path`: the digest of the body after
+each request the write plan makes. A retry continues only when the page is still
+at one of those states, so its own partial or unacknowledged writes are
+recognised. Any other body means someone changed the page since: that body is
+kept as a third version and the retry becomes a conflict, with no further write.
+A replayed operation reports what it did then, and separately `live` and
+`page_moved`, whether the page has changed since it finished.
+
 `decide` is pure. `run` does the work and stops, with a reason and no best-effort
 continuation, on: a sent piece, an unreadable body, an unavailable version
 store, a stale page, a write failure or a readback mismatch.
@@ -131,6 +139,43 @@ def _write_journal(folder, piece_id, op_id, record):
 
 # -- the operation -----------------------------------------------------------
 
+def _path(tree, steps):
+    """The body's digest before the steps and after each request they make, in order.
+
+    Mirrors notion_draft.apply: an insert goes in after the last kept, updated or
+    inserted block, in requests of at most 100 blocks.
+    """
+    cur = list(tree)
+    out = [be.digest(blocks.blocks_to_md(cur))]
+
+    def at(block_id):
+        return next(i for i, b in enumerate(cur) if b.get("id") == block_id)
+
+    pos = 0
+    for s in steps:
+        if s[0] == "keep":
+            pos = at(s[1]) + 1
+            continue
+        if s[0] == "update":
+            i = at(s[1])
+            cur[i] = dict(s[2], id=s[1])
+            pos = i + 1
+            out.append(be.digest(blocks.blocks_to_md(cur)))
+        elif s[0] == "insert":
+            for k in range(0, len(s[1]), 100):
+                chunk = s[1][k:k + 100]
+                cur[pos:pos] = chunk
+                pos += len(chunk)
+                out.append(be.digest(blocks.blocks_to_md(cur)))
+        else:
+            i = at(s[1])
+            del cur[i]
+            if i < pos:
+                pos -= 1
+            out.append(be.digest(blocks.blocks_to_md(cur)))
+    return out
+
+
 def _result(outcome, piece_id, op_id, log, stopped=None, replayed=False, writes=0, **kw):
     return dict(outcome=outcome, stopped=stopped, replayed=replayed, piece_id=piece_id, op_id=op_id,
                 writes=writes, log=log, **kw)
@@ -177,10 +222,14 @@ def run(folder, piece_id, page, op_id, local_body, source_version=None, write_ve
     if resumed:
         # The same operation again: what it first saw decides, not what it left behind.
         if journal["state"] in ("done", "conflict"):
-            note("replayed", outcome=journal["outcome"], state=journal["state"])
+            # What it did then, and separately whether the page is still where it left it.
+            left = journal.get("page", journal.get("agreed_after", journal["notion"]))
+            moved = n_dig != left
+            note("replayed", outcome=journal["outcome"], state=journal["state"], live=n_dig, page_moved=moved)
             return _result(journal["outcome"], piece_id, op_id, log, replayed=True,
                            versions=journal["versions"], agreed=journal.get("agreed_after", journal["agreed"]),
-                           gate=journal.get("gate"), notion=journal["notion"], local=l_dig)
+                           gate=journal.get("gate"), notion=journal["notion"], local=l_dig,
+                           live=n_dig, page_moved=moved)
         n_dig, source_version, outcome = journal["notion"], journal["source_version"], journal["outcome"]
     else:
         outcome = decide(agreed, notion_md, local_md, op_id)
@@ -203,12 +252,12 @@ def run(folder, piece_id, page, op_id, local_body, source_version=None, write_ve
                   local=l_dig, agreed=agreed, versions=refs, state="pending")
 
     if outcome == CONFLICT:
-        _write_journal(folder, piece_id, op_id, dict(record, state="conflict", gate=dict(GATE_CONFLICT)))
+        _write_journal(folder, piece_id, op_id, dict(record, state="conflict", gate=dict(GATE_CONFLICT), page=n_dig))
         note("conflict", gate=GATE_CONFLICT["gate"])
         return _result(outcome, piece_id, op_id, log, versions=refs, gate=dict(GATE_CONFLICT),
                        agreed=agreed, notion=n_dig, local=l_dig)
     if outcome == REFRESH_LOCAL:
-        _write_journal(folder, piece_id, op_id, dict(record, state="done"))
+        _write_journal(folder, piece_id, op_id, dict(record, state="done", page=n_dig))
         return _result(outcome, piece_id, op_id, log, versions=refs, agreed=agreed, notion=n_dig, local=l_dig)
 
     # apply_local: the page must still be what the operation read, unless this is its own retry.
@@ -218,9 +267,30 @@ def run(folder, piece_id, page, op_id, local_body, source_version=None, write_ve
         live_md, live_tree, _ = nd._notion_body(page)
     except Exception:
         return stop("unreadable")
-    if not resumed and be.digest(live_md) != n_dig:
-        return stop("stale", live=be.digest(live_md))
-    steps = [] if be.digest(live_md) == l_dig else nd.plan(live_tree, new_blocks)
+    live_dig = be.digest(live_md)
+    if not resumed and live_dig != n_dig:
+        return stop("stale", live=live_dig)
+    known = list((journal or {}).get("path") or [n_dig]) if resumed else [n_dig]
+    if live_dig not in known and live_dig != l_dig:
+        # Not a state this operation's own writes explain: someone changed the page. Keep it, write nothing.
+        live_name = version_name(piece_id, source_version, op_id, f"live-{live_dig[:12]}")
+        try:
+            write_version(folder / be.VERSIONS / live_name, live_md)
+        except (OSError, StoreError):
+            return stop("version_store")
+        refs = dict(refs, live=f"{be.VERSIONS}/{live_name}")
+        _write_journal(folder, piece_id, op_id, dict(record, versions=refs, path=known, state="conflict",
+                                                     gate=dict(GATE_CONFLICT), page=live_dig))
+        note("conflict", gate=GATE_CONFLICT["gate"], live=live_dig, live_version=refs["live"])
+        return _result(CONFLICT, piece_id, op_id, log, versions=refs, gate=dict(GATE_CONFLICT),
+                       agreed=agreed, notion=n_dig, local=l_dig, live=live_dig)
+    steps = [] if live_dig == l_dig else nd.plan(live_tree, new_blocks)
+    try:
+        path = known + [d for d in _path(live_tree, steps) if d not in known]
+    except Exception:
+        return stop("unreadable")
+    record = dict(record, path=path)
+    _write_journal(folder, piece_id, op_id, record)
     state = nd.read_state(folder)
     nd.write_state(folder, page_id=state.get("page_id") or page.id, base=agreed, interrupted=True)
     try:
@@ -237,7 +307,7 @@ def run(folder, piece_id, page, op_id, local_body, source_version=None, write_ve
         _write_journal(folder, piece_id, op_id, dict(record, state="readback_mismatch", readback=back_dig))
         return stop("readback_mismatch", readback=back_dig, writes=writes)
     record_agreed(folder, page.id, l_dig)
-    _write_journal(folder, piece_id, op_id, dict(record, state="done", agreed_after=l_dig))
+    _write_journal(folder, piece_id, op_id, dict(record, state="done", agreed_after=l_dig, page=l_dig))
     note("agreed", agreed=l_dig)
     return _result(outcome, piece_id, op_id, log, versions=refs, writes=writes, agreed=l_dig,
                    notion=n_dig, local=l_dig)

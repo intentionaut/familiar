@@ -26,6 +26,10 @@ are what the stage checks against.
 Optional. The `publish` stage reads this block; the `social` stage does not care.
 Set `scheduler: none`, or delete this block, and `publish` prints a paste-ready
 table instead of calling anything. Nothing else about the stage changes.
+Set `scheduler: handoff` when another scheduler of yours does the creating:
+`publish` builds and counts every post as usual, asks you once, then writes the
+finished posts into the piece's `social.md` under `## Handed off` for that tool
+to read, and calls nothing itself.
 
 - **scheduler:** buffer
 - **key:** `$BUFFER_API_KEY`, the *name* of an environment variable. Never

@@ -12,6 +12,7 @@ and is skipped; it already ran before the release.
 """
 import re
 import unittest
+import warnings
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -37,6 +38,11 @@ def published_text_files():
             yield path, path.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
             continue  # binary: an image, a font
+
+if WORKSHOP is None:
+    # A skip is easy to read as a pass. Say, in the run's own output, that nothing was checked here.
+    warnings.warn("private-names check NOT RUN: no workshop list beside this copy; it runs in the workshop "
+                  "and on the extract before release", stacklevel=1)
 
 
 @unittest.skipIf(WORKSHOP is None, "released copy: no workshop list to read; the check ran before release")

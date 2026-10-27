@@ -634,6 +634,48 @@ class Server(Piece):
         self.assertEqual(404, status)
 
 
+class EditScript(unittest.TestCase):
+    """EDIT_JS is browser code nothing here runs (#346). These checks pin what Python can see: the page serves the
+    script once and safely, it reads the hooks the page writes, and every action it sends is one apply_edit takes."""
+
+    def page(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / "pieces" / "2026-09-13-test-piece"
+            (folder / "edits").mkdir(parents=True)
+            (folder / "draft.md").write_text(DRAFT, encoding="utf-8")
+            return board.piece_page(board.gather(folder, datetime.datetime.now().timestamp(), 7),
+                                    "familiar", token="tok")
+
+    def test_the_page_serves_the_script_once_and_the_data_before_it(self):
+        page = self.page()
+        self.assertEqual(1, page.count(f"<script>{board.EDIT_JS}</script>"))
+        self.assertEqual(1, page.count("(() => {\nconst D = JSON.parse"))
+        self.assertLess(page.index('id="piece-data"'), page.index(f"<script>{board.EDIT_JS}"))
+
+    def test_the_script_cannot_end_its_own_tag_or_open_a_comment(self):
+        self.assertNotIn("</script", board.EDIT_JS.lower())
+        self.assertNotIn("<!--", board.EDIT_JS)
+
+    def test_the_script_reads_the_hooks_the_page_writes(self):
+        page = self.page()
+        for hook in ("piece-data", "doc", "toast"):
+            self.assertIn(f'getElementById("{hook}")', board.EDIT_JS)
+            self.assertIn(f'id="{hook}"', page)
+        for key in ("id", "token", "hash", "rework"):
+            self.assertIn(f"D.{key}", board.EDIT_JS)
+            self.assertIn(f'"{key}":', page)
+        self.assertIn('"X-Familiar-Token"', board.EDIT_JS)
+        self.assertIn('"/api/version/"', board.EDIT_JS)
+
+    def test_every_action_the_script_sends_is_one_apply_edit_takes(self):
+        import inspect
+        import re
+        sent = set(re.findall(r'\b(?:api|act)\("(\w+)"', board.EDIT_JS))
+        taken = set(re.findall(r'action == "(\w+)"', inspect.getsource(board.apply_edit)))
+        self.assertEqual({"save", "comment", "send", "accept", "reply", "drop", "choose", "answer"}, sent)
+        self.assertEqual(sent, taken)
+
+
 class Theme(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

@@ -28,6 +28,22 @@ companion draft has lost the afternoon.
 Hand off. Read `prompts/social.md` and follow it exactly, including both of its
 gates. Nothing about the social stage changes because it was reached from here.
 
+## Voice proof (short branch)
+
+Only where the install carries a voice gate: `voice-gate.py`, in the `scripts` folder at the checkout root, beside
+`modules/` (called `<voice gate>` below). If it is not there, say once "no voice gate: these posts are unbound, the
+writer's review is the only check". If it is there, this branch does not prove anything itself: the proof is the one in
+`prompts/social.md`, and it runs here exactly as it does there. Every post and first comment is an artifact with
+`stage` `familiar-core:social`, proved before the writer sees it at gate 2:
+
+```sh
+python3 <voice gate> --repo <checkout root> --input <receipt.json> --private-layer <label>=<path to that layer file> --ledger <piece folder>/voice-ledger.jsonl --record
+```
+
+Exit 0 shows the post, with any ADVISE hits under it. On exit 1 a post that is not proved is not shown. On exit 2 say
+"Familiar unavailable" and make no substitute. The ledger is the source piece's own `voice-ledger.jsonl`, hashes only,
+never in the repo. Reaching `social` through `repurpose` is not a way round the gate.
+
 ---
 
 # Long branch
@@ -154,9 +170,48 @@ ask a different angle rather than the same question again.
   stop. There is no companion piece this time, and that is a real answer.
 - Do not write to the source piece's folder, and do not edit the source piece.
 
+## Voice proof (long branch)
+
+This branch writes no final copy: `brief.md` quotes the working files verbatim and `interview-questions.md` asks the
+writer questions. The brief still carries a receipt, because later stages read it as fact and a receipt binds exactly
+which bytes they read. The words of the companion piece come only from the standard pipeline, and `draft` proves them
+(`prompts/draft.md`, `stage` `familiar-core:draft`). If this branch ever writes words meant to go out, it runs the
+short-branch proof on them first.
+
+Only where the install carries a voice gate: `voice-gate.py`, in the `scripts` folder at the checkout root, beside
+`modules/` (called `<voice gate>` below). If it is not there, say once "no voice gate: this brief is unbound, the
+writer's review is the only check", and change nothing else in this branch. If it is there, the brief is an artifact,
+proved before `brief.md` is written and again after every edit made to it. `interview-questions.md` is not proved: it is
+questions, not words that go out.
+
+1. Write the gate's input for the exact bytes of the brief: `surface` `post`, no `form` (a brief is no post of any form,
+   so the gate reports the form checks as not run), `text` the brief, and a `receipt` that carries `ref`, the full
+   `head_sha`, `draft_sha256`, the `files` read with their `sha256` and cited `sections`, `sources` (the working files
+   the brief quotes), and an `artifact` object: `contract` 1, `id` `<new piece folder name>:brief`, `version`, `kind`
+   `brief`, `stage` `familiar-core:repurpose-long`, `output_sha256`, `installed.head_sha`, `private_layer` (each personal
+   layer file by `label` and `sha256`), and `parent` from version 2. Quotations carried in word for word from the writer's
+   working files go under `provenance` as `owner_verbatim`; nothing else is typed.
+2. Run, with the checkout root as `--repo`:
+
+   ```sh
+   python3 <voice gate> --repo <checkout root> --input <receipt.json> --private-layer <label>=<path to that layer file> --ledger <piece folder>/voice-ledger.jsonl --record
+   ```
+
+   The ledger is a new sibling file in the new piece folder, hashes only, never in the repo. `--record` writes a version
+   only when it passed. `draft` binds its own id in the same ledger later.
+3. Read the exit code. **Exit 0** (PASS or ADVISE): write `brief.md`. Each ADVISE hit goes under the brief with its rule
+   file, line and date, for the writer to keep, cut or rewrite; a hit never blocks. **Exit 1** (a receipt error):
+   `brief.md` is not written. Say what the gate named and rebuild the receipt or the text. **Exit 2** (no kill list
+   found): say "Familiar unavailable", write nothing and make no substitute.
+
+A brief receipt is not approval of any word in it. Every result still ends `EDITOR REVIEW REQUIRED`, and the writer's
+review of the brief is unchanged. Nothing here makes the gate run: the call is this prompt's instruction, not a runtime
+protection.
+
 ## Exit (long branch)
 
-- Save brief.md and interview-questions.md in the new piece folder.
+- Save brief.md and interview-questions.md in the new piece folder. Save `brief.md` only after the voice proof above
+  returns exit 0 (or says there is no voice gate).
 - Do NOT ask the writer anything else and do NOT run the interview. Hand off:
   tell the orchestrator to run /interview on the new piece folder, passing
   interview-questions.md as the seed and brief.md as context.

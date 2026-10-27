@@ -16,7 +16,10 @@ JSON on stdin and gets out of the way. Everything decided here:
 Env overrides: FAMILIAR_LOG_FILE, FAMILIAR_LOG_MODEL, FAMILIAR_LOG_EFFORT.
 
 Every entry logs one usage line: calls, models, tokens and cost as the calls
-reported them, null when they did not (docs/plans/records.md section 3).
+reported them, null when they did not (docs/plans/records.md section 3). Every
+call's step record is also kept, as a line in familiar-core.jsonl in
+~/.claude/familiar-log/usage/ (FAMILIAR_USAGE_DIR moves it), where
+scripts/usage-report reads it.
 """
 import datetime
 import fcntl
@@ -35,6 +38,7 @@ ROOT = pathlib.Path(os.environ.get("FAMILIAR_ROOT") or
 sys.path.insert(0, str(ROOT / "scripts"))
 
 STATE = pathlib.Path.home() / ".claude" / "familiar-log" / "state"
+USAGE_FILE = "familiar-core.jsonl"
 LIMIT = 120_000          # characters of transcript in one model call
 MAX_CHUNKS = 6           # earlier chunks beyond this are read for the writer's words only
 AGENT_TOOLS = {"Agent", "Task"}
@@ -147,6 +151,30 @@ MODEL_TIMEOUT = 600  # seconds; the call is killed after this and recorded as a 
 MODEL_RETRIES = 0    # a failed call is recorded and raised; nothing here asks the model again
 
 
+def usage_dir():
+    """Where step records are kept for scripts/usage-report: beside the state folder unless FAMILIAR_USAGE_DIR says."""
+    forced = os.environ.get("FAMILIAR_USAGE_DIR")
+    return pathlib.Path(forced).expanduser() if forced else STATE.parent / "usage"
+
+
+def save_step(rec, started):
+    """Keep one step record where scripts/usage-report reads it (#468): a line with the module and the UTC time the
+    call started. The record holds the prompt's hash, never the prompt. A save that fails is said in the log and never
+    fails the call: the entry is the work, the record is its receipt."""
+    line = json.dumps({"module": "familiar-core", "started": started.astimezone(datetime.timezone.utc).isoformat(),
+                       **rec}, sort_keys=True)
+    try:
+        folder = usage_dir()
+        folder.mkdir(parents=True, exist_ok=True)
+        with (folder / USAGE_FILE).open("a", encoding="utf-8") as fh:
+            fh.write(line + "\n")
+        back = (folder / USAGE_FILE).read_text(encoding="utf-8").splitlines()
+        if not back or back[-1] != line:
+            log("usage record not saved: it did not read back")
+    except OSError as e:
+        log(f"usage record not saved: {e}")
+
+
 def usage_of(result):
     """Model, tokens and cost from a claude -p JSON result. A field the result
     does not carry is None: never estimated, never zero."""
@@ -195,13 +223,17 @@ def call_model(prompt, timeout=MODEL_TIMEOUT):
     model = os.environ.get("FAMILIAR_LOG_MODEL", "sonnet")
     effort = os.environ.get("FAMILIAR_LOG_EFFORT", "medium")
     sha = hashlib.sha256(prompt.encode()).hexdigest()
+    started = datetime.datetime.now(datetime.timezone.utc)
     t0 = time.monotonic()
 
     def record(outcome, result=None):
-        """Every call leaves a record, whatever happened to it: null usage when the call reported none."""
+        """Every call leaves a record, whatever happened to it: null usage when the call reported none. It is kept in
+        memory for the usage line and saved for scripts/usage-report."""
         used = usage_of(result)
-        USAGE.append({**used, "model": used["model"] or model,
-                      "duration_ms": int((time.monotonic() - t0) * 1000), "outcome": outcome, "prompt_sha256": sha})
+        rec = {**used, "model": used["model"] or model,
+               "duration_ms": int((time.monotonic() - t0) * 1000), "outcome": outcome, "prompt_sha256": sha}
+        USAGE.append(rec)
+        save_step(rec, started)
 
     try:
         res = subprocess.run(
@@ -231,6 +263,10 @@ def call_model(prompt, timeout=MODEL_TIMEOUT):
         # A CLI that ignored the flag: keep the text, record the call with no usage.
         record("ok")
         return res.stdout.strip()
+    if not result.get("is_error") and (result.get("stop_reason") == "refusal" or not result["result"].strip()):
+        # The call answered without an error and the answer was turned away: it said it refused, or it had no text.
+        record("refused", result)
+        raise RuntimeError(f"claude refused or returned no text: {result['result'].strip()[:300]}")
     record("error" if result.get("is_error") else "ok", result)
     if result.get("is_error"):
         raise RuntimeError(f"claude reported an error: {result['result'].strip()[:300]}")

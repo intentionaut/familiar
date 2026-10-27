@@ -6,7 +6,7 @@ in their voice, not in model voice.
 ## Setup
 
 1. Read the piece's outline.md (chosen structure marked) and notes.md.
-2. Read knowledge/voice-guide.md, knowledge/style-rules.md, knowledge/positioning.md, knowledge/examples/canonical.md. Internalise them before typing. If an `instance/` directory exists at the repo root, read every `instance/voice-*.md` the same way: it is the writer's personal voice layer and wins any conflict with the knowledge templates. If `Language:` in positioning.md is not English, read `knowledge/languages/<code>.md` too and write in that language's conventions, not English ones.
+2. Read knowledge/voice-guide.md, knowledge/style-rules.md, knowledge/positioning.md, knowledge/examples/canonical.md. Internalise them before typing. If an `instance/` directory exists at the repo root, read every `instance/voice-*.md` the same way, except the overlays for other surfaces (`voice-comment.md`, `voice-sending.md`): it is the writer's personal voice layer and wins any conflict with the knowledge templates. `voice-long-form.md`, if present, is this stage's overlay and loads after the rest. If `instance/own-and-flip.md` exists, read it too: `dev-edit` and `social` gate the opening on it. If `Language:` in positioning.md is not English, read `knowledge/languages/<code>.md` too and write in that language's conventions, not English ones.
 3. Target length: 800 to 1200 words for a standard piece; deep dives up to 2500 only if outline says so.
 
 **Scope:** if `$ARGUMENTS` names a section, heading or paragraph, draft that part only and leave everything else in `draft.md` untouched. Say which part you worked on. If `draft.md` already has content and no scope is given, ask before replacing it: replace, add to, or write a numbered variant beside it (`draft-2.md`).
@@ -26,6 +26,29 @@ otherwise. Hand it back with `familiar rework propose <piece> <id> <file>`,
 adding `--note` for one line they should read first. Never edit `draft.md`
 yourself: they accept a suggestion on the board. If `open` says the words are
 no longer in the draft, suggest nothing and say so.
+
+## The writer-first path
+
+Familiar drafts from her outline and notes, and that is the default. She can
+also write the first draft herself and have Familiar only edit and challenge.
+Offer it once per piece, in one line, unless she has already said which: "I can
+draft this from your outline and notes, or you write it and I edit and
+challenge." It is an option, never the way in, and she does not need a reason.
+
+If she writes it:
+
+- Do not write a draft. Her sentences are the draft.
+- She writes into `draft.md`, or pastes it. Add front matter to the file with
+  `drafted_by: writer` and `title_settled: false`, and touch not one sentence of
+  the body, the same as when carrying words across.
+- Then dev-edit and line-edit, which edit and challenge and never rewrite. The
+  self-check in the exit block does not run over prose she wrote.
+- Note `Path: writer-first` in the piece's `SESSION-CONTEXT.md`.
+
+`drafted_by: writer` is what tells `scripts/her-share.py` to measure that piece
+against the rewrites the edits suggested, not against the draft, so the share it
+reports at learn time is true for either path. No path is better by default: the
+share, over several pieces, is what says whether one should be.
 
 ## If the writer brought this piece in
 
@@ -75,6 +98,10 @@ in their words are findings for prompts/line-edit.md, not yours to tidy.
 - Follow voice-guide.md exactly: short declaratives, no em dashes, British spelling, no banned words, concrete nouns.
 - Never invent evidence. Any claim without backing becomes `[NEEDS SOURCE: what and why]` inline. Better a bracket than a fabrication.
 - Quotes only exist if they're in notes.md verbatim. Otherwise bracket them too.
+- **Her sentences go in as she wrote them.** A sentence of hers in notes.md (under
+  Working thesis or Spark candidates, or in a block quote) goes into the body
+  verbatim wherever it fits, not paraphrased. Build the sentences around it. Where
+  it does not fit, leave it out and say so; do not reword it to fit.
 - Coined terms italicised on first use, defined immediately.
 - Headers sound like a person (see canonical examples). Sentence case.
 - End with the invitation to reply, phrased as a real question they would want answered.
@@ -95,6 +122,43 @@ and `Chosen` with `Because` once the writer picks. Never only in conversation.
 **Cuts.** Anything substantial removed at this stage goes to `cuts.md` per
 AGENTS.md, "The cutting room", with a `Flag:` of dead, reusable or blocked. A
 cut section or a dropped set of evidence is material, not waste.
+
+## Voice proof
+
+Only where the install carries a voice gate: `voice-gate.py`, in the `scripts` folder at the checkout root, beside
+`modules/` (called `<voice gate>` below). This module does not ship one. If it is not there, say once in the report
+"no voice gate: this draft is unbound, the writer's review is the only check", and change nothing else in this stage. If
+it is there, the draft is an artifact, proved before it is written to the piece folder and again after every edit you make
+to it. The personal voice layer you already read in Setup is the layer the gate binds.
+
+**Proof.**
+
+1. Write the gate's input for the exact words of the draft: `surface` `post`, `form` `long`, `text` the words, and a
+   `receipt` that carries `ref`, the full `head_sha`, `draft_sha256`, the `files` read with their `sha256` and cited
+   `sections`, `sources`, and an `artifact` object: `contract` 1, `id` `<piece folder name>:draft`, `version`, `kind`
+   `draft`, `stage` `familiar-core:draft`, `output_sha256`, `installed.head_sha`, `private_layer` (each personal layer
+   file by `label` and `sha256`), and `parent` from version 2. The sentences of hers you carried in word for word go under
+   `provenance` as `owner_verbatim`; nothing else is typed.
+2. Run, with the checkout root as `--repo`:
+
+   ```sh
+   python3 <voice gate> --repo <checkout root> --input <receipt.json> --private-layer <label>=<path to that layer file> --ledger <piece folder>/voice-ledger.jsonl --record
+   ```
+
+   One `--private-layer` per layer file. The ledger is a new sibling file in the piece folder, hashes only, never in the
+   repo. `--record` writes a version only when it passed.
+3. Read the exit code. **Exit 0** (PASS or ADVISE): hand the draft on. Each ADVISE hit goes under the draft with its rule
+   file, line and date, for the writer to keep, cut or rewrite; a hit never blocks. **Exit 1** (a receipt error): the
+   draft stops. Say what the gate named, write nothing, and rebuild the receipt or the text. **Exit 2** (no kill list
+   found): say "Familiar unavailable", write nothing and make no substitute.
+4. Run it first on the composed text, before `draft.md` is written, so a stop leaves no file behind. Run it again at the
+   Exit, after the mechanical self-checks, whenever they changed a word: those bytes are the next version of the same
+   artifact (version n+1, `parent` the version and `output_sha256` it replaces). The same applies to every later edit of
+   yours: reread `draft.md` first, never overwrite the writer's own edits, and never reuse the old receipt for new bytes.
+   The gate refuses it, and a revision with no ledger cannot pass.
+
+A pass says these exact words were bound to this revision and these guideline bytes. It is not the writer's approval:
+every result still ends `EDITOR REVIEW REQUIRED`, and her review is still the gate to the next stage.
 
 ## Exit
 
@@ -124,6 +188,40 @@ you just wrote, not editing the writer, and the list is how the writer knows
 the check ran rather than trusting that it did. Anything already in their
 words stays exactly as they wrote it, and every stage after this one surfaces
 its fixes rather than applying them.
+Then run `python3 scripts/notes-in-body.py <the piece folder>`. It lists the
+sentences of hers in notes.md that the draft paraphrased, each beside the draft
+sentence that replaced it. Show her the list as it is, with the question it
+asks: restore her wording, or let it go. Do not restore or drop anything
+yourself, and do not report the check as clean if it says it could not run.
+
+Then run `python3 scripts/experience-flags.py <the piece folder>` over your own
+draft. It flags first-person, sensory, anecdote and joke-shaped sentences that
+trace to nothing in her notes (or `source.md`, `session.md`): you have no lived
+experience, so each one is either hers or invented. For every sentence it flags,
+replace it with the `[ASK THE WRITER: ...]` it suggests, worded for what is
+missing, or cut it. Never keep one because it reads well. Whether a line lands
+stays hers; this only makes sure she is asked. If it says it could not run, say
+so in the list rather than reporting the check as clean. Do not run it over
+prose she wrote or carried across.
+
+Then run `python3 scripts/unsourced-run.py <the draft>`. It marks runs of three
+or more flat claims in one paragraph with no source, quote, hedge or bracket
+attached, so the weak paragraph shows next to the strong one. For each run, say
+which claim she can back and bracket the rest as `[NEEDS SOURCE: ...]` in your
+own prose, or cut it. It cannot tell whether a claim is true; it only shows that
+nothing in the text holds it up. Never add a source you have not been given. If
+it says it could not run, say so in the list rather than reporting the check as
+clean.
+
+Then run `python3 scripts/revival-check.py <the draft> --piece <the piece folder>`.
+It compares the draft with this piece's dead cuts, the options the writer chose
+against, and the rules they rejected at the learn gate. A flag names the
+original kill and its reason: take the revived passage out of your own prose, or
+leave it in and tell the writer what changed since the kill, so they can decide.
+Kills stay killed until they say the evidence moved. If it says it could not run,
+or that rejected rules were not checked, say so in the list rather than reporting
+the check as clean.
+Then run the voice proof above on the final text if a check changed it, and show any ADVISE hits with the draft.
 Report word count, reading ease, and list every [NEEDS ...] bracket left in.
 Then stop. They rewrite; the next stage is dev-edit only when they ask.
 

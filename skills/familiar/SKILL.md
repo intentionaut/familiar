@@ -176,7 +176,9 @@ The stages, for Familiar's own routing:
 `board` is a command, not a stage, so it has no gate. Run
 `<home>/scripts/board.py --open` to build a static board of every piece and a
 page per piece. Columns are states of the writing (Thinking, Writing, Editing,
-Ready, Sent) and every card says what that piece needs next.
+Ready, Sent) and every card says what that piece needs next. The built-in
+board is deprecated: it still works and prints a notice each time. A house on
+the Notion provider uses `familiar board` instead.
 
 Pass `--pieces` once per folder when pieces live in more than one place, for
 example a Dex vault and a separate newsletter repo. Use it when the writer asks

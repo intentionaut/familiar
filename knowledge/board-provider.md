@@ -3,6 +3,12 @@
 Where the board's state comes from. Unset means the built-in board, which works
 out every piece's state from the piece folders and needs nothing from you.
 
+The built-in board is deprecated. It still works, and says so each time you
+open it. A new install is set to `notion` when `familiar init` copies this file.
+To move an existing house, set `- Provider: notion` below, add your database and
+put the token in `FAMILIAR_NOTION_TOKEN`; the steps are in the 0.60.0 changelog
+entry.
+
 ## Settings
 
 - Provider: [local / notion]

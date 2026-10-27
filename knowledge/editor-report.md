@@ -20,6 +20,8 @@ The recurring problems drafts wrestle with:
 
 10. **Novelty overclaim or useful reframe**: apply `knowledge/novelty-skeptic.md` to claims that imply an invention, a first or a new mechanism, and to reframes that might extend the discussion. Name what was known and what this piece actually adds. Do not present a source-search miss as proof of novelty.
 
+11. Is the piece hiding the thing?
+
 ## Repeated developmental edits
 
 Run 1 through n as numbered rounds in the same `edits/dev-edit-report.md`.

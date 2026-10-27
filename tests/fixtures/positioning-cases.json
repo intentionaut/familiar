@@ -1,0 +1,26 @@
+{
+  "about": "Synthetic cases for positioning-trace.py. Invented text only; no real positioning, buyer or source. `keep` cases must come back with the stated status and, for the untouched ones, not be read at all.",
+  "sources": {
+    "S1": "## Interview notes\nThe studio cut onboarding from 14 days to 5 days.\nTeams reviewed every bet in a weekly forum.\n",
+    "S2": "## Survey\nMost buyers asked for a second engagement within a quarter.\nThe pilot ran with 12 teams.\n"
+  },
+  "anchor": "After a quarter the buyer believes a real product problem was solved, the team makes better bets, and they would hire again.",
+  "cases": [
+    {"id": "traced-figure", "line": "The studio cut onboarding from 14 days to 5 days. [src: S1]", "want": "traced"},
+    {"id": "traced-paraphrase", "line": "Teams reviewed every bet in a weekly forum, so bets got better. [src: S1]", "want": "traced"},
+    {"id": "traced-two-ids", "line": "Most buyers asked for a second engagement within a quarter. [src: S2, S1]", "want": "traced"},
+    {"id": "quoted-line", "line": "\"Our onboarding fell from 40 days to 2 days, guaranteed.\"", "want": "unread"},
+    {"id": "heading", "line": "## Onboarding fell from 40 days to 2 days", "want": "unread"},
+    {"id": "block-quote", "line": "> Onboarding fell from 40 days to 2 days.", "want": "unread"},
+    {"id": "question", "line": "Why did onboarding get faster for every team?", "want": "unread"},
+    {"id": "bracketed", "line": "Onboarding fell sharply. [NEEDS SOURCE]", "want": "unread"},
+    {"id": "fragment", "line": "Faster, clearer.", "want": "unread"},
+    {"id": "no-cite", "line": "The studio cut onboarding from 14 days to 5 days.", "want": "untraced"},
+    {"id": "no-cite-invented", "line": "Every client doubled revenue in a year.", "want": "untraced"},
+    {"id": "unknown-id", "line": "The studio cut onboarding from 14 days to 5 days. [src: S9]", "want": "mis-cited"},
+    {"id": "wrong-source", "line": "The studio cut onboarding from 14 days to 5 days. [src: S2]", "want": "mis-cited"},
+    {"id": "figure-differs", "line": "The studio cut onboarding from 14 days to 3 days. [src: S1]", "want": "mis-cited"},
+    {"id": "source-does-not-say", "line": "Teams doubled their revenue within a year. [src: S1]", "want": "mis-cited"},
+    {"id": "one-good-one-unknown", "line": "The studio cut onboarding from 14 days to 5 days. [src: S1, S9]", "want": "mis-cited"}
+  ]
+}

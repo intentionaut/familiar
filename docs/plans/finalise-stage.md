@@ -26,7 +26,7 @@ it gets written worst or not at all.
 
 The budget is not the platform's budget. It is the platform's budget minus what
 the site adds. On intentionaut.com, `pages/writing/[slug].astro` renders
-`title + " | Saielle DaSilva"`, so a 60-character target leaves 42 for the
+`title + " | Author Name"`, so a 60-character target leaves 42 for the
 title. Finalise has to know the template, not just the limit.
 
 Same trap in the other direction: for a beehiiv-sourced post the site takes

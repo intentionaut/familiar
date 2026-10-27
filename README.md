@@ -11,6 +11,11 @@ Then it interviews you one question at a time, drafts from your own published
 pieces, and hands back an editor's report instead of a rewrite. Nothing is
 invented: anything it cannot source becomes a visible bracket for you to fill.
 
+It does draft: from your outline and notes, in your voice, as a starting point
+you make your own. If you would rather write the first draft, say so and it only
+edits and challenges. Either way, it counts how much of each published piece is
+your own sentences, so the trend is something you can see.
+
 Plain markdown prompts, AGPL-3.0-or-later, nothing leaves your machine.
 
 ```
@@ -127,7 +132,7 @@ bring <path>        start from a draft or notes you already have
 case-study <log>    start from a build log or a coding session
 interview <idea>    find the thesis, one question at a time
 outline             three shapes, you pick
-draft               a draft in your voice, brackets over inventions
+draft               a draft in your voice, brackets over inventions (or you write it first)
 dev-edit            an editor's report, nothing applied
 line-edit           the mechanical pass, an exact fix per flag
 finalise            title, subject line, SEO, once the argument has settled
@@ -206,8 +211,11 @@ title, date, the first thing it says, and the next thing it needs. Click a card
 for the whole piece on one page: what it is waiting on, which brackets are still
 unresolved, the notes and outline folded away, then the draft.
 
-The built-in board is maintained and not extended. To keep the board in Notion
-instead, choose it in `knowledge/board-provider.md` in your house. Then
+**The built-in board is deprecated.** It keeps working and nothing has been
+removed, but it is not extended, and `familiar board` and `scripts/board.py` say
+so each time they run. A new install keeps its board in Notion. To move an
+existing house, choose Notion in `knowledge/board-provider.md` (steps are in the
+0.60.0 changelog entry). Then
 `familiar board` prints that board, and `familiar board sync <piece>` brings one
 piece's row up to date after a stage. Only board fields go to Notion: title,
 state, what the piece needs next, when it last moved, and what is in its way.

@@ -270,6 +270,89 @@ class Wiring(unittest.TestCase):
         self.assertEqual(1, r.returncode)
         self.assertEqual(1, len([l for l in r.stdout.splitlines() if l.strip()]))
 
+class Deprecation(unittest.TestCase):
+    """The built-in board still works, and says each time that it is deprecated."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = pieces(self.tmp.name)
+        self.house = Path(self.tmp.name) / "house"
+        self.house.mkdir()
+        (self.house / "positioning.md").write_text("# Positioning\n", encoding="utf-8")
+        self.home = Path(self.tmp.name) / "home"
+        self.home.mkdir()
+        # BROWSER=true makes `--open` a no-op, so no test opens a real browser.
+        self.env = {k: v for k, v in os.environ.items() if not k.startswith(("FAMILIAR", "NOTION"))}
+        self.env.update(HOME=str(self.home), FAMILIAR_KNOWLEDGE=str(self.house),
+                        FAMILIAR_PIECES=str(self.root), BROWSER="true")
+
+    def run_py(self, script, *args):
+        return subprocess.run([sys.executable, str(ROOT / "scripts" / script), *args],
+                              capture_output=True, text=True, env=self.env, cwd=self.tmp.name)
+
+    def test_familiar_board_on_the_built_in_board_says_it_is_deprecated_and_still_builds(self):
+        r = self.run_py("familiar", "board")
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertIn("deprecated", r.stderr)
+        self.assertIn("Provider: notion", r.stderr)
+        self.assertTrue((self.root / ".board" / "index.html").is_file())
+
+    def test_board_py_says_it_is_deprecated_when_run_directly(self):
+        r = self.run_py("board.py")
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertIn(bp.DEPRECATION, r.stderr)
+        self.assertNotIn("deprecated", r.stdout)
+
+    def test_the_provider_summary_says_it_too_for_the_built_in_board(self):
+        r = self.run_py("board_provider.py")
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertIn(bp.DEPRECATION, r.stderr)
+
+    def test_choosing_local_on_purpose_still_shows_it(self):
+        (self.house / bp.SETTINGS_FILE).write_text("- Provider: local\n", encoding="utf-8")
+        self.assertIn(bp.DEPRECATION, self.run_py("familiar", "board").stderr)
+
+    def test_the_notion_board_does_not_show_it(self):
+        # No token: the run stops, but never with the built-in board's notice.
+        (self.house / bp.SETTINGS_FILE).write_text(
+            f"- Provider: notion\n- Notion database: {tn.DB}\n", encoding="utf-8")
+        self.assertNotIn("deprecated", self.run_py("familiar", "board").stderr)
+
+
+class NewInstallDefault(unittest.TestCase):
+    """A fresh `familiar init` points the house at the Notion board; an existing house is left alone."""
+
+    def test_a_copied_template_is_set_to_notion_and_nothing_else_changes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            f = Path(tmp) / bp.SETTINGS_FILE
+            template = (ROOT / "knowledge" / bp.SETTINGS_FILE).read_text(encoding="utf-8")
+            f.write_text(template, encoding="utf-8")
+            self.assertIsNone(bp.read_setting(tmp))
+            self.assertTrue(bp.default_new_install(tmp))
+            self.assertEqual("notion", bp.read_setting(tmp))
+            after = f.read_text(encoding="utf-8")
+            self.assertEqual(template.replace("- Provider: [local / notion]", "- Provider: notion"), after)
+
+    def test_a_house_that_already_chose_is_never_rewritten(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            f = Path(tmp) / bp.SETTINGS_FILE
+            f.write_text("- Provider: local\n", encoding="utf-8")
+            self.assertFalse(bp.default_new_install(tmp))
+            self.assertEqual("- Provider: local\n", f.read_text(encoding="utf-8"))
+
+    def test_init_in_a_new_folder_sets_the_copy_and_not_the_shipped_template(self):
+        shipped = (ROOT / "knowledge" / bp.SETTINGS_FILE).read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as home:
+            env = {**os.environ, "HOME": home, "FAMILIAR_KNOWLEDGE": "", "FAMILIAR_CONFIG": "",
+                   "FAMILIAR_PIECES": ""}
+            r = subprocess.run([sys.executable, str(FAMILIAR), "init", "--force"], capture_output=True,
+                               text=True, cwd=tmp, env=env)
+            self.assertEqual(0, r.returncode, r.stderr)
+            self.assertEqual("notion", bp.read_setting(Path(tmp) / "knowledge"))
+            self.assertIn("Notion", r.stdout)
+        self.assertEqual(shipped, (ROOT / "knowledge" / bp.SETTINGS_FILE).read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()

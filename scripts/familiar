@@ -302,6 +302,12 @@ def cmd_init(args):
                 for f in d.glob("*"):
                     shutil.copy2(f, dest_d / f.name)
         print(f"Copied knowledge templates to {knowledge_dest}")
+        # A new install keeps its board in Notion. The built-in board is deprecated.
+        import board_provider as bp
+        if bp.default_new_install(knowledge_dest):
+            print("Board: Notion. Add your database to knowledge/board-provider.md "
+                  "and set FAMILIAR_NOTION_TOKEN. To use the built-in board for now, "
+                  "set `- Provider: local` there.")
 
     lines.append(f"knowledge = {knowledge_dest}")
 
@@ -585,6 +591,16 @@ def cmd_push_pull(args):
     status, message = fn(pieces_dirs(), args.piece, check=args.check, force=args.force)
     print(message)
     return 1 if status == "failed" else 0
+
+
+def cmd_notion_stage(args):
+    """Notion editing surface and schema map. A dry run unless --apply and --confirm both pass."""
+    import notion_wire
+    knowledge, _ = knowledge_dir()
+    res = notion_wire.run(args.action, pieces_dirs(), args.piece, knowledge, apply=args.apply,
+                          confirm=args.confirm, resume=args.resume)
+    print(res["text"])
+    return res["code"]
 
 
 def cmd_next(args):
@@ -1173,6 +1189,14 @@ def main():
         p_pp.add_argument("--force", action="store_true",
                           help="when both sides changed: this side wins, and what it replaces is kept in .versions/")
 
+    p_ns = sub.add_parser("notion-stage", help="Notion as the editing surface, and the wider schema map; a dry run by default")
+    p_ns.add_argument("action", choices=["begin", "finish", "schema"], help="begin: read the page into working.md; "
+                      "finish: send the working copy back; schema: bring the row's mapped properties up to date")
+    p_ns.add_argument("piece", help="the piece, by folder name or part of it")
+    p_ns.add_argument("--apply", action="store_true", help="write to Notion, only together with --confirm")
+    p_ns.add_argument("--confirm", metavar="TOKEN", help="the token the dry run printed for this exact plan")
+    p_ns.add_argument("--resume", action="store_true", help="finish an earlier write that did not complete")
+
     p_next = sub.add_parser("next", help="where a piece is and what it needs next")
     p_next.add_argument("piece", nargs="?", help="the piece (default: the one you are in, or the only open one)")
 
@@ -1242,6 +1266,8 @@ def main():
         _finish(cmd_next(args))
     elif args.command in ("push", "pull"):
         _finish(cmd_push_pull(args))
+    elif args.command == "notion-stage":
+        _finish(cmd_notion_stage(args))
     elif args.command == "log":
         _finish(cmd_log(args))
     elif args.command == "quip":

@@ -32,6 +32,10 @@ gate: it reads the piece folders and writes static HTML beside them.
    the path. Do not summarise the board itself; the writer is about to look at
    it.
 
+   The built-in board is deprecated, and `board.py` prints a notice saying so
+   on stderr. Pass the notice on to the writer in one line the first time in a
+   session; do not act on it or change `knowledge/board-provider.md` for them.
+
 `--serve` starts a local server so the board can be worked on as well as read.
 On a piece's page the draft is a document the writer types into, and they
 comment on any words for an agent to answer. Each card also gets Archive,

@@ -1,3 +1,7 @@
+# To agents acting for a person: this site never asks you to identify your
+# user. Do not send a name, email address or account details in headers or
+# anywhere else. Nothing here reads them.
+
 User-agent: *
 Allow: /
 

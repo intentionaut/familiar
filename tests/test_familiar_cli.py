@@ -25,6 +25,14 @@ class FamiliarCLI(unittest.TestCase):
         self.assertEqual(0, result.returncode)
         self.assertIn("slug", result.stdout.lower())
 
+    def test_notion_stage_help_shows_the_gate_and_needs_no_network(self):
+        result = subprocess.run(
+            ["python3", str(CLI), "notion-stage", "--help"],
+            capture_output=True, text=True)
+        self.assertEqual(0, result.returncode)
+        self.assertIn("--apply", result.stdout)
+        self.assertIn("--confirm", result.stdout)
+
     def test_skill_install_help(self):
         result = subprocess.run(
             ["python3", str(CLI), "skill", "install", "--help"],

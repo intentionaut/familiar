@@ -150,10 +150,12 @@ def cmd_hook():
         # nothing, on purpose: hooks/session-checkin.sh sends stderr to /dev/null
         # and puts stdout into the session, so a message has nowhere right to go.
         return
+    if not isinstance(payload, dict):
+        return  # valid JSON that is not an object ([], null, 3): the same as bad JSON, silent
     cwd = payload.get("cwd") or os.getcwd()
     try:
         os.chdir(cwd)
-    except OSError:
+    except (OSError, TypeError, ValueError):  # a cwd that is not a usable path string
         return
     try:
         from paths import knowledge_dir

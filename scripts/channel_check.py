@@ -41,15 +41,23 @@ def parse_registry(path):
     text = path.read_text(encoding="utf-8", errors="replace")
     channels = {}
     current = None
+    last = None
     for line in text.splitlines():
         m = re.match(r"^## Channel: (\S+)\s*$", line)
         if m:
             current = m.group(1)
             channels[current] = {}
+            last = None
             continue
         m = re.match(r"^- \*\*(.+?):\*\*\s*(.*)$", line)
         if m and current:
-            channels[current][m.group(1)] = m.group(2).strip()
+            last = m.group(1)
+            channels[current][last] = m.group(2).strip()
+        elif current and last and re.match(r"^\s+\S", line):
+            # a wrapped field: the indented lines belong to the field above
+            channels[current][last] += " " + line.strip()
+        else:
+            last = None
     return channels
 
 
@@ -169,12 +177,17 @@ def check(cfg, extra_pieces=None):
     names, cadence, limits = schedule_tables(cfg / "social-schedule.md")
     by_schedule = {f.get("Schedule name"): cid
                    for cid, f in registry.items() if f.get("Schedule name")}
+    # A schedule table may spell a channel by its schedule name (LinkedIn) or
+    # by its id (linkedin). Both resolve to the one declared channel; a name
+    # that is neither is still undeclared.
+    spellings = dict(by_schedule)
+    spellings.update({cid: cid for cid in registry})
     for name in names:
         if name not in by_schedule and name not in registry:
             problems.append(
                 f"social-schedule.md: channel '{name}' is not declared in "
                 f"channels.md - declare it or remove the row")
-    for name, cid in by_schedule.items():
+    for name, cid in spellings.items():
         fields = registry[cid]
         m = re.search(r"(\d+)", fields.get("Cadence", ""))
         if name in cadence and m and cadence[name] != int(m.group(1)):

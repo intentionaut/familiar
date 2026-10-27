@@ -24,6 +24,7 @@ so it is not committed. Format is deliberately dull:
     pieces = ~/Projects/familiar/pieces
 
 Run it to see what resolves:  python3 scripts/paths.py
+For another program:          python3 scripts/paths.py --json   (the keys are in the contract)
 """
 import os
 from pathlib import Path
@@ -111,6 +112,13 @@ if __name__ == "__main__":
         print(k)
         raise SystemExit(0)
     f = _config_file()
+    if "--json" in _sys.argv:
+        # The machine-readable address (contracts/familiar-core.contract.md, #469). Other modules read this, never the
+        # lines below, which are for people and may be reworded.
+        import json as _json
+        print(_json.dumps({"config_file": str(f) if f else None, "knowledge": str(k), "knowledge_whose": whose,
+                           "pieces": [str(p) for p in pieces_dirs()]}))
+        raise SystemExit(0)
     print(f"config file : {f if f else 'none, using defaults'}")
     print(f"knowledge   : {k}  ({whose})")
     for i, p in enumerate(pieces_dirs()):

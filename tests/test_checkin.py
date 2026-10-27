@@ -57,6 +57,13 @@ class HookIsSilent(unittest.TestCase):
             out, err, code = run_hook(tmp, stdin="{not json")
         self.assertEqual(("", "", 0), (out, err, code))
 
+    def test_valid_json_that_is_not_an_object_prints_nothing_and_exits_0(self):
+        # Issue 389: payload.get raised AttributeError on [] and exited 1.
+        for stdin in ("[]", "null", "3", '"cwd"', "[{\"cwd\": \"/\"}]", '{"cwd": 5}', '{"cwd": ["/"]}'):
+            with self.subTest(stdin=stdin), tempfile.TemporaryDirectory() as tmp:
+                out, err, code = run_hook(tmp, stdin=stdin)
+            self.assertEqual(("", "", 0), (out, err, code))
+
     def test_no_house_prints_nothing(self):
         with tempfile.TemporaryDirectory() as tmp:
             repo = make_repo(tmp)

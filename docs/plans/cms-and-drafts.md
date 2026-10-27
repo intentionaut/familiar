@@ -157,7 +157,7 @@ stream; and Dex already collides with a vault-root file.
 Migration was one pass and it was safe, because the entry heading already
 names the piece. `knowledge/context-log.md:10` defines the heading as
 `## YYYY-MM-DD HH:MM  <stage>  <piece folder>`, and the real log on this machine
-follows it: `## 2026-08-30 08:55  line-edit  pieces/2026-08-30-kernic-site-copy`.
+follows it: `## 2026-08-30 08:55  line-edit  pieces/2026-08-30-client-site-copy`.
 **[READ]** So a root log splits into per-piece logs with no guessing. That is
 how the local one was split on 30 August: entries copied, never moved, and the
 original left in place with a note.
@@ -237,7 +237,7 @@ $ familiar status
 A piece whose context log is missing or older than its newest file:
 
 ```
-  2026-08-19-kernic-copy           dev-edit   log is behind the files, open it to see     3d    local
+  2026-08-19-client-site-copy      dev-edit   log is behind the files, open it to see     3d    local
 ```
 
 That line is the honest answer. Inventing a decision gate from the report file

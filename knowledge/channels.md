@@ -26,7 +26,7 @@ which destinations a channel may use. One post, one destination: a post
 driving to the newsletter list never also plugs the site, and a post driving
 to the site never also plugs the list.
 
-## Channel: linkedin-feed
+## Channel: linkedin
 
 - **Job:** Reach and discovery. The channel new readers arrive through.
 - **Schedule name:** LinkedIn
@@ -50,6 +50,32 @@ to the site never also plugs the list.
 - **Relationships:** Companion to `linkedin-newsletter`. A feed post may
   point at a newsletter issue but never reproduces it; identical copy never
   appears on both.
+- **Review and publish gate:** The `social` stage's two gates, then the
+  `publish` confirm gate and the never-publish check. Nothing schedules
+  itself.
+
+## Channel: bluesky
+
+- **Job:** Reach and discovery in short form, for readers who follow the
+  work on Bluesky rather than LinkedIn.
+- **Schedule name:** Bluesky
+- **Audience:** [segment ids from `knowledge/audiences.md`, or from
+  `positioning.md` Segments. Who reads you on Bluesky.]
+- **Voice overlay:** [the short-form register: `knowledge/social-rules.md`
+  over `knowledge/voice-guide.md`, plus any Bluesky-specific habits of yours.
+  A register, never a second voice guide.]
+- **Form and length:** Original posts, one idea each. 300 characters hard,
+  counted after tracking parameters are appended.
+- **Cadence:** [posts a week, matching `knowledge/social-schedule.md`]
+- **Source material:** Shipped pieces and the back catalogue. Every post is
+  built from something the source actually says.
+- **Default CTA and destination:** Exactly one destination per post: the
+  piece, the newsletter list or the hub, as the post's job says.
+- **Link placement:** Inline in the post. The link counts against the 300
+  characters.
+- **utm:** source `bsky.app`, medium `social`, per `knowledge/links.md`.
+- **Relationships:** Companion to `linkedin`. The same idea may appear on
+  both, written for each; identical copy never appears on both.
 - **Review and publish gate:** The `social` stage's two gates, then the
   `publish` confirm gate and the never-publish check. Nothing schedules
   itself.
@@ -148,7 +174,7 @@ to the site never also plugs the list.
 - **Link placement:** Not applicable.
 - **utm:** A destination in `knowledge/links.md`, not a source.
 - **Relationships:** Destination for career-evidence posts on
-  `linkedin-feed`. Nothing else points here.
+  `linkedin`. Nothing else points here.
 - **Review and publish gate:** The writer reviews anything that names or
   links the product.
 

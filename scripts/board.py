@@ -47,6 +47,7 @@ import argparse, datetime, html, json, os, pathlib, re, secrets, shutil, sys, th
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from paths import pieces_dirs as resolved_pieces, knowledge_dir  # noqa: E402
 import board_edit  # noqa: E402
+import board_provider  # noqa: E402
 
 # --------------------------------------------------------------------------
 # Markdown to HTML, for display only
@@ -2274,6 +2275,9 @@ def main():
                     help="serve it locally so pieces can be archived and restored")
     ap.add_argument("--open", action="store_true", help="open the board in a browser")
     args = ap.parse_args()
+
+    # Deprecated in 0.60.0: still builds, and says so each time.
+    print(board_provider.DEPRECATION, file=sys.stderr)
 
     root = pathlib.Path(__file__).resolve().parent.parent
     # One resolver for every script: flags, then FAMILIAR_PIECES, then the

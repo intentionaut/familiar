@@ -1,6 +1,6 @@
 # Humanizer check
 
-Generated 2026-09-14 against humanizer SKILL.md version 3.0.0.
+Generated 2026-10-18 against humanizer SKILL.md version 3.1.0.
 Candidates only. Nothing here is applied: bring style-rules.md back in step
 with humanizer per CONTRIBUTING.md. Re-run: `scripts/humanizer-check.py`.
 
@@ -10,8 +10,9 @@ with humanizer per CONTRIBUTING.md. Re-run: `scripts/humanizer-check.py`.
 
 ## Humanizer patterns with no obvious counterpart in style-rules.md
 
-Matched loosely on heading words, so expect some false alarms.
+A pattern counts as covered only by the numbered rule with the same number whose
+text shares its title words. Expect a few false alarms; a gap is never hidden.
 
-- none
+- §26 Re-explaining what the reader knows
 
 Source: https://raw.githubusercontent.com/blader/humanizer/main/SKILL.md

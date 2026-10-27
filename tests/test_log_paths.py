@@ -633,14 +633,31 @@ class AddWritesSafely(unittest.TestCase):
         self.assertEqual("{not json", self.settings.read_text(encoding="utf-8"))
         self.assertEqual(before, self.registry.read_bytes())
 
-    @unittest.expectedFailure   # issue 386; an unexpected pass fails the run, so it is strict
     def test_a_failed_add_leaves_no_log_behind(self):
-        # Known defect, tracked as issue 386: cmd_add creates the log
-        # before it reads settings.json. strict: the run fails once it is fixed.
+        # Issue 386: cmd_add used to create the log before it read settings.json.
         self.settings.parent.mkdir()
         self.settings.write_text("{not json", encoding="utf-8")
-        self.run_log("add", "widget")
+        got = self.run_log("add", "widget")
+        self.assertNotEqual(0, got.returncode)
         self.assertEqual([], sorted(p.name for p in self.project.glob("*-LOG.md")))
+
+    def test_an_add_that_cannot_write_the_settings_leaves_no_log_or_folder_behind(self):
+        # Issue 386, "or cannot be written": the log is created before the settings write, so a failure there removes it.
+        before = self.registry.read_bytes()
+        with self.fail_writes_to("settings.json"):
+            with self.assertRaises(PermissionError):
+                self.add_in_process()
+        self.assertEqual([], sorted(p.name for p in self.project.glob("*-LOG.md")))
+        self.assertFalse(self.settings.parent.exists(), "an empty .claude this add made is removed")
+        self.assertEqual(before, self.registry.read_bytes())
+
+    def test_a_failed_add_keeps_a_log_that_was_already_there(self):
+        log = self.project / "WIDGET-LOG.md"
+        log.write_text("# widget build log\n\n## 2026-10-01\n\nkept\n", encoding="utf-8")
+        with self.fail_writes_to("settings.json"):
+            with self.assertRaises(PermissionError):
+                self.add_in_process()
+        self.assertEqual("# widget build log\n\n## 2026-10-01\n\nkept\n", log.read_text(encoding="utf-8"))
 
     def test_add_that_cannot_write_the_settings_changes_nothing_else_and_says_it_failed(self):
         before = self.registry.read_bytes()

@@ -7,7 +7,7 @@ mechanical, exhaustive, boring on purpose.
 ## Setup
 
 1. Read the piece's draft.md (newest `pieces/*/` if not given).
-2. Read knowledge/style-rules.md and knowledge/voice-guide.md. If an `instance/` directory exists at the repo root, read every `instance/voice-*.md` as well: the personal voice layer, which wins on conflict with the templates. Check `Language:`
+2. Read knowledge/style-rules.md and knowledge/voice-guide.md. If an `instance/` directory exists at the repo root, read every `instance/voice-*.md` as well, except the overlays for other surfaces (`voice-comment.md`, `voice-sending.md`), then `voice-long-form.md`, this stage's overlay, if present: the personal voice layer, which wins on conflict with the templates. Check `Language:`
    in knowledge/positioning.md; if not English, read `knowledge/languages/<code>.md`
    and apply its skip/keep/replace table before anything marked (en).
 
@@ -83,9 +83,45 @@ knowledge/style-rules.md, "Framing people and products fairly": a named
 person or company talked down, the writer's own earlier work, or a product
 the piece describes. Flag with the exact rewrite, as with any other finding.
 
+## Voice proof
+
+Only where the install carries a voice gate: `voice-gate.py`, in the `scripts` folder at the checkout root, beside
+`modules/` (called `<voice gate>` below). This module does not ship one. If it is not there, say once in the summary
+"no voice gate: these rewrites are unbound, the writer's review is the only check", and change nothing else in this
+stage. If it is there, every `Fix:` line you write is its own artifact, proved before the report is written and again
+whenever you reword it. The personal voice layer you already read in Setup is the layer the gate binds.
+
+**Proof (per Fix).**
+
+1. Write the gate's input for the exact words of the `Fix:` line: `surface` `post`, `form` `long`, `text` the words, and a
+   `receipt` that carries `ref`, the full `head_sha`, `draft_sha256`, the `files` read with their `sha256` and cited
+   `sections`, `sources`, and an `artifact` object: `contract` 1, `id` `<piece folder name>:line:<finding number>`,
+   `version`, `kind` `line`, `stage` `familiar-core:line-edit`, `output_sha256`, `installed.head_sha`, `private_layer`
+   (each personal layer file by `label` and `sha256`), and `parent` from version 2. Words that are the writer's own,
+   carried unchanged from the draft, go under `provenance` as `owner_verbatim`; nothing else is typed.
+2. Run, with the checkout root as `--repo`:
+
+   ```sh
+   python3 <voice gate> --repo <checkout root> --input <receipt.json> --private-layer <label>=<path to that layer file> --ledger <piece folder>/voice-ledger.jsonl --record
+   ```
+
+   One `--private-layer` per layer file. The ledger is a new sibling file in the piece folder, hashes only, never in the
+   repo. `--record` writes a version only when it passed.
+3. Read the exit code. **Exit 0** (PASS or ADVISE): the Fix goes in the report. Each ADVISE hit goes under the Fix with its
+   rule file, line and date, for the writer to keep, cut or rewrite; a hit never blocks. **Exit 1** (a receipt error): the
+   Fix is not shown. Say what the gate named, then rebuild the receipt or reword the Fix. **Exit 2** (no kill list found):
+   say "Familiar unavailable", write no report and make no substitute.
+4. Any later change to a Fix's words (a rewrite after the critique check, a correction, your own second look) is the next
+   version of the same artifact: version n+1, `parent` the version and `output_sha256` it replaces, then run the gate
+   again. Do not reuse the old receipt for new bytes; the gate refuses it, and a revision with no ledger cannot pass. A
+   hedge finding has no Fix line and is not proved.
+
+A pass says these exact words were bound to this revision and these guideline bytes. It is not the writer's approval:
+every result still ends `EDITOR REVIEW REQUIRED`, and nothing is applied until she accepts it.
+
 ## Exit
 
-Write to `edits/line-edit-report.md`: findings, then the summary table from the
+Run the voice proof above over every `Fix:` line, then write to `edits/line-edit-report.md`: findings, then the summary table from the
 spec (flags per category, reading ease, grade level, top three highest-impact fixes).
 They apply what they agree with. Nothing is auto-applied.
 
@@ -97,6 +133,20 @@ cost beside the suggestion before she decides. Do not drop or soften a Fix
 because it was flagged; the cost is hers to weigh. If it says it could not run,
 or that a suggestion had no rewritten line, say so in the summary; that is not
 a clean result.
+
+Then run `python3 scripts/critique-lint.py edits/line-edit-report.md`. It flags
+praise or agreement that quotes no line (a compliment opener, a finding that
+only says it is fine) and any finding that quotes none of the draft's words.
+Fix what it flags in your own report before she sees it: quote the line, or cut
+the praise. Do not invent a fault to fill a gap; a firm "this works", said once
+and quoting the line, stays. If it says it could not run, say so in the summary.
+
+Then run `python3 scripts/revival-check.py edits/line-edit-report.md --piece <the piece
+folder>`. It flags a Fix that brings back a dead cut, an option the writer chose
+against, or a rule they rejected. Under each finding it flags, add one line,
+`Revival: <the original kill and its reason>`, and leave the Fix as it is: she
+decides whether the evidence changed. If it says it could not run, or that
+rejected rules were not checked, say so in the summary.
 
 Every finding in the report carries a `Disposition:` line, left for the writer
 to fill as they work through it: `accepted`, `rejected` or `revised`, and a

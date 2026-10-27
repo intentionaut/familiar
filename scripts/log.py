@@ -527,17 +527,9 @@ def cmd_add(args):
             home = ask_log_home()
         name = log_destination(folder, name, home)
 
-    dest = resolve_log(folder, name)
-    if not dest.exists():
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(
-            f"# {folder.name} build log\n\nKept per Familiar's prompts/log.md.\n"
-            "Append-only, dated, newest at the bottom.\n\n---\n", encoding="utf-8")
-        print(f"  Created {dest}")
-
-    # Merge into the project's settings, never replace.
+    # Read and merge the project's settings first (never replace), so a settings file that cannot be read
+    # stops the command before anything is created (#386).
     sp = folder / ".claude" / "settings.json"
-    sp.parent.mkdir(parents=True, exist_ok=True)
     data = load_settings_json(sp)
     hooks = data.setdefault("hooks", {})
     entry = {"type": "command", "command": str(HOOK), "timeout": 60}
@@ -551,7 +543,30 @@ def cmd_add(args):
         groups[:] = [g for g in groups if g.get("hooks")]
         groups.append({"hooks": [entry]})
         added += 1
-    sp.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+
+    dest = resolve_log(folder, name)
+    created = not dest.exists()
+    made_dir = not sp.parent.exists()
+    try:
+        if created:
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_text(
+                f"# {folder.name} build log\n\nKept per Familiar's prompts/log.md.\n"
+                "Append-only, dated, newest at the bottom.\n\n---\n", encoding="utf-8")
+            print(f"  Created {dest}")
+        sp.parent.mkdir(parents=True, exist_ok=True)
+        sp.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    except BaseException:
+        # A failed add changes nothing: take back what this call made (#386).
+        if created:
+            dest.unlink(missing_ok=True)
+        if made_dir:
+            try:
+                sp.unlink(missing_ok=True)
+                sp.parent.rmdir()
+            except OSError:
+                pass
+        raise
 
     # Record it, so the hook can find a log called anything.
     text = reg.read_text(encoding="utf-8")

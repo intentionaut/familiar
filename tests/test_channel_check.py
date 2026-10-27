@@ -189,5 +189,91 @@ Held copy is never input.
         self.assertTrue(any("one place" in p for p in problems))
 
 
+SHIPPED = ROOT / "knowledge" / "channels.md"
+
+SHIPPED_SCHEDULE = """# Social schedule
+
+## Channels
+
+| Channel | Account | Voice | Limit | Scheduler |
+|---------|---------|-------|-------|-----------|
+| LinkedIn | @writer | first person | 3000 | Buffer |
+| Bluesky | @writer | first person | 300 | Buffer |
+
+## Scheduler
+
+| Channel | Channel id | Limit | Link goes |
+|---------|-----------|-------|-----------|
+| linkedin | abc123 | 3000 | pinned first comment |
+| bluesky | def456 | 300 | inline |
+"""
+
+
+class ShippedRegistry(unittest.TestCase):
+    """The template registry and the sample schedule agree on `linkedin`
+    and `bluesky`; the retired `linkedin-feed` id is an unknown channel."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.cfg = Path(self.tmp.name)
+        write(self.cfg, "channels.md", SHIPPED.read_text())
+        write(self.cfg, "links.md", LINKS)
+        write(self.cfg, "social-schedule.md", SHIPPED_SCHEDULE)
+        self.pieces = self.cfg / "pieces"
+        self.pieces.mkdir()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def piece(self, channel):
+        d = self.pieces / "2026-01-01-example"
+        d.mkdir(exist_ok=True)
+        (d / "social.md").write_text(
+            f"# Social\n\n## Chosen\n\n### C1\nchannel: {channel}\n"
+            f"destination: piece\nText.\n")
+
+    def test_ids_are_linkedin_and_bluesky(self):
+        ids = set(channel_check.parse_registry(self.cfg / "channels.md"))
+        self.assertIn("linkedin", ids)
+        self.assertIn("bluesky", ids)
+        self.assertNotIn("linkedin-feed", ids)
+
+    def test_linkedin_and_bluesky_pass_against_the_sample_schedule(self):
+        for cid in ("linkedin", "bluesky"):
+            self.piece(cid)
+            problems, _ = channel_check.check(self.cfg, [self.pieces])
+            self.assertEqual([], problems, cid)
+
+    def test_the_old_linkedin_feed_id_is_flagged_as_undeclared(self):
+        self.piece("linkedin-feed")
+        problems, _ = channel_check.check(self.cfg, [self.pieces])
+        self.assertTrue(any("linkedin-feed" in p and "not declared" in p
+                            for p in problems), problems)
+
+    def test_an_old_id_in_the_schedule_is_flagged_too(self):
+        write(self.cfg, "social-schedule.md", SHIPPED_SCHEDULE.replace(
+            "| linkedin | abc123 |", "| linkedin-feed | abc123 |"))
+        problems, _ = channel_check.check(self.cfg, [self.pieces])
+        self.assertTrue(any("linkedin-feed" in p and "not declared" in p
+                            for p in problems), problems)
+
+    def test_a_limit_contradiction_is_caught_under_the_id_spelling(self):
+        write(self.cfg, "social-schedule.md", SHIPPED_SCHEDULE.replace(
+            "| bluesky | def456 | 300 |", "| bluesky | def456 | 500 |"))
+        problems, _ = channel_check.check(self.cfg, [self.pieces])
+        self.assertTrue(any("bluesky" in p and "limit" in p
+                            for p in problems), problems)
+
+    def test_a_wrapped_field_is_read_whole(self):
+        reg = channel_check.parse_registry(self.cfg / "channels.md")
+        self.assertIn("3,000 hard", reg["linkedin"]["Form and length"])
+
+    def test_the_bluesky_block_declares_the_required_fields(self):
+        reg = channel_check.parse_registry(self.cfg / "channels.md")
+        for req in channel_check.REQUIRED:
+            self.assertTrue(reg["bluesky"].get(req), req)
+        self.assertIn("300", reg["bluesky"]["Form and length"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -14,8 +14,14 @@ in place, never produce a "clean version".
 
 ## Method
 
-Follow the report spec in knowledge/editor-report.md exactly:
+Follow the report spec in knowledge/editor-report.md exactly, after one gate:
 
+0. **Opening gate** (posts and essays; comments are exempt). If `instance/own-and-flip.md` exists at the repo root, read it first: it holds the writer's own rules and anchors for these checks and wins on conflict. Three binary checks, each answered yes or no with the quoted line that settles it:
+   a. The draft names its most pokeable fact (the thing a sceptical reader would poke at first) in the first third.
+   b. One concrete scene lands before the first claim.
+   c. A flip line (one sentence that turns that sore spot into the point) sits in the first third.
+
+   A no on any of them sends the piece back to `draft`: it becomes the first critical fix, and roadmap step one reads `Opening: return to draft`. Do not polish the rest of an opening that fails. These are judgement checks; nothing about them goes into the mechanical line-edit sweep.
 1. **Spark assessment**: top / buried / missing / needs sharpening. Quote it, locate it.
 2. **Thesis check**: one sentence as written, does it hold, quote any drift with locations. Run the novelty check against concrete claims and record its findings in this round, not in a separate rewrite.
 3. **Critical fixes**: structural only, each paired with an exact rewrite in their voice. Put consequential novelty claims here when they change the argument.
@@ -59,9 +65,11 @@ cut section or a dropped set of evidence is material, not waste.
 
 ## Exit
 
-Append the numbered round to `edits/dev-edit-report.md` next to the draft, preserving earlier rounds verbatim. Then run `python3 scripts/edge-diff.py edits/dev-edit-report.md`: for each quoted line and its `Rewrite:` it flags what the polish costs (a contraction expanded, an idiom lost, short sentences joined, a length moved). Put one `Edge cost:` line under each finding it flags; never soften the rewrite because of it. If it says it could not run, say so in the report. If an older report has no rounds, label it Round 1 without changing its findings, and create Round 2. Tell the writer the report
+Append the numbered round to `edits/dev-edit-report.md` next to the draft, preserving earlier rounds verbatim. Then run `python3 scripts/edge-diff.py edits/dev-edit-report.md`: for each quoted line and its `Rewrite:` it flags what the polish costs (a contraction expanded, an idiom lost, short sentences joined, a length moved). Put one `Edge cost:` line under each finding it flags; never soften the rewrite because of it. If it says it could not run, say so in the report. Then run `python3 scripts/critique-lint.py edits/dev-edit-report.md`: it flags a finding, a section or the report opening with praise or agreement that quotes no line, and a finding that quotes none of the draft's words. Fix what it flags in your own report before the writer sees it: quote the line, or cut the praise. Do not invent a problem to fill a gap, and do not drop a specific "this works" that quotes the line; one said once is allowed. If it says it could not run, say so in the report. If an older report has no rounds, label it Round 1 without changing its findings, and create Round 2. Tell the writer the report
 is ready and how many fixes landed in each section. They accept, reject or revise
 each item themselves. If they want changes applied, they will say which ones.
+
+Then run `python3 scripts/revival-check.py edits/dev-edit-report.md --piece <the piece folder>`. It flags any finding or option in this round that brings back a dead cut, an option the writer chose against, or a rule they rejected. Where it flags one, say so under that finding: `Revival: <the original kill and its reason>`. They decide whether the evidence changed; do not drop the finding or soften it because of the flag. If it says it could not run, or that rejected rules were not checked, say so in the report.
 
 Then ask whether to open the report and the draft, one line, yes or no. See
 AGENTS.md, "Opening the file at an edit stage". Open both on yes; drop it on no.

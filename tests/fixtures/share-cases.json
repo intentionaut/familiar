@@ -1,0 +1,31 @@
+{
+  "about": "Synthetic draft and final pairs for her-share.py, each with the counts it must report. Invented text only; no writer's real drafts. `files` adds other files to the piece folder (an edit report, for the writer-first path). Kept apart from tell-cases.json so a hook's cases arrive with its own change.",
+  "cases": [
+    {"id": "final-is-the-draft-nodded-through",
+     "draft": "The kettle broke on Monday.\nNobody told the office about it.\nThe rota failed the same week.\n",
+     "final": "The kettle broke on Monday.\nNobody told the office about it.\nThe rota failed the same week.\n",
+     "want": {"sentences": 3, "kept": 3, "edited": 0, "hers": 0, "her_share": 0.0}},
+    {"id": "final-is-written-over",
+     "draft": "The kettle broke on Monday.\nNobody told the office about it.\nThe rota failed the same week.\n",
+     "final": "Monday was the day the tea stopped.\nI found out from a note on the fridge.\nBy Friday the whole schedule had gone.\n",
+     "want": {"sentences": 3, "kept": 0, "edited": 0, "hers": 3, "her_share": 1.0}},
+    {"id": "a-mix",
+     "draft": "The kettle broke on Monday.\nNobody told the office about it.\nThe rota failed the same week.\nSomeone should own the rota.\n",
+     "final": "The kettle broke on Monday.\nNobody in the office was told about it.\nBy Friday the whole schedule had gone.\nOne person has to own it, and that is the point.\n",
+     "want": {"sentences": 4, "kept": 1, "edited": 1, "hers": 2, "her_share": 0.5}},
+    {"id": "headings-quotes-code-and-short-lines-are-not-counted",
+     "draft": "# A title\nThe kettle broke on Monday.\nYes.\n",
+     "final": "---\ntitle: x\n---\n# A different title\n> A block quote that is not read at all.\n```\ncode that is not read either\n```\nThe kettle broke on Monday.\nYes.\n",
+     "want": {"sentences": 1, "kept": 1, "edited": 0, "hers": 0, "her_share": 0.0}},
+    {"id": "writer-first-her-draft-goes-through-untouched",
+     "draft": "---\ndrafted_by: writer\n---\nThe kettle broke on Monday.\nNobody told the office about it.\n",
+     "final": "The kettle broke on Monday.\nNobody told the office about it.\n",
+     "files": {"edits/line-edit-report.md": "### 1. A line\n\n[line 5] \"Nobody told the office about it.\"\nIssue: x\nFix: Nobody ever told the office.\n"},
+     "want": {"path": "writer-first", "sentences": 2, "kept": 0, "edited": 0, "hers": 2, "her_share": 1.0}},
+    {"id": "writer-first-an-accepted-rewrite-is-the-models",
+     "draft": "---\ndrafted_by: writer\n---\nThe kettle broke on Monday.\nNobody told the office about it.\n",
+     "final": "The kettle broke on Monday.\nNobody ever told the office.\n",
+     "files": {"edits/line-edit-report.md": "### 1. A line\n\n[line 5] \"Nobody told the office about it.\"\nIssue: x\nFix: Nobody ever told the office.\n"},
+     "want": {"path": "writer-first", "sentences": 2, "kept": 1, "edited": 0, "hers": 1, "her_share": 0.5}}
+  ]
+}

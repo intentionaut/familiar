@@ -11,6 +11,39 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import paths  # noqa: E402
 
 
+class JsonOutput(unittest.TestCase):
+    """`paths.py --json` is the machine-readable address other modules read (#469). Its keys are in core's contract."""
+
+    def run_json(self, tmp, **env):
+        import json
+        import subprocess
+        base = {k: v for k, v in os.environ.items()
+                if k not in ("FAMILIAR_KNOWLEDGE", "FAMILIAR_CONFIG", "FAMILIAR_PIECES")}
+        r = subprocess.run([sys.executable, str(ROOT / "scripts" / "paths.py"), "--json"], cwd=tmp,
+                           env={**base, **env}, capture_output=True, text=True, timeout=30)
+        self.assertEqual(0, r.returncode, r.stderr)
+        return json.loads(r.stdout)
+
+    def test_it_names_the_house_the_pieces_and_whose_the_house_is(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            house = Path(tmp) / "house"
+            house.mkdir()
+            (house / "positioning.md").write_text("# mine\n")
+            one, two = Path(tmp) / "one", Path(tmp) / "two"
+            got = self.run_json(tmp, FAMILIAR_KNOWLEDGE=str(house), FAMILIAR_PIECES=os.pathsep.join([str(one), str(two)]))
+        self.assertEqual({"config_file", "knowledge", "knowledge_whose", "pieces"}, set(got))
+        self.assertEqual(str(house.resolve()), got["knowledge"])
+        self.assertEqual("yours", got["knowledge_whose"])
+        self.assertEqual([str(one.resolve()), str(two.resolve())], got["pieces"])
+
+    def test_with_no_house_it_says_the_shipped_templates_and_no_config_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            got = self.run_json(tmp, HOME=tmp)
+        self.assertEqual("the shipped templates", got["knowledge_whose"])
+        self.assertIsNone(got["config_file"])
+        self.assertTrue(got["pieces"], "always at least one pieces folder")
+
+
 class KnowledgeAddress(unittest.TestCase):
     def setUp(self):
         self._env = {k: os.environ.pop(k, None)

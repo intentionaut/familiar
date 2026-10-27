@@ -93,7 +93,15 @@ proposal.
    decisions mode keeps: it means the guide is out of date, or the writer has
    changed. Surface it as a contradiction, not as a new rule, and let them
    decide which is wrong.
-5. Write `knowledge/proposals/YYYY-MM-DD-diff-<slug>.md`.
+5. **Count her share.** Run `python3 scripts/her-share.py <piece folder>`, and
+   `python3 scripts/her-share.py --trend` for every published piece so far. It
+   gives the share of `final.md` sentences she wrote or rewrote past recognition,
+   against the ones kept from the model's draft (or, on the writer-first path,
+   from the rewrites it suggested). Put both in the proposal and say them in the
+   summary, as numbers. There is no target: do not say the share is too low or
+   too high, and do not propose a rule from the number alone. If it says it
+   could not run, say so; a piece with no `final.md` is not measured, never zero.
+6. Write `knowledge/proposals/YYYY-MM-DD-diff-<slug>.md`.
 
 ### Gate
 
@@ -165,6 +173,11 @@ in the proposal so the next `decisions` run knows where to start.
 - Before proposing, read `knowledge/rejected-rules.md`. A rule on that index
   was turned down once already. Do not propose it again unless the evidence
   has changed, and say what changed.
+- Check it, do not rely on remembering it: run `python3 scripts/revival-check.py
+  <the proposal file>` before the gate. It flags any proposed rule that repeats a
+  row of `rejected-rules.md`, with the original reason. Keep a flagged rule only
+  with a line saying what changed; otherwise cut it. If it says rejected rules
+  were not checked, say so at the gate; that is not a clean result.
 - Every rejection at the gate is recorded in `knowledge/rejected-rules.md`
   the moment it happens: the rule, the date, and the writer's one-line reason
   in their words. It lives in the writer's house, never in the Familiar repo,

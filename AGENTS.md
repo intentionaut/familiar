@@ -54,7 +54,7 @@ person adds it.
 /case-study → brief.md + interview-questions.md   (from a build log or a session transcript; preps the interview, never runs it)
 /interview  → notes.md        (one question at a time; thesis, stakes, evidence, themes)
 /outline    → outline.md      (three structures; the writer picks)
-/draft      → draft.md        (full draft in voice, [NEEDS SOURCE] brackets over inventions)
+/draft      → draft.md        (full draft in voice, [NEEDS SOURCE] brackets over inventions; or you write it and Familiar only edits, the writer-first path)
 /dev-edit   → edits/dev-edit-report.md   (report only, never auto-apply)
 /line-edit  → edits/line-edit-report.md  (mechanical pass, exact fixes per flag)
 /finalise   → title, subject line, SEO   (the last creative act; repurpose and social need a settled title)
@@ -417,6 +417,13 @@ never twice for the same report.
 gate: it reads the piece folders and writes HTML beside them, and changes
 nothing.
 
+**The built-in board is deprecated** (0.60.0). It still works and nothing is
+removed, but it is not extended, and `board.py` and `familiar board` print a
+deprecation notice (to stderr) each time they build it. New installs are set to
+the Notion provider by `familiar init`. Removal is a separate change, blocked on
+`docs/plans/native-board-dependencies.md`, and starts only on the writer's say.
+Do not remove or rewrite any file on that list as part of other work.
+
 ```
 scripts/board.py --open
 scripts/board.py --pieces DIR --pieces DIR       pieces in more than one place
@@ -682,6 +689,9 @@ shortfall. If nothing is lost, it was carrying a verdict.
 - `scripts/notion_draft.py`: `familiar push` and `familiar pull`, a draft copied to a Notion page and back; one side changes at a time, and what is replaced is kept first
 - `scripts/notion_surface.py`: opt-in `Editing surface: notion`; the page body is the working draft, a tagged `working.md` is made before a stage and sent back through the guard on exit; two changed bodies are never merged
 - `scripts/notion_blocks.py`: a draft's markdown to Notion blocks and back; content with no form on the other side is refused and named
+- `scripts/beehiiv-reconcile.py`: `familiar` newsletter read-back; proposes which live Beehiiv post each board card is and the address to use, from the address, then the title, then a close match; writes nothing, the writer accepts each row
+- `scripts/record-sent.py`: records a send for a channel no publication tool reports (LinkedIn, Bluesky) in `final.md`'s frontmatter; shows the change, writes only with `--confirm`, reads it back with `published.py`
+- `scripts/notion_wire.py`: `familiar notion-stage begin|finish|schema <piece>`, the caller for the two Notion scripts above; a dry run that prints the exact requests, and a write only with `--apply` and the plan's `--confirm` token
 - `scripts/board_sync.py`: `familiar board`, `familiar board sync <piece>` and `familiar next`, reading and writing through the provider; a sync never blocks a stage, and `next` names and starts nothing
 - `scripts/notion_board.py`: the Notion provider behind that boundary; board fields only, never a delete or an archive
 - `scripts/board_provider.py`: the provider boundary `board` and `next` read through; the built-in board is the default provider

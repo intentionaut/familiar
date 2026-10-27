@@ -20,6 +20,15 @@ settled title to point at.
    in the knowledge folder, and in a vault, in the publication's own resources. Their practice outranks anything
    generic in this prompt. If there are none, say so once and use section 3.
 
+4. Run `python3 scripts/claim-flags.py <piece folder>`. It reports claim flags a
+   research tool left in the piece folder as `flags.md`: `none`, `ok` or
+   `refused`. On `ok` with anything open, show the writer its list before
+   section 1, as it printed it: the claims still to keep or drop, and the kept
+   ones that still need a source in the piece. Then carry on. Open flags never
+   stop this stage; whether a claim stands is the writer's call. On `refused`,
+   say the reason in one line and carry on; never open `flags.md` yourself to
+   read part of it, and never edit it.
+
 **Scope:** if `$ARGUMENTS` names one of the three jobs ("finalise the title",
 "just the SEO"), do that one and leave the rest. Say which you did.
 
@@ -56,6 +65,11 @@ Propose two, one descriptive and one curiosity-led, each with what it costs.
 Say plainly that this is a guess until there is open-rate evidence, and note in
 the context log which kind was chosen, so a pattern can be seen across issues.
 
+**Preview text.** For each subject line, propose the line an inbox shows after
+it: about 90 characters, saying what the reader gets. It carries on from the
+subject line and never repeats it. Write it under its subject line as
+`Preview: <text>`.
+
 ## 3. How it will be found
 
 Only for pieces that get a web version. Skip it for email-only, and say you did.
@@ -85,6 +99,42 @@ and `Chosen` with `Because` once the writer picks. Never only in conversation.
 **Cuts.** Anything substantial removed at this stage goes to `cuts.md` per
 AGENTS.md, "The cutting room", with a `Flag:` of dead, reusable or blocked. A
 cut section or a dropped set of evidence is material, not waste.
+
+## Voice proof
+
+Only where the install carries a voice gate: `voice-gate.py`, in the `scripts` folder at the checkout root, beside
+`modules/` (called `<voice gate>` below). This module does not ship one. If it is not there, say once in the report
+"no voice gate: these options are unbound, the writer's review is the only check", and change nothing else in this stage. If it is there, every title, subtitle, subject line, preview text and
+meta title or description you propose is its own artifact, proved before the writer sees it.
+
+**Personal voice layer (read, only when the gate is there).** Read every `instance/voice-*.md` at the checkout root, as
+`draft.md` does. It wins any conflict with the knowledge templates. Before this section, this stage did not read it.
+
+**Proof (per option).**
+
+1. Write the gate's input for the exact words of the option: `surface` `post`, `form` `long`, `text` the words, and a
+   `receipt` that carries `ref`, the full `head_sha`, `draft_sha256`, the `files` read with their `sha256` and cited
+   `sections`, `sources`, and an `artifact` object: `contract` 1, `id` `<piece folder name>:<kind>:<option number>`,
+   `version`, `kind` (`title`, `subtitle`, `subject` or `metadata`), `stage` `familiar-core:finalise`, `output_sha256`,
+   `installed.head_sha`, `private_layer` (each personal layer file by `label` and `sha256`), and `parent` from version 2.
+   Spans the writer supplied word for word go under `provenance` as `owner_verbatim`; nothing else is typed.
+2. Run, with the checkout root as `--repo`:
+
+   ```sh
+   python3 <voice gate> --repo <checkout root> --input <receipt.json> --private-layer <label>=<path to that layer file> --ledger <piece folder>/voice-ledger.jsonl --record
+   ```
+
+   One `--private-layer` per layer file. The ledger is a new sibling file in the piece folder, hashes only, never in the
+   repo. `--record` writes a version only when it passed.
+3. Show an option only when the gate passed or advised (exit 0). On FAIL (exit 1) or UNKNOWN (exit 2) the option is not
+   shown; regenerate it or leave it out. ADVISE hits go under the option for the writer to keep, cut or rewrite.
+4. Any change to an option's words after it was bound (the writer's correction, your own rewrite) is the next version of
+   the same artifact: version n+1, `parent` the version and `output_sha256` it replaces, then run the gate again. Do not
+   reuse the old receipt for new bytes; the gate refuses it, and a revision with no ledger cannot pass. Reread
+   `draft.md` before any rewrite and never overwrite the writer's own edits.
+
+A pass says these exact words were bound to this revision and these guideline bytes. It is not the writer's approval:
+every result still ends `EDITOR REVIEW REQUIRED`, and the writer's pick is still the gate to `draft.md`.
 
 ## Exit
 

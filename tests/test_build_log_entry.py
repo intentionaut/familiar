@@ -157,6 +157,63 @@ if __name__ == "__main__":
 class Usage(unittest.TestCase):
     """Each entry logs what its calls reported: real numbers, null when absent, never estimated."""
 
+    def setUp(self):
+        # Records are saved as the calls end (#468); keep them out of the real ~/.claude.
+        self.dir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.dir.cleanup)
+        self.usage_dir = Path(self.dir.name) / "usage"
+        from unittest import mock
+        patch = mock.patch.dict(os.environ, {"FAMILIAR_USAGE_DIR": str(self.usage_dir)})
+        patch.start()
+        self.addCleanup(patch.stop)
+
+    def saved(self):
+        f = self.usage_dir / "familiar-core.jsonl"
+        return [json.loads(l) for l in f.read_text().splitlines()] if f.exists() else []
+
+    def test_every_call_is_saved_where_usage_report_reads_it(self):
+        out = json.dumps({"result": "## entry", "total_cost_usd": 0.012, "usage": {"input_tokens": 900, "output_tokens": 70},
+                          "modelUsage": {"claude-sonnet-5": {}}})
+        self.run_with(out)
+        (row,) = self.saved()
+        self.assertEqual("familiar-core", row["module"])
+        self.assertRegex(row["started"], r"\+00:00$")
+        self.assertEqual(("claude-sonnet-5", 900, 70, 0.012, "ok"),
+                         tuple(row[k] for k in ("model", "input_tokens", "output_tokens", "cost_usd", "outcome")))
+        self.assertEqual(hashlib.sha256(b"prompt").hexdigest(), row["prompt_sha256"])
+        self.assertNotIn("prompt", row)
+
+    def test_a_failed_call_is_saved_with_null_usage(self):
+        with self.assertRaises(RuntimeError):
+            self.run_with("", returncode=2)
+        (row,) = self.saved()
+        self.assertEqual(("error", None, None, None), tuple(row[k] for k in ("outcome", "input_tokens", "output_tokens", "cost_usd")))
+
+    def test_a_refusal_is_recorded_as_refused_and_raises(self):
+        for reply in ({"result": "I can't help with that.", "stop_reason": "refusal"}, {"result": "", "usage": {}}):
+            self.usage_dir.joinpath("familiar-core.jsonl").unlink(missing_ok=True)
+            with self.assertRaises(RuntimeError, msg=reply):
+                self.run_with(json.dumps(reply))
+            self.assertEqual(["refused"], [r["outcome"] for r in self.saved()], reply)
+            self.assertEqual("refused", ble.USAGE[0]["outcome"])
+
+    def test_a_save_that_fails_is_said_and_the_call_still_returns(self):
+        self.usage_dir.parent.mkdir(parents=True, exist_ok=True)
+        self.usage_dir.write_text("a file where the folder should be")
+        import io
+        import contextlib
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            text, _ = self.run_with(json.dumps({"result": "## entry"}))
+        self.assertEqual("## entry", text)
+        self.assertIn("usage record not saved", out.getvalue())
+
+    def test_the_folder_defaults_beside_the_state_folder(self):
+        from unittest import mock
+        with mock.patch.dict(os.environ):
+            os.environ.pop("FAMILIAR_USAGE_DIR")
+            self.assertEqual(ble.STATE.parent / "usage", ble.usage_dir())
+
     def run_with(self, stdout, returncode=0):
         from unittest import mock
         done = mock.Mock(returncode=returncode, stdout=stdout, stderr="")

@@ -147,6 +147,46 @@ One table per channel:
 Convert each send time to the exact ISO timestamp a scheduler would need. List
 any assumption ("piece ships Wednesday 3 September").
 
+### Voice proof
+
+Only where the install carries a voice gate: `voice-gate.py`, in the `scripts` folder at the checkout root, beside
+`modules/` (called `<voice gate>` below). This module does not ship one. If it is not there, say once in the gate 2
+summary "no voice gate: these posts are unbound, the writer's review is the only check", and change nothing else in
+this stage. If it is there, every post and first comment you finish is its own artifact, proved before the writer sees
+it at gate 2, and proved again whenever a post changes after gate 2. Pool candidates are not handed off, so they are
+not proved; only finished copy is.
+
+**Personal voice layer (read, only when the gate is there).** Read every `instance/voice-*.md` at the checkout root, as
+`draft.md` does. It wins any conflict with the knowledge templates. Before this section, this stage did not read it.
+
+**Proof (per post, and per post in a thread).**
+
+1. Write the gate's input for the exact words of the post: `surface` `post`, `form` `social`, `text` the words, and a
+   `receipt` that carries `ref`, the full `head_sha`, `draft_sha256`, the `files` read with their `sha256` and cited
+   `sections`, `sources`, and an `artifact` object: `contract` 1, `id` `<piece folder name>:<kind>:<number in Chosen>`,
+   `version`, `kind` (`post`, or `first-comment` for a pinned first comment), `stage` `familiar-core:social`,
+   `output_sha256`, `installed.head_sha`, `private_layer` (each personal layer file by `label` and `sha256`), and
+   `parent` from version 2. Spans the writer supplied word for word go under `provenance` as `owner_verbatim`; nothing
+   else is typed. Leave an unresolved link as its marker in the text.
+2. Run, with the checkout root as `--repo`:
+
+   ```sh
+   python3 <voice gate> --repo <checkout root> --input <receipt.json> --private-layer <label>=<path to that layer file> --ledger <piece folder>/voice-ledger.jsonl --record
+   ```
+
+   One `--private-layer` per layer file. The ledger is a new sibling file in the piece folder, hashes only, never in the
+   repo. `--record` writes a version only when it passed.
+3. Put a post in `## Chosen` only when the gate passed or advised (exit 0). On FAIL (exit 1) or UNKNOWN (exit 2) the post
+   is not shown; rewrite it or leave it out. ADVISE hits go under the post for the writer to keep, cut or rewrite.
+4. Any change to a post's words after it was bound (the writer's edit at gate 2, a link that resolved, a rework of a
+   scheduled post, your own rewrite) is the next version of the same artifact: version n+1, `parent` the version and
+   `output_sha256` it replaces, then run the gate again. Do not reuse the old receipt for new bytes; the gate refuses it,
+   and a revision with no ledger cannot pass. Reread `social.md` before any rewrite and never overwrite the writer's own
+   edits. `publish` still sends approved copy byte for byte and never rewrites it.
+
+A pass says these exact words were bound to this revision and these guideline bytes. It is not the writer's approval:
+every result still ends `EDITOR REVIEW REQUIRED`, and gate 2 is still her yes.
+
 ### Gate 2
 
 Before showing anything, run the quality pass on the picked posts. Two passes,
@@ -166,6 +206,22 @@ would change. If nothing repeats, one line saying so.
 
 For each, run tests 1 to 3 from social-rules.md, then the mechanical sweep from
 style-rules.md and the channel's limit from social-schedule.md.
+
+**A post that passes test 1 then gets the opening gate.** If
+`instance/own-and-flip.md` exists at the repo root, read it first: it holds the
+writer's own rules and anchors for these checks and wins on conflict. Three
+binary checks, each answered yes or no with the quoted line that settles it:
+
+a. The draft names its most pokeable fact (the thing a sceptical reader would
+   poke at first) in the first third.
+b. One concrete scene lands before the first claim.
+c. A flip line (one sentence that turns that sore spot into the point) sits in
+   the first third.
+
+A no on any of them sends the post back to be redrafted, not polished: say
+which check failed, quote the line that shows it, and write the post again
+before running findings on it. These are judgement checks; nothing about them
+goes into the mechanical sweep.
 
 **If it passes test 1**, show the findings inline, in style-rules.md's format:
 
@@ -259,6 +315,13 @@ Write `social.md` in the piece folder (for a quiet week, in a dated folder
 
 `## Chosen` and `## Schedule` are what `publish` reads. `## Held` and
 `## Candidate pool` are what it must ignore, so keep the headings distinct.
+
+Before that line, run `python3 scripts/revival-check.py social.md --piece <the
+piece folder>`. It flags a post or candidate that brings back a dead cut, an
+option the writer chose against, or a rule they rejected. Move a flagged item
+out of `## Chosen` into `## Held` with the original kill and its reason beside
+it, so the writer decides whether the evidence changed. If it says it could not
+run, or that rejected rules were not checked, say so in the line.
 
 Then one line: the copy is approved, what is in it, and anything still missing
 before it can be scheduled (a link that has not resolved, a channel not

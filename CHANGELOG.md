@@ -51,6 +51,98 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.69.0 (2026-10-27)
+
+- **Finalise proposes preview text.** Each subject line now comes with the line an inbox shows after it, about 90 characters, saying what the reader gets.
+
+## 0.68.0 (2026-10-25)
+
+- **Record a post that went out on LinkedIn or Bluesky.** `record-sent.py` adds the date, channel and address of a post to the piece's `final.md`, so the piece shows as sent and its link can be used. It shows what it would add first and writes only when you confirm.
+- **It leaves your words and earlier records alone.** The text is untouched, a send already recorded is never overwritten, and if the piece does not read back as sent the original is put back.
+
+## 0.67.0 (2026-10-18)
+
+- **Compare your board with what your newsletter actually sent.** `beehiiv-reconcile.py` reads every sent and archived post from your Beehiiv publication and lists, for each card, the live post it looks like and the web address to use. It changes nothing; you accept or reject each row.
+- **Each match shows its reason.** An address already on the card comes first, then the same title, then a close one. A close match is only a suggestion, two equal candidates are both listed with none picked, and a card with no live post says so.
+
+## 0.66.0 (2026-10-18)
+
+- **Channel ids are `linkedin` and `bluesky`, and the template declares both.** The LinkedIn feed channel is now `linkedin` (it was `linkedin-feed`), and a new `bluesky` block carries the job, a 300-character limit, inline link placement and the gate, with your audience and voice left as fields to fill. `channel_check` reads a schedule row under either its schedule name or its id, and holds both to the same cadence and limit.
+- **If your own `channels.md` or a piece's `social.md` still says `linkedin-feed`, change it to `linkedin`.** `channel_check` reports the old id as a channel the registry does not declare until you do. Nothing is renamed for you.
+
+## 0.65.0 (2026-10-18)
+
+- **Repurposing a long piece carries proof on its brief where a voice gate is installed.** The long branch of `repurpose` proves `brief.md` as a brief before it is written and again after every edit. The proof binds the brief's exact bytes and version, a style hit shows as advice and never blocks, a mistake in the proof keeps the brief from being written, and with no kill list the stage says "Familiar unavailable" and writes nothing. The receipt approves no word in the brief; the companion piece's words are still proved at `draft`. Without a gate nothing changes and the stage says so.
+
+## 0.64.1 (2026-10-18)
+
+Bug fixes and updates.
+
+## 0.64.0 (2026-10-18)
+
+- **Publishing and repurposing carry proof where a voice gate is installed.** `publish` proves each finished post, with its link built, before it shows anything as ready to schedule, whether it schedules, hands off or only prints the text. `repurpose` runs the same proof on every post it reaches through `social`. A style hit shows as advice and never blocks; a mistake in the proof keeps that post out of the schedule, and with no kill list the stage says "Familiar unavailable" and schedules nothing. Neither stage changes a word of approved copy. Without a gate nothing changes and both stages say so.
+
+## 0.63.0 (2026-10-18)
+
+- **Drafts and line edits carry proof where a voice gate is installed.** `draft` proves the draft against your voice files before it is written and again after every edit it makes, and `line-edit` proves each rewritten line before the report is written. A style hit shows as advice with its rule and never blocks. A mistake in the proof stops the stage, and with no kill list the stage says "Familiar unavailable" and writes nothing. Without a gate nothing changes and both stages say so.
+
+## 0.62.1 (2026-10-18)
+
+- **The humanizer drift check no longer reports "none missing" when a sign has no rule.** `scripts/humanizer-check.py` now counts a humanizer pattern as covered only when your style rules have the numbered rule with the same number and title words, so a sign with no counterpart is listed. When it cannot read either side it says it cannot tell instead of reporting a clean result. It still reports only; it adds no rules.
+
+## 0.62.0 (2026-10-17)
+
+- **Posts carry proof where a voice gate is installed.** `social` proves each finished post and first comment against your voice files before you see it at gate 2, and proves it again when a post changes afterwards. A short-form `repurpose` goes through the same stage. Without a gate nothing changes and `social` says the posts are unbound.
+- **`social` reads your personal voice layer when that gate is there**, so the posts are written against the same files they are checked against.
+
+## 0.61.0 (2026-10-17)
+
+- **Titles and subject lines carry proof where a voice gate is installed.** `finalise` proves each title, subtitle, subject line and meta title or description against your voice files before you see it, and a reworded option is proved again as its next version. Without a gate nothing changes and `finalise` says the options are unbound.
+- **`finalise` reads your personal voice layer when that gate is there**, so the options are written against the same files they are checked against.
+
+## 0.60.0 (2026-10-17)
+
+- **New installs keep their board in Notion.** `familiar init` now sets the board provider to Notion in the knowledge folder it creates. Add your database and token and `familiar board` shows your cards. A house that already chose a provider is left as it is.
+- **The built-in board is deprecated.** It still opens and every piece still shows, and nothing has been removed. `familiar board` and `scripts/board.py` now tell you it is deprecated each time. Its removal, when it comes, will have its own entry.
+- **Moving an existing house to Notion.** Migration: in `knowledge/board-provider.md`, set `- Provider: notion`, add `- Notion database:` with your database's ID or URL, and put the token in `FAMILIAR_NOTION_TOKEN`. Check it with `python3 scripts/notion_check.py`, then run `familiar board`. To stay on the built-in board for now, set `- Provider: local`; the notice still shows.
+
+## 0.59.0 (2026-10-17)
+
+- **Write the first draft yourself, if you want to.** Before drafting, Familiar offers a choice: it drafts from your outline and notes, or you write and it only edits and challenges. The default stays as it was, and the offer is made once per piece.
+- **See how much of a published piece is yours.** When you teach Familiar from a draft and the version you published, it now also reports the share of the published sentences that you wrote or rewrote, for that piece and as a trend across pieces. It is a count with no target.
+
+## 0.58.0 (2026-10-17)
+
+- **What you cut stays cut.** The draft, both edits, social and learn now check their output against the cuts you marked dead, the options you chose against and the rules you rejected. If something comes back, it is flagged with the original kill and the reason you gave, so you can say whether anything has changed. Nothing is removed for you and nothing is blocked.
+
+## 0.57.0 (2026-10-17)
+
+- **Editor reports that point at your words, not at praise.** After an edit report is written, Familiar checks it for a compliment or agreement opener that quotes no line, and for a finding that quotes none of your draft. A specific "this works" that quotes the line is left alone, and a report is never required to find a fault.
+
+## 0.56.0 (2026-10-17)
+
+- **See where the draft sounds equally sure of everything.** After drafting, Familiar marks any run of three or more flat claims in a paragraph that carry no source, quote or hedge, so the weak paragraph stands out from the strong one. It points at where to look and cannot say whether a claim is true; nothing is changed or blocked.
+
+## 0.55.0 (2026-10-17)
+
+- **Experience in the draft is yours to confirm.** Familiar has no lived experience, so after drafting it flags every first-person, sensory, anecdote or joke-shaped sentence that does not trace to your notes and turns it into a question for you: where did this come from? Whether a line lands stays your call; this only makes sure you are asked.
+
+## 0.54.0 (2026-10-17)
+
+- **Your own sentences stay yours in the draft.** Sentences you wrote in your notes now go into the draft as written, and once the draft is done Familiar lists the ones it reworded, each beside the sentence that replaced it, so you can put your wording back or let it go. Nothing is restored or changed for you.
+
+## 0.53.0 (2026-10-16)
+
+- **See open claim flags before you name the piece.** If your research tool left a list of claims that need a source, finalise now shows it first: the ones you have not yet kept or dropped, and the ones you kept that still have no source in the piece. Nothing is blocked, and the list is never edited.
+
+## 0.52.0 (2026-10-16)
+
+- **Hand finished posts to a scheduler of your own.** Set `scheduler: handoff` and publish still builds every link, counts each post and asks you once, then writes the finished posts into your social file for your own tool to schedule, instead of calling a scheduler itself. Each one is marked as handed off, so nothing is queued twice.
+
+## 0.51.0 (2026-10-16)
+
+- **A post that times out is not sent twice.** Publish now notes each post in your social file before handing it to the scheduler, then swaps the note for the post's id. If the scheduler never answers, it looks in the queue for that exact post instead of trying again, and if it cannot tell, it marks the post unresolved and leaves the call to you.
+
 ## 0.50.0 (2026-10-15)
 
 - **See what a rewrite costs before you take it.** The line edit and the developmental edit now compare each of your lines with the rewrite suggested for it, and note what the polish gives up: a contraction written out, a spoken idiom dropped, short sentences joined, a line much longer or shorter. The note sits under the finding, so the cost is in front of you before you say yes. Nothing is changed or blocked, and a rewrite that is flagged is still yours to take.

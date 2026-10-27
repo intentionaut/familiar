@@ -43,6 +43,18 @@ SETTINGS_FILE = "board-provider.md"
 ID_FILE = ".piece-id"
 PROVIDERS = ("local", "notion")
 
+# The built-in board is deprecated (0.60.0). It still works and nothing is
+# removed; removal is a later, separate change. Every command that builds it
+# prints this, to stderr, so a script reading its output is unaffected.
+DEPRECATION = (
+    "The built-in board is deprecated and will be removed in a later release. "
+    "Nothing has been removed yet. To keep your board in Notion, set "
+    "`- Provider: notion` in knowledge/board-provider.md "
+    "(the steps are in the 0.60.0 changelog entry).")
+
+# A new install starts on Notion. An existing house keeps what it chose.
+NEW_INSTALL_PROVIDER = "notion"
+
 # The only fields a provider reads or writes. Anything else on a row is the
 # writer's, and is carried through untouched.
 BOARD_FIELDS = ("title", "state", "next_decision", "last_activity", "blockers", "links")
@@ -245,6 +257,25 @@ def read_setting(knowledge, fname=SETTINGS_FILE):
     return m.group(1).strip().lower()
 
 
+def default_new_install(knowledge, fname=SETTINGS_FILE):
+    """Point a freshly copied house at the Notion board. True when it wrote the line.
+
+    Only the template's unset `- Provider:` line is replaced. A house that has
+    already chosen, `local` included, is never rewritten, and nothing else in
+    the file changes.
+    """
+    f = Path(knowledge) / fname
+    if not f.is_file() or read_setting(knowledge, fname) is not None:
+        return False
+    text = f.read_text(encoding="utf-8")
+    new, n = re.subn(r"^- Provider:[ \t]*.*$", f"- Provider: {NEW_INSTALL_PROVIDER}",
+                     text, count=1, flags=re.M)
+    if not n:
+        return False
+    f.write_text(new, encoding="utf-8")
+    return True
+
+
 def resolve_provider(pieces_dirs, knowledge=None, env=None, transport=None):
     """The provider the writer's house selects; the built-in board when it selects none."""
     if knowledge is None:
@@ -274,6 +305,8 @@ def main(argv=None):
         print(e, file=sys.stderr)
         return 2
     by = counts(items)
+    if isinstance(provider, LocalProvider):
+        print(DEPRECATION, file=sys.stderr)
     print(f"board: {provider.name}, {len(items)} piece{'s' if len(items) != 1 else ''}")
     for state in ("thinking", "writing", "editing", "ready", "sent"):
         if by.get(state):

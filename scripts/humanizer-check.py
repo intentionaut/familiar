@@ -52,54 +52,93 @@ def patterns_from(skill):
 def norm(s):
     return re.sub(r"[^a-z0-9 ]", " ", s.lower())
 
-def main():
-    quiet = "--quiet" in sys.argv
-    skill = fetch()
-    version = re.search(r"version:\s*\"?([0-9.]+)", skill)
-    version = version.group(1) if version else "unknown"
-    ours = norm(RULES.read_text(encoding="utf-8"))
-    if INSTANCE.is_dir():
-        for vf in sorted(INSTANCE.glob("voice-*.md")):
-            ours += " " + norm(vf.read_text(encoding="utf-8"))
+def house_rules(rules_text):
+    """The house's numbered rules, {number: its text}. Empty when none parse."""
+    found = list(re.finditer(r"^(\d+)\. \*\*", rules_text, re.M))
+    out = {}
+    for i, m in enumerate(found):
+        end = found[i + 1].start() if i + 1 < len(found) else len(rules_text)
+        out.setdefault(m.group(1), rules_text[m.start():end])
+    return out
 
+def analyse(skill, rules_text, ours):
+    """Compare humanizer's SKILL.md with the house list. patterns_status is
+    "unknown" when either side yields nothing to compare: an empty list is never
+    reported as "none missing"."""
+    version = re.search(r"version:\s*\"?([0-9.]+)", skill)
+    words = words_from(skill)
     # Humanizer spells the American way and this house the British one.
-    missing_words = [w for w in words_from(skill)
+    missing_words = [w for w in words
                      if w.split("/")[0].strip() not in ours
                      and w.split("/")[0].strip().replace("iz", "is") not in ours]
-
+    patterns = patterns_from(skill)
+    rules = house_rules(rules_text)
     missing_patterns = []
-    for num, title in patterns_from(skill):
+    for num, title in patterns:
+        # A pattern counts as covered only by the house rule of the same number
+        # (style-rules keeps humanizer's numbering) whose text shares its title words.
+        block = norm(rules.get(num, ""))
         key = [t for t in norm(title).split() if len(t) > 3 and t not in
                ("with", "that", "from", "about", "when", "into", "left", "your")]
-        hits = sum(1 for t in key if t in ours)
-        # A title made only of short words ("Not X but Y") is looked for whole.
-        if (not key and norm(title).strip() not in ours) or (key and hits / len(key) < 0.5):
+        if not block:
+            ok = False
+        elif key:
+            ok = sum(1 for t in key if t in block) / len(key) >= 0.5
+        else:
+            ok = norm(title).strip() in block
+        if not ok:
             missing_patterns.append((num, title))
+    return {"version": version.group(1) if version else "unknown",
+            "missing_words": missing_words, "words_status": "ok" if words else "unknown",
+            "missing_patterns": missing_patterns,
+            "patterns_status": "ok" if patterns and rules else "unknown"}
 
-    today = datetime.date.today().isoformat()
+def render(r, today):
     lines = [
         "# Humanizer check",
         "",
-        f"Generated {today} against humanizer SKILL.md version {version}.",
+        f"Generated {today} against humanizer SKILL.md version {r['version']}.",
         "Candidates only. Nothing here is applied: bring style-rules.md back in step",
         "with humanizer per CONTRIBUTING.md. Re-run: `scripts/humanizer-check.py`.",
         "",
         "## Overused words humanizer lists that style-rules.md does not mention",
         "",
     ]
-    lines += [f"- {w}" for w in missing_words] or ["- none"]
+    if r["words_status"] == "unknown":
+        lines += ["- Cannot tell: no word list was found in humanizer's file. This is not a clean result."]
+    else:
+        lines += [f"- {w}" for w in r["missing_words"]] or ["- none"]
     lines += ["", "## Humanizer patterns with no obvious counterpart in style-rules.md", "",
-              "Matched loosely on heading words, so expect some false alarms.", ""]
-    lines += [f"- §{n} {t}" for n, t in missing_patterns] or ["- none"]
+              "A pattern counts as covered only by the numbered rule with the same number whose",
+              "text shares its title words. Expect a few false alarms; a gap is never hidden.", ""]
+    if r["patterns_status"] == "unknown":
+        lines += ["- Cannot tell: the patterns or the house's numbered rules could not be read.",
+                  "  This is not a clean result. Check both files by hand."]
+    else:
+        lines += [f"- §{n} {t}" for n, t in r["missing_patterns"]] or ["- none"]
     lines += ["", f"Source: {RAW}", ""]
-    REPORT.write_text("\n".join(lines), encoding="utf-8")
+    return "\n".join(lines)
 
-    summary = {"version": version, "missing_words": len(missing_words),
-               "missing_patterns": len(missing_patterns), "report": str(REPORT.relative_to(ROOT))}
+def summary(r):
+    unknown = r["patterns_status"] == "unknown"
+    return {"version": r["version"], "missing_words": len(r["missing_words"]),
+            "words_status": r["words_status"],
+            "missing_patterns": None if unknown else len(r["missing_patterns"]),
+            "patterns_status": r["patterns_status"], "report": str(REPORT.relative_to(ROOT))}
+
+def main():
+    quiet = "--quiet" in sys.argv
+    skill = fetch()
+    rules_text = RULES.read_text(encoding="utf-8")
+    ours = norm(rules_text)
+    if INSTANCE.is_dir():
+        for vf in sorted(INSTANCE.glob("voice-*.md")):
+            ours += " " + norm(vf.read_text(encoding="utf-8"))
+    r = analyse(skill, rules_text, ours)
+    REPORT.write_text(render(r, datetime.date.today().isoformat()), encoding="utf-8")
     if not quiet:
-        print(json.dumps(summary, indent=2))
+        print(json.dumps(summary(r), indent=2))
     return 0
 
 if __name__ == "__main__":
     sys.exit(main())
-

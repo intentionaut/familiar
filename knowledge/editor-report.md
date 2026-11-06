@@ -1,8 +1,9 @@
 # Editor report spec
 
-The developmental edit returns a structured report, not a rewritten draft.
-It surfaces the decisions, the writer makes them.
-Friction is deliberate. Never apply changes automatically.
+The developmental edit returns a structured report and a revised draft. The
+report is the trace; the revised draft, `.versions/dev-edit-draft.md`, carries every
+fix applied, and the writer answers it yes, no or with her words. Nothing
+replaces `draft.md` until she says yes.
 
 ## Issue taxonomy
 
@@ -75,4 +76,4 @@ Two or three sentences on what the piece will do to a reader once the fixes land
 - Specific fixes only: every issue gets an exact rewritten line.
 - Flag counts matter but impact ordering matters more; lead with what changes the piece most.
 - Number every new finding in a heading of its own (`### R2-3a.`, `### R2-4.1` for round 2), quote the words it is about, and never reuse a number in a later look. Round 1 may retain legacy IDs. The board shows each finding beside the paragraph it quotes, where the writer can send it to an agent.
-- The cumulative report goes to `edits/dev-edit-report.md` next to the draft; append a new round instead of replacing history. The writer works through it themselves: accept, reject, revise.
+- The cumulative report goes to `edits/dev-edit-report.md` next to the draft; append a new round instead of replacing history. The writer reads the revised draft, not the report: yes, no or her words.

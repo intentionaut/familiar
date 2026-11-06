@@ -218,27 +218,18 @@ b. One concrete scene lands before the first claim.
 c. A flip line (one sentence that turns that sore spot into the point) sits in
    the first third.
 
-A no on any of them sends the post back to be redrafted, not polished: say
-which check failed, quote the line that shows it, and write the post again
-before running findings on it. These are judgement checks; nothing about them
+A no on any of them is corrected here: write the post again from the material
+in the piece, record which check failed and the quoted line in the context
+log, then run the checks again. After two failed attempts, say so as an error
+with the quoted line and stop. These are judgement checks; nothing about them
 goes into the mechanical sweep.
 
-**If it passes test 1**, show the findings inline, in style-rules.md's format:
-
-```
-"<quoted text>"
-Issue: <rule or test>
-Why it matters: <one sentence>
-Fix: <the exact rewritten line, in the writer's voice>
-```
-
-Then stop and let the writer take each one. Apply what they accept, verbatim.
-Nothing is applied before they answer, including mechanical findings: a quiet
-fix is a decision made on the writer's behalf about their own voice.
-
-If a post genuinely has nothing wrong with it, say which tests it passed and
-that it is ready. Never say only "clean". A pass has to show what it checked or
-it is indistinguishable from not having run.
+**If it passes test 1**, apply every finding's fix, in the writer's voice, and
+run the checks again. Record each finding in style-rules.md's format
+(`"<quoted text>"`, `Issue:`, `Why it matters:`, `Fix:`) in the context log as
+the trace. Show the writer the finished post and ask one line: yes, no with a
+reason, or your words. Under it, one line naming the tests it passed: a pass
+has to show what it checked or it is indistinguishable from not having run.
 
 **If it fails test 1**, do not list findings. Go to the pick: two to four
 viewpoints the material already supports, each written out: the opening line as

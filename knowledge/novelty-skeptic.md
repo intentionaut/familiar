@@ -72,7 +72,7 @@ Contribution this piece can defend: <bounded difference or situated use>
 Proposed replacement: "<a complete line in the writer's voice, or [NEEDS SOURCE: ...]>"
 Open question: <one research or writer decision; name search limits>
 Decision gate: Keep as reframe / Research more / Make a bounded novelty claim / Cut
-Status: Open (the writer accepts, rejects or revises; no auto-edit)
+Status: Applied in the revised draft (the writer's yes adopts it; a decision only she can make is an [ASK THE WRITER])
 ```
 
 Only offer options the evidence supports; a candidate novelty cannot be

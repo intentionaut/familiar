@@ -1,8 +1,10 @@
 # Stage: dev-edit (developmental edit)
 
-Produce the editorial report. You are a demanding but loyal editor.
-The report surfaces decisions; the writer makes them. Never rewrite the draft
-in place, never produce a "clean version".
+Produce the editorial report and the revised draft. You are a demanding but
+loyal editor. The checks run behind the scenes (AGENTS.md, "Gates run behind
+the scenes"): the report is the trace, and the writer receives the draft with
+every fix applied, in `.versions/dev-edit-draft.md`. Never rewrite `draft.md`
+itself.
 
 ## Setup
 
@@ -21,7 +23,7 @@ Follow the report spec in knowledge/editor-report.md exactly, after one gate:
    b. One concrete scene lands before the first claim.
    c. A flip line (one sentence that turns that sore spot into the point) sits in the first third.
 
-   A no on any of them sends the piece back to `draft`: it becomes the first critical fix, and roadmap step one reads `Opening: return to draft`. Do not polish the rest of an opening that fails. These are judgement checks; nothing about them goes into the mechanical line-edit sweep.
+   A no on any of them becomes the first critical fix, and roadmap step one reads `Opening: rewritten`: rewrite the opening in the revised draft from material already in the piece, the notes or the context log, then run the three checks again. If the scene or fact it needs exists only in the writer's head, put one `[ASK THE WRITER: ...]` where it goes. If the opening still fails after two attempts, say so as an error, with the quoted line, and stop. These are judgement checks; nothing about them goes into the mechanical line-edit sweep.
 1. **Spark assessment**: top / buried / missing / needs sharpening. Quote it, locate it.
 2. **Thesis check**: one sentence as written, does it hold, quote any drift with locations. Run the novelty check against concrete claims and record its findings in this round, not in a separate rewrite.
 3. **Critical fixes**: structural only, each paired with an exact rewrite in their voice. Put consequential novelty claims here when they change the argument.
@@ -65,9 +67,16 @@ cut section or a dropped set of evidence is material, not waste.
 
 ## Exit
 
-Append the numbered round to `edits/dev-edit-report.md` next to the draft, preserving earlier rounds verbatim. Then run `python3 scripts/edge-diff.py edits/dev-edit-report.md`: for each quoted line and its `Rewrite:` it flags what the polish costs (a contraction expanded, an idiom lost, short sentences joined, a length moved). Put one `Edge cost:` line under each finding it flags; never soften the rewrite because of it. If it says it could not run, say so in the report. Then run `python3 scripts/critique-lint.py edits/dev-edit-report.md`: it flags a finding, a section or the report opening with praise or agreement that quotes no line, and a finding that quotes none of the draft's words. Fix what it flags in your own report before the writer sees it: quote the line, or cut the praise. Do not invent a problem to fill a gap, and do not drop a specific "this works" that quotes the line; one said once is allowed. If it says it could not run, say so in the report. If an older report has no rounds, label it Round 1 without changing its findings, and create Round 2. Tell the writer the report
-is ready and how many fixes landed in each section. They accept, reject or revise
-each item themselves. If they want changes applied, they will say which ones.
+Append the numbered round to `edits/dev-edit-report.md` next to the draft, preserving earlier rounds verbatim. Then run `python3 scripts/edge-diff.py edits/dev-edit-report.md`: for each quoted line and its `Rewrite:` it flags what the polish costs (a contraction expanded, an idiom lost, short sentences joined, a length moved). Put one `Edge cost:` line under each finding it flags; never soften the rewrite because of it. If it says it could not run, say so in the report. Then run `python3 scripts/critique-lint.py edits/dev-edit-report.md`: it flags a finding, a section or the report opening with praise or agreement that quotes no line, and a finding that quotes none of the draft's words. Fix what it flags in your own report before the writer sees it: quote the line, or cut the praise. Do not invent a problem to fill a gap, and do not drop a specific "this works" that quotes the line; one said once is allowed. If it says it could not run, say so in the report. If an older report has no rounds, label it Round 1 without changing its findings, and create Round 2. Then write
+`.versions/dev-edit-draft.md`: `draft.md` with every critical fix and line-level
+rewrite in this round applied, and nothing else changed. Show the writer that
+draft, not the report, and ask one line: yes, no with a reason, or your words.
+Yes runs `python3 scripts/adopt-draft.py <the piece folder> <the piece folder>/.versions/dev-edit-draft.md`, which keeps the old
+`draft.md` as a verified `.versions/draft-before-r<N>.md` before replacing it; if it exits non-zero, show its error
+as it stands, because `draft.md` was not changed;
+no records her reason in the report; her words replace the passage they name,
+and the checks run on them once more. If an `[ASK THE WRITER]` is open, ask it in
+the same message, batched into one question.
 
 Then run `python3 scripts/revival-check.py edits/dev-edit-report.md --piece <the piece folder>`. It flags any finding or option in this round that brings back a dead cut, an option the writer chose against, or a rule they rejected. Where it flags one, say so under that finding: `Revival: <the original kill and its reason>`. They decide whether the evidence changed; do not drop the finding or soften it because of the flag. If it says it could not run, or that rejected rules were not checked, say so in the report.
 

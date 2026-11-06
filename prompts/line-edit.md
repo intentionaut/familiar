@@ -117,13 +117,19 @@ whenever you reword it. The personal voice layer you already read in Setup is th
    hedge finding has no Fix line and is not proved.
 
 A pass says these exact words were bound to this revision and these guideline bytes. It is not the writer's approval:
-every result still ends `EDITOR REVIEW REQUIRED`, and nothing is applied until she accepts it.
+every result still ends `EDITOR REVIEW REQUIRED`, and nothing replaces `draft.md` until she says yes.
 
 ## Exit
 
 Run the voice proof above over every `Fix:` line, then write to `edits/line-edit-report.md`: findings, then the summary table from the
 spec (flags per category, reading ease, grade level, top three highest-impact fixes).
-They apply what they agree with. Nothing is auto-applied.
+That report is the trace. Then write `.versions/line-edit-draft.md`: the draft with
+every `Fix:` applied and nothing else changed, as one paste-ready block. Show her
+that block, not the findings, and ask one line: yes, no with a reason, or your
+words. Yes runs `python3 scripts/adopt-draft.py <the piece folder>
+<the piece folder>/.versions/line-edit-draft.md`, which keeps the old `draft.md` as a verified
+`.versions/draft-before-r<N>.md` before replacing it; if it exits non-zero, show its
+error as it stands, because `draft.md` was not changed.
 
 Then run `python3 scripts/edge-diff.py edits/line-edit-report.md`. It compares
 each quoted line with its `Fix:` and flags what the polish costs: a contraction

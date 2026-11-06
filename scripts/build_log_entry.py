@@ -48,6 +48,19 @@ SECTIONS = """**Shipped**
 **Decisions**
 - What was decided, what was rejected, and the reason (only if the reason was given).
 
+**Context**
+- The problem this work is for, said the way the person who has it would say
+  it: who they are, what they were trying to do, what was in the way. A
+  stakeholder, a customer, a team, or the human. Not the code.
+- What the AI did that a leader adopting AI would want to know: where it was
+  right, wrong, overconfident or needed a person, with the line that shows it.
+- The skill the work shows, named the way job specs name it (for example
+  evaluation design, agent guardrails, data privacy, vendor terms, metric
+  definition, stakeholder trade-offs), tied to the line that shows it.
+- A question an executive would ask about this (cost, risk, trust, who signs
+  off, build or buy) and the answer the session gives.
+- Only what the session shows. A line with no evidence behind it is left out.
+
 **Went wrong**
 - Wrong turns, bugs, wasted work. Cause and cost.
 
@@ -277,7 +290,8 @@ NOTES_PROMPT = """Below is part {i} of {n} of one Claude Code working session, i
 Take notes for a build log entry that will be written from all the parts.
 
 Facts only, no narrative. Keep: what shipped, what was decided and why, what
-went wrong with its cause and cost, any number said out loud, and the human's
+went wrong with its cause and cost, any number said out loud, who the work is
+for and what they needed, what the AI got right or wrong, and the human's
 own words worth keeping, quoted exactly. Leave out anything you cannot see in
 the text. Bullets, no headings, no preamble.
 

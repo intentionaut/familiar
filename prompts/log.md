@@ -65,6 +65,19 @@ prose only where prose earns it.
   **Decisions**
   - What was decided, what was rejected, and the reason. Include mine and yours.
 
+  **Context**
+  - The problem this work is for, said the way the person who has it would say
+    it: who they are, what they were trying to do, what was in the way. Not the
+    code. A post starts from this, so a log without it is a changelog.
+  - What the AI did that a leader adopting AI would want to know: where it was
+    right, wrong, overconfident or needed a person, with the line that shows it.
+  - The skill the work shows, named the way job specs name it (evaluation
+    design, agent guardrails, data privacy, vendor terms, metric definition,
+    stakeholder trade-offs), tied to the line that shows it.
+  - A question an executive would ask about this (cost, risk, trust, who signs
+    off, build or buy) and the answer the session gave.
+  - Only what happened. This is context, not framing: no lesson, no moral.
+
   **Went wrong**
   - Wrong turns, surprising bugs, wasted work. Name the cause, and the cost in
     time, money or rework. Include your own mistakes. This is the section that's

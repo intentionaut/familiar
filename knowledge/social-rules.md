@@ -151,15 +151,15 @@ running prose and a five-line post scores noise.
 
 ## Findings, and who decides
 
-Same doctrine as every other edit stage in Familiar. Nothing is auto-applied,
-nothing is fixed quietly, and "clean" is not something the pass may conclude
-about its own work without showing what it checked.
+Same doctrine as every other edit stage in Familiar: findings are corrected
+behind the scenes and recorded in the context log, and "clean" is not something
+the pass may conclude about its own work without showing what it checked.
 
 For a mechanical finding, the format is `style-rules.md`'s: the quoted text, the
 rule, one line on why it matters, and the exact rewrite. For a failure of tests
 1 to 4, the format is the pick above.
 
-The writer accepts, rejects or revises each one.
+The writer sees the finished post and answers yes, no or with her words.
 
 ## House additions
 

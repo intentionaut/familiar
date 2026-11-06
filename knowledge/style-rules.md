@@ -1,8 +1,9 @@
 # Style rules (mechanical pass)
 
 A checklist precise enough for any model or human to run consistently.
-Every flag must come with the exact rewritten line. Never auto-apply changes:
-the writer accepts, rejects, or revises each one.
+Every flag must come with the exact rewritten line. The fixes are applied in a
+revised draft beside `draft.md`, never over it; the writer answers that draft
+yes, no or with her words.
 
 ## Language gate
 
@@ -302,8 +303,8 @@ Writing about your own work means writing about employers, clients, colleagues
 and tools that let you down. The line edit flags where the piece talks one of
 them down, and offers the version that keeps the point.
 
-This is a flag with an exact rewrite, like every other line-edit finding. The
-writer accepts, rejects or revises it.
+This is a flag with an exact rewrite, like every other line-edit finding, and
+the rewrite goes into the revised draft she answers.
 
 ### A named person or company
 

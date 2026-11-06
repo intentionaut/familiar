@@ -113,7 +113,8 @@ def kills_from_piece(folder):
             material = "\n".join(l for l in rest.splitlines() if not re.match(r"\s*(?:\*\*)?(From|Why|Flag)(?:\*\*)?:", l, re.I))
             kills.append({"kind": "cut", "kill": head.strip(), "why": why.group(1).strip() if why else "(no reason recorded)",
                           "where": "cuts.md", "texts": [head.strip()] + [s for _, s in sentences(material)]})
-    for f in sorted(folder.rglob("*.md")):
+    for f in sorted(p for p in folder.rglob("*.md")  # .versions/ and other dot-dirs are kept copies, not the piece (as board.py)
+                    if not any(x.startswith(".") for x in p.relative_to(folder).parts)):
         for _, _, title, chosen, opts, because in option_sets(f.read_text(encoding="utf-8")):
             if chosen is None:
                 continue

@@ -51,6 +51,11 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.70.0 (2026-11-06)
+
+- **Edits come back as a finished draft.** Dev-edit and line-edit apply their fixes and hand you the revised draft to accept, reject or rewrite in your own words. A question reaches you only when the draft needs something only you know.
+- **Your draft is kept before it changes.** Accepting a revised draft saves the current one to the piece's kept versions, checks the copy matches, and only then replaces it. If any step fails, your draft stays as it was.
+
 ## 0.69.0 (2026-10-27)
 
 - **Finalise proposes preview text.** Each subject line now comes with the line an inbox shows after it, about 90 characters, saying what the reader gets.

@@ -526,8 +526,9 @@ them would take a piece off the board with nothing to say why.
 
 ## The one thing Familiar refuses
 
-Every other check reports. The writer accepts it, rejects it, or revises it, and
-nothing is applied without them. `knowledge/never-publish.md` is the exception.
+Every other check corrects behind the scenes (see "Gates run behind the
+scenes"), and nothing replaces the writer's draft until she says yes.
+`knowledge/never-publish.md` is the exception.
 
 It holds strings that must never appear in anything sent out: a client under an
 agreement, a salary, an unannounced product, a metric nobody cleared. `publish`
@@ -635,8 +636,16 @@ shortfall. If nothing is lost, it was carrying a verdict.
   before any rule marked (en) in style-rules.md.
 - Never invent evidence. Use `[NEEDS SOURCE: ...]` instead. Never invent a
   quote. Use `[ASK THE WRITER: ...]`.
-- Edits surface decisions with exact rewrites; the writer accepts, rejects or
-  revises. Never produce a "clean version".
+- **Gates run behind the scenes** (decided 2026-11-06: "they're gates, but the
+  gates happen behind the scenes, what stops is errors to the user"). An edit
+  stage corrects what its checks find and hands the writer the finished,
+  revised draft in `.versions/`, never over `draft.md`; she answers yes,
+  no, or with her words. The findings are the trace, written to the stage's
+  report and the context log, not shown to her as work. A check that still
+  fails after two correction attempts stops and is reported as an error, with
+  the exact message and the last draft. Only errors and an `[ASK THE WRITER]`
+  only she can answer reach her. Publication is unchanged: she copies to
+  beehiiv or authorises into Buffer herself.
 - Write in the writer's voice as described in `knowledge/voice-guide.md`, using
   `knowledge/examples/canonical.md` as the reference. If the voice guide is still
   the unfilled template, say so and ask for a sample before drafting.

@@ -82,6 +82,13 @@ class LongSessions(unittest.TestCase):
         self.assertNotIn("covers several projects",
                          ble.build_prompt(["### USER\nx"], "t", "## H", False))
 
+    def test_the_format_asks_for_context_a_post_can_start_from(self):
+        p = ble.build_prompt(["### USER\nx"], "t", "## H", False)
+        self.assertIn("**Context**", p)
+        self.assertIn("job specs", p)
+        self.assertIn("executive would ask", p)
+        self.assertLess(p.index("**Context**"), p.index("**Went wrong**"))
+
     def test_the_format_asks_for_quips_verbatim(self):
         self.assertIn("**Quips**", ble.build_prompt(["### USER\nx"], "t", "## H", False))
 

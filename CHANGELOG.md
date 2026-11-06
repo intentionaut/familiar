@@ -51,6 +51,10 @@ Hard rules. An entry that breaks one of them does not ship.
 
 ---
 
+## 0.71.0 (2026-11-06)
+
+- **Build logs keep what a post needs.** Each entry now records who the work was for and what they needed, what the AI got right or wrong, the skills it shows in the terms job listings use, and a question a leader would ask about it, with the answer. Every line rests on something that happened.
+
 ## 0.70.0 (2026-11-06)
 
 - **Edits come back as a finished draft.** Dev-edit and line-edit apply their fixes and hand you the revised draft to accept, reject or rewrite in your own words. A question reaches you only when the draft needs something only you know.
